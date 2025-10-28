@@ -16,12 +16,10 @@ class Kernel extends HttpKernel
      * These middleware may be assigned to groups or used individually.
      */
     protected $routeMiddleware = [
-        // middleware bawaan Laravel
-        'auth' => Authenticate::class,
-        'verified' => EnsureEmailIsVerified::class,
+    'auth' => \App\Http\Middleware\Authenticate::class,
+    'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
 
-        // middleware custom
-        'isAdmin' => IsAdmin::class,
-        'isKaryawan' => IsKaryawan::class,
-    ];
+    'isAdmin' => \App\Http\Middleware\IsAdmin::class,
+    'isKaryawan' => \App\Http\Middleware\IsKaryawan::class,
+];
 }

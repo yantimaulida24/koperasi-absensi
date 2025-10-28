@@ -2,17 +2,27 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Karyawan extends Model
 {
-    use HasFactory;
+    protected $table = 'karyawan';
+    protected $primaryKey = 'id_karyawan';
+    protected $fillable = [
+        'id_pengguna',
+        'id_jabatan',
+        'nama_karyawan',
+        'no_telepon',
+        'alamat'
+    ];
 
-    protected $fillable = ['nama', 'email', 'jabatan', 'kode_qr'];
-
-    public function absensis()
+    public function pengguna()
     {
-        return $this->hasMany(Absensi::class);
+        return $this->belongsTo(Pengguna::class, 'id_pengguna', 'id_pengguna');
+    }
+
+    public function jabatan()
+    {
+        return $this->belongsTo(Jabatan::class, 'id_jabatan', 'id_jabatan');
     }
 }

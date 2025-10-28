@@ -6,38 +6,33 @@ use App\Http\Controllers\AbsensiController;
 use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Auth;
 
-// 🔹 Redirect halaman utama ke halaman login
-Route::get('/', function () {
-    return redirect('/login');
-});
-
-// 🔹 Route bawaan Laravel untuk login/logout
+// Login & Logout Laravel
 Auth::routes();
 
-// 🔹 Semua route di bawah hanya bisa diakses oleh user yang sudah login
-Route::middleware(['auth'])->group(function () {
+// Ketika user akses root → langsung dashboard
+Route::get('/', function () {
+    return redirect()->route('dashboard');
+});
 
-    // ✅ Halaman dashboard setelah login (untuk admin & karyawan)
+// Semua route wajib login
+Route::middleware('auth')->group(function () {
+
+    // Dashboard bisa dari / atau /home
     Route::get('/dashboard', [HomeController::class, 'index'])->name('dashboard');
-    Route::get('/home', [HomeController::class, 'index'])->name('home');
+    Route::get('/home', function () {
+        return redirect()->route('dashboard');
+    });
 
-    // ✅ Resource CRUD untuk data karyawan (khusus admin)
-    Route::middleware(['isAdmin'])->group(function () {
+    // CRUD Data Karyawan khusus Admin
+    Route::middleware('isAdmin')->group(function () {
         Route::resource('karyawan', KaryawanController::class);
     });
 
-    // ✅ Halaman daftar absensi (menampilkan semua QR karyawan)
-    Route::get('/absensi', [AbsensiController::class, 'index'])->name('absensi.index');
-
-    // ✅ Simpan absensi secara manual (opsional)
-    Route::post('/absensi', [AbsensiController::class, 'store'])->name('absensi.store');
-
-    // ✅ Tambah karyawan dan buat QR unik
-    Route::post('/karyawan', [AbsensiController::class, 'createKaryawan'])->name('karyawan.store');
-
-    // ✅ Scan QR Code lewat HP (otomatis absen dan redirect ke konfirmasi)
-    Route::get('/absensi/scan/{kode_qr}', [AbsensiController::class, 'scan'])->name('absensi.scan');
-
-    // ✅ Halaman konfirmasi setelah absensi berhasil
-    Route::get('/absensi/konfirmasi', [AbsensiController::class, 'konfirmasi'])->name('absensi.konfirmasi');
+    // Absensi (semua role yang login bisa)
+    Route::prefix('absensi')->group(function () {
+        Route::get('/', [AbsensiController::class, 'index'])->name('absensi.index');
+        Route::post('/', [AbsensiController::class, 'store'])->name('absensi.store');
+        Route::get('/scan/{kode_qr}', [AbsensiController::class, 'scan'])->name('absensi.scan');
+        Route::get('/konfirmasi', [AbsensiController::class, 'konfirmasi'])->name('absensi.konfirmasi');
+    });
 });

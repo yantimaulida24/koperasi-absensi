@@ -1,34 +1,47 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Tambah Karyawan</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body class="p-5">
+@extends('layouts.app')
 
-<div class="container">
-    <h2>Tambah Data Karyawan</h2>
+@section('content')
+<div class="container-fluid">
+    <h4 class="mb-4">Tambah Karyawan</h4>
+
     <form action="{{ route('karyawan.store') }}" method="POST">
         @csrf
         <div class="mb-3">
-            <label>Nama</label>
-            <input type="text" name="nama" class="form-control" required>
-        </div>
-
-        <div class="mb-3">
-            <label>Email</label>
-            <input type="email" name="email" class="form-control" required>
+            <label>Pengguna</label>
+            <select name="id_pengguna" class="form-control" required>
+                <option value="">Pilih</option>
+                @foreach($pengguna as $p)
+                <option value="{{ $p->id_pengguna }}">{{ $p->username }}</option>
+                @endforeach
+            </select>
         </div>
 
         <div class="mb-3">
             <label>Jabatan</label>
-            <input type="text" name="jabatan" class="form-control" required>
+            <select name="id_jabatan" class="form-control" required>
+                <option value="">Pilih</option>
+                @foreach($jabatan as $j)
+                <option value="{{ $j->id_jabatan }}">{{ $j->nama_jabatan }}</option>
+                @endforeach
+            </select>
         </div>
 
-        <button type="submit" class="btn btn-primary">Simpan</button>
-        <a href="{{ route('karyawan.index') }}" class="btn btn-secondary">Kembali</a>
+        <div class="mb-3">
+            <label>Nama Karyawan</label>
+            <input type="text" name="nama_karyawan" required class="form-control">
+        </div>
+
+        <div class="mb-3">
+            <label>No Telepon</label>
+            <input type="text" name="no_telepon" class="form-control">
+        </div>
+
+        <div class="mb-3">
+            <label>Alamat</label>
+            <textarea name="alamat" class="form-control"></textarea>
+        </div>
+
+        <button class="btn btn-primary">Simpan</button>
     </form>
 </div>
-
-</body>
-</html>
+@endsection
