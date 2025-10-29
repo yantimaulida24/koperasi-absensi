@@ -6,22 +6,19 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
+        // Buat tabel 'jabatans' yang benar
         Schema::create('jabatans', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+            $table->id('id_jabatan');  // Kolom primary key untuk jabatan
+            $table->string('nama_jabatan'); // Nama jabatan
+            $table->timestamps();  // Timestamps untuk created_at dan updated_at
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
+        // Hapus tabel 'jabatans'
         Schema::dropIfExists('jabatans');
     }
 };

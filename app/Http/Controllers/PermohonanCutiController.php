@@ -2,71 +2,82 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\PermohonanCuti;
-use Illuminate\Support\Facades\Auth;
+use App\Models\Karyawan;
+use Illuminate\Http\Request;
 use Carbon\Carbon;
 
 class PermohonanCutiController extends Controller
 {
+    // Menampilkan daftar permohonan cuti
     public function index()
     {
-        // Tampilkan semua cuti jika admin, atau milik sendiri jika karyawan
-        if (Auth::user()->role === 'admin') {
-            $cutis = PermohonanCuti::latest()->get();
-        } else {
-            $cutis = PermohonanCuti::where('id_karyawan', Auth::id())->latest()->get();
-        }
-
-        return view('permohonan-cuti.index', compact('cutis'));
+        $cuti = PermohonanCuti::with('karyawan')->get();
+        return view('permohonan-cuti.index', compact('cuti'));
     }
 
+    // Menampilkan form tambah permohonan cuti
     public function create()
     {
-        return view('permohonan-cuti.create');
+        $karyawan = Karyawan::all();
+        return view('permohonan-cuti.create', compact('karyawan'));
     }
 
+    // Menyimpan permohonan cuti baru
     public function store(Request $request)
     {
         $request->validate([
-            'tanggal_mulai' => 'required|date',
+            'id_karyawan' => 'required|exists:karyawans,id_karyawan',
+            'tanggal_mulai' => 'required|date|after_or_equal:today',
             'tanggal_selesai' => 'required|date|after_or_equal:tanggal_mulai',
-            'alasan' => 'required|string|max:500',
+            'alasan_cuti' => 'required|string',
         ]);
 
+        // Saat tambah permohonan cuti, status otomatis "belum disetujui"
         PermohonanCuti::create([
-            'id_karyawan' => Auth::id(),
-            'tanggal_pengajuan' => Carbon::now(),
+            'id_karyawan' => $request->id_karyawan,
+            'tanggal_pengajuan' => Carbon::today(),
             'tanggal_mulai' => $request->tanggal_mulai,
             'tanggal_selesai' => $request->tanggal_selesai,
-            'alasan' => $request->alasan,
-            'status' => 'Pending',
+            'status_cuti' => 'belum disetujui',
+            'alasan_cuti' => $request->alasan_cuti,
         ]);
 
-        return redirect()->route('permohonan-cuti.index')->with('success', 'Permohonan cuti berhasil diajukan!');
+        return redirect()->route('permohonan-cuti.index')->with('success', 'Permohonan cuti berhasil dibuat!');
     }
 
+    // Menampilkan form edit permohonan cuti
     public function edit($id)
     {
         $cuti = PermohonanCuti::findOrFail($id);
-        return view('permohonan-cuti.edit', compact('cuti'));
+        $karyawan = Karyawan::all();
+        return view('permohonan-cuti.edit', compact('cuti', 'karyawan'));
     }
 
+    // Update permohonan cuti (hanya status bisa diubah admin)
     public function update(Request $request, $id)
     {
-        $cuti = PermohonanCuti::findOrFail($id);
-
         $request->validate([
-            'status' => 'required|in:Pending,Disetujui,Ditolak',
+            'id_karyawan' => 'required|exists:karyawans,id_karyawan',
+            'tanggal_mulai' => 'required|date|after_or_equal:today',
+            'tanggal_selesai' => 'required|date|after_or_equal:tanggal_mulai',
+            'alasan_cuti' => 'required|string',
+            'status_cuti' => 'required|in:disetujui,belum disetujui',
         ]);
 
+        $cuti = PermohonanCuti::findOrFail($id);
         $cuti->update([
-            'status' => $request->status
+            'id_karyawan' => $request->id_karyawan,
+            'tanggal_mulai' => $request->tanggal_mulai,
+            'tanggal_selesai' => $request->tanggal_selesai,
+            'status_cuti' => $request->status_cuti,
+            'alasan_cuti' => $request->alasan_cuti,
         ]);
 
-        return redirect()->route('permohonan-cuti.index')->with('success', 'Status cuti berhasil diubah!');
+        return redirect()->route('permohonan-cuti.index')->with('success', 'Permohonan cuti berhasil diperbarui!');
     }
 
+    // Hapus permohonan cuti
     public function destroy($id)
     {
         $cuti = PermohonanCuti::findOrFail($id);

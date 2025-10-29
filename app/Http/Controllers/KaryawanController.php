@@ -3,96 +3,85 @@
 namespace App\Http\Controllers;
 
 use App\Models\Karyawan;
-use App\Models\Pengguna;
 use App\Models\Jabatan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class KaryawanController extends Controller
 {
-    /**
-     * Tampilkan daftar karyawan.
-     */
+    // Menampilkan daftar karyawan
     public function index()
     {
-        // Eager load relasi pengguna dan jabatan
-        $karyawan = Karyawan::with(['pengguna', 'jabatan'])->get();
+        $karyawan = Karyawan::with(['jabatan'])->get();  // Mengambil data karyawan dengan relasi jabatan
         return view('karyawan.index', compact('karyawan'));
     }
 
-    /**
-     * Tampilkan form tambah karyawan.
-     */
+    // Menampilkan form tambah karyawan
     public function create()
     {
-        $pengguna = Pengguna::where('role', 'karyawan')->get();
-        $jabatan = Jabatan::all();
-        return view('karyawan.create', compact('pengguna', 'jabatan'));
+        $jabatan = Jabatan::all();  // Ambil semua data jabatan
+        return view('karyawan.create', compact('jabatan'));  // Kirim data jabatan ke tampilan
     }
 
-    /**
-     * Simpan data karyawan baru.
-     */
+    // Menyimpan data karyawan baru
     public function store(Request $request)
     {
+        // Validasi input
         $request->validate([
-            'id_pengguna' => 'required|unique:karyawan,id_pengguna',
-            'id_jabatan' => 'required|exists:jabatan,id_jabatan',
+            'id_jabatan' => 'required|exists:jabatans,id_jabatan',  // Pastikan id_jabatan valid
             'nama_karyawan' => 'required|string|max:255',
             'no_telepon' => 'nullable|string|max:20',
             'alamat' => 'nullable|string|max:255',
         ]);
 
-        Karyawan::create($request->all());
+        // Menyimpan data karyawan, id_user diisi dengan ID pengguna yang sedang login
+        Karyawan::create([
+            'id_user' => Auth::id(),  // Ambil ID pengguna yang sedang login
+            'id_jabatan' => $request->id_jabatan,
+            'nama_karyawan' => $request->nama_karyawan,
+            'no_telepon' => $request->no_telepon,
+            'alamat' => $request->alamat,
+        ]);
 
-        return redirect()->route('karyawan.index')->with('success', 'Data berhasil ditambahkan');
+        return redirect()->route('karyawan.index')->with('success', 'Data karyawan berhasil ditambahkan!');
     }
 
-    /**
-     * Tampilkan form edit karyawan.
-     */
+    // Menampilkan form edit karyawan
     public function edit($id)
     {
         $karyawan = Karyawan::findOrFail($id);
-        $pengguna = Pengguna::where('role', 'karyawan')->get();
-        $jabatan = Jabatan::all();
-
-        return view('karyawan.edit', compact('karyawan', 'pengguna', 'jabatan'));
+        $jabatan = Jabatan::all();  // Ambil data jabatan
+        return view('karyawan.edit', compact('karyawan', 'jabatan'));
     }
 
-    /**
-     * Update data karyawan.
-     */
+    // Update data karyawan
     public function update(Request $request, $id)
     {
-        $karyawan = Karyawan::findOrFail($id);
-
+        // Validasi input
         $request->validate([
-            'id_pengguna' => 'required|exists:pengguna,id_pengguna|unique:karyawan,id_pengguna,' . $karyawan->id_karyawan . ',id_karyawan',
-            'id_jabatan' => 'required|exists:jabatan,id_jabatan',
+            'id_jabatan' => 'required|exists:jabatans,id_jabatan',  // Pastikan id_jabatan valid
             'nama_karyawan' => 'required|string|max:255',
             'no_telepon' => 'nullable|string|max:20',
             'alamat' => 'nullable|string|max:255',
         ]);
 
-        $karyawan->update($request->only([
-            'id_pengguna',
-            'id_jabatan',
-            'nama_karyawan',
-            'no_telepon',
-            'alamat'
-        ]));
+        $karyawan = Karyawan::findOrFail($id);
+        $karyawan->update([
+            'id_jabatan' => $request->id_jabatan,
+            'nama_karyawan' => $request->nama_karyawan,
+            'no_telepon' => $request->no_telepon,
+            'alamat' => $request->alamat,
+        ]);
 
-        return redirect()->route('karyawan.index')->with('success', 'Data berhasil diupdate');
+        return redirect()->route('karyawan.index')->with('success', 'Data karyawan berhasil diperbarui!');
     }
 
-    /**
-     * Hapus data karyawan.
-     */
+    // Hapus data karyawan
     public function destroy($id)
     {
         $karyawan = Karyawan::findOrFail($id);
         $karyawan->delete();
 
-        return redirect()->route('karyawan.index')->with('success', 'Data berhasil dihapus');
+        return redirect()->route('karyawan.index')->with('success', 'Data karyawan berhasil dihapus!');
     }
 }

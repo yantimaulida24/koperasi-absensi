@@ -25,6 +25,7 @@
     @if(Auth::check() && Auth::user()->role === 'admin')
         <div class="sidebar-heading">Menu Admin</div>
 
+        <!-- Data Karyawan -->
         <li class="nav-item">
             <a class="nav-link" href="{{ route('karyawan.index') }}">
                 <i class="fas fa-fw fa-users"></i>
@@ -32,6 +33,15 @@
             </a>
         </li>
 
+        <!-- Data Jabatan -->
+        <li class="nav-item">
+            <a class="nav-link" href="{{ route('jabatan.index') }}">
+                <i class="fas fa-fw fa-briefcase"></i>
+                <span>Data Jabatan</span>
+            </a>
+        </li>
+
+        <!-- Data Absensi -->
         <li class="nav-item">
             <a class="nav-link" href="{{ route('absensi.index') }}">
                 <i class="fas fa-fw fa-calendar-check"></i>
@@ -39,6 +49,7 @@
             </a>
         </li>
 
+        <!-- Permohonan Cuti -->
         <li class="nav-item">
             <a class="nav-link" href="{{ route('permohonan-cuti.index') }}">
                 <i class="fas fa-fw fa-envelope-open"></i>

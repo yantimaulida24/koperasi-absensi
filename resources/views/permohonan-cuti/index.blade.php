@@ -2,42 +2,44 @@
 
 @section('content')
 <div class="container">
-    <h3 class="mb-4 fw-bold">Permohonan Cuti</h3>
+    <h3 class="mb-4">Daftar Permohonan Cuti</h3>
 
-    <a href="{{ route('permohonan-cuti.create') }}" class="btn btn-primary mb-3">Ajukan Cuti</a>
+    <a href="{{ route('permohonan-cuti.create') }}" class="btn btn-success mb-3">Tambah Permohonan Cuti</a>
 
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
-    <table class="table table-bordered table-hover">
-        <thead class="table-primary">
+    <table class="table table-bordered">
+        <thead>
             <tr>
+                <th>ID Cuti</th>
                 <th>Nama Karyawan</th>
+                <th>Tanggal Pengajuan</th>
                 <th>Tanggal Mulai</th>
                 <th>Tanggal Selesai</th>
-                <th>Status</th>
+                <th>Status Cuti</th>
                 <th>Alasan</th>
                 <th>Aksi</th>
             </tr>
         </thead>
         <tbody>
-            @foreach($cutis as $cuti)
+            @foreach($cuti as $c)
             <tr>
-                <td>{{ $cuti->karyawan->name }}</td>
-                <td>{{ $cuti->tanggal_mulai }}</td>
-                <td>{{ $cuti->tanggal_selesai }}</td>
-                <td>{{ $cuti->status }}</td>
-                <td>{{ $cuti->alasan }}</td>
+                <td>{{ $c->id_cuti }}</td>
+                <td>{{ $c->karyawan->nama_karyawan }}</td>
+                <td>{{ $c->tanggal_pengajuan }}</td>
+                <td>{{ $c->tanggal_mulai }}</td>
+                <td>{{ $c->tanggal_selesai }}</td>
+                <td>{{ $c->status_cuti }}</td>
+                <td>{{ $c->alasan_cuti }}</td>
                 <td>
-                    @if(Auth::user()->role === 'admin')
-                    <a href="{{ route('permohonan-cuti.edit', $cuti->id_cuti) }}" class="btn btn-sm btn-warning">Ubah Status</a>
-                    <form action="{{ route('permohonan-cuti.destroy', $cuti->id_cuti) }}" method="POST" class="d-inline">
+                    <a href="{{ route('permohonan-cuti.edit', $c->id_cuti) }}" class="btn btn-primary btn-sm">Edit</a>
+                    <form action="{{ route('permohonan-cuti.destroy', $c->id_cuti) }}" method="POST" style="display:inline;">
                         @csrf
                         @method('DELETE')
-                        <button class="btn btn-sm btn-danger" onclick="return confirm('Yakin ingin hapus?')">Hapus</button>
+                        <button class="btn btn-danger btn-sm" onclick="return confirm('Yakin ingin hapus?')">Hapus</button>
                     </form>
-                    @endif
                 </td>
             </tr>
             @endforeach

@@ -6,38 +6,31 @@ use Illuminate\Database\Eloquent\Model;
 
 class Karyawan extends Model
 {
-    // Nama tabel
-    protected $table = 'karyawans'; // pastikan ini sesuai nama tabel di database
+    protected $table = 'karyawans';  // Nama tabel
+    protected $primaryKey = 'id_karyawan';  // Primary key
+    public $timestamps = true;  // Gunakan timestamps
 
-    // Primary key
-    protected $primaryKey = 'id_karyawan';
-    public $incrementing = true;
-    protected $keyType = 'int';
-
-    // Mass assignable
     protected $fillable = [
-        'id_pengguna',
-        'id_jabatan',
+        'id_user',  // Relasi ke pengguna (users)
+        'id_jabatan', // Relasi ke jabatan (jabatans)
         'nama_karyawan',
         'no_telepon',
-        'alamat'
+        'alamat',
     ];
 
-    // Relasi ke pengguna
-    public function pengguna()
+    /**
+     * Relasi ke tabel users
+     */
+    public function user()
     {
-        return $this->belongsTo(Pengguna::class, 'id_pengguna', 'id_pengguna');
+        return $this->belongsTo(User::class, 'id_user', 'id');  // Relasi 'id_user' di karyawan berelasi dengan 'id' di users
     }
 
-    // Relasi ke jabatan
+    /**
+     * Relasi ke tabel jabatan
+     */
     public function jabatan()
     {
-        return $this->belongsTo(Jabatan::class, 'id_jabatan', 'id_jabatan');
-    }
-
-    // Relasi ke permohonan cuti
-    public function cuti()
-    {
-        return $this->hasMany(PermohonanCuti::class, 'id_karyawan', 'id_karyawan');
+        return $this->belongsTo(Jabatan::class, 'id_jabatan', 'id_jabatan');  // Relasi 'id_jabatan' di karyawan berelasi dengan 'id_jabatan' di jabatan
     }
 }
