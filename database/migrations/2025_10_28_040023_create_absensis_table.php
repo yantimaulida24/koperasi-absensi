@@ -6,15 +6,16 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-   public function up()
-{
-    Schema::create('absensis', function (Blueprint $table) {
-        $table->id();
-        $table->foreignId('karyawan_id')->constrained('karyawans')->onDelete('cascade');
-        $table->timestamp('waktu_masuk')->nullable();
-        $table->timestamps();
-    });
-}
+    public function up(): void
+    {
+        Schema::create('absensis', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('karyawan_id')->constrained('karyawans')->onDelete('cascade');
+            $table->timestamp('waktu_masuk')->nullable();
+            $table->enum('status', ['Masuk', 'Tidak Masuk'])->default('Masuk'); // kolom status langsung di sini
+            $table->timestamps();
+        });
+    }
 
     public function down(): void
     {

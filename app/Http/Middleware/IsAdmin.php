@@ -14,6 +14,6 @@ class IsAdmin
             return $next($request);
         }
 
-        return redirect('/home')->with('error', 'Kamu bukan admin.');
+        return redirect('/dashboard')->with('error', 'Kamu bukan admin.');
     }
 }

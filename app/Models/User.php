@@ -14,7 +14,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'kode_qr', // untuk QR unik tiap karyawan
+        'role',     // ✅ tambahkan ini agar bisa digunakan di middleware cekRole
+        'kode_qr',  // untuk QR unik tiap karyawan
     ];
 
     protected $hidden = [
@@ -30,9 +31,19 @@ class User extends Authenticatable
         ];
     }
 
-    // Relasi ke absensi
+    // ===========================
+    // Relasi ke tabel absensi
+    // ===========================
     public function absensis()
     {
         return $this->hasMany(Absensi::class);
+    }
+
+    // ===========================
+    // Relasi ke tabel permohonan cuti
+    // ===========================
+    public function cuti()
+    {
+        return $this->hasMany(PermohonanCuti::class, 'id_karyawan', 'id');
     }
 }

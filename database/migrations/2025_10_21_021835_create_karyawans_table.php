@@ -9,17 +9,17 @@ return new class extends Migration
     /**
      * Jalankan migration.
      */
-    public function up()
-{
-    Schema::create('karyawans', function (Blueprint $table) {
-        $table->id();
-        $table->string('nama');
-        $table->string('email')->nullable();
-        $table->string('jabatan')->nullable();
-        $table->string('kode_qr')->unique();
-        $table->timestamps();
-    });
-}
+    public function up(): void
+    {
+        Schema::create('karyawans', function (Blueprint $table) {
+            $table->id(); // primary key, auto-increment
+            $table->string('nama');
+            $table->string('email')->nullable();
+            $table->string('jabatan')->nullable();
+            $table->string('kode_qr')->unique();
+            $table->timestamps();
+        });
+    }
 
     /**
      * Undo migration.

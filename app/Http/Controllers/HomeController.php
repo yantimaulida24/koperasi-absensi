@@ -5,15 +5,19 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Absensi;
+use App\Models\PermohonanCuti;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 {
     public function index()
     {
+        // Total pengguna
         $totalPengguna = User::count();
         $totalKaryawan = User::where('role', 'karyawan')->count();
 
+        // Data absensi hari ini
         $totalMasuk = Absensi::whereDate('created_at', now())
                                 ->where('status', 'Masuk')
                                 ->count();
@@ -22,6 +26,7 @@ class HomeController extends Controller
                                 ->where('status', 'Tidak Masuk')
                                 ->count();
 
+        // Data grafik mingguan
         $labelMinggu = [];
         $dataMasuk = [];
         $dataTidakMasuk = [];
@@ -39,7 +44,19 @@ class HomeController extends Controller
                 ->count();
         }
 
+        // Absensi terbaru
         $absensiTerbaru = Absensi::latest()->take(7)->get();
+
+        // Permohonan cuti terbaru
+        if (Auth::user()->role == 'karyawan') {
+            $permohonanCuti = PermohonanCuti::where('id_karyawan', Auth::id())
+                                ->latest()
+                                ->take(5)
+                                ->get();
+        } else {
+            // Admin bisa lihat semua
+            $permohonanCuti = PermohonanCuti::latest()->take(5)->get();
+        }
 
         return view('home', compact(
             'totalPengguna',
@@ -49,7 +66,8 @@ class HomeController extends Controller
             'labelMinggu',
             'dataMasuk',
             'dataTidakMasuk',
-            'absensiTerbaru'
+            'absensiTerbaru',
+            'permohonanCuti'
         ));
     }
 }

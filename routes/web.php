@@ -1,15 +1,16 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\KaryawanController;
 use App\Http\Controllers\AbsensiController;
-use App\Http\Controllers\HomeController;
+use App\Http\Controllers\PermohonanCutiController;
 use Illuminate\Support\Facades\Auth;
 
-// Login & Logout Laravel
+// Auth default Laravel
 Auth::routes();
 
-// Ketika user akses root → langsung dashboard
+// Redirect root ke dashboard
 Route::get('/', function () {
     return redirect()->route('dashboard');
 });
@@ -17,22 +18,36 @@ Route::get('/', function () {
 // Semua route wajib login
 Route::middleware('auth')->group(function () {
 
-    // Dashboard bisa dari / atau /home
+    // Dashboard (admin & karyawan)
     Route::get('/dashboard', [HomeController::class, 'index'])->name('dashboard');
-    Route::get('/home', function () {
-        return redirect()->route('dashboard');
-    });
 
-    // CRUD Data Karyawan khusus Admin
-    Route::middleware('isAdmin')->group(function () {
-        Route::resource('karyawan', KaryawanController::class);
-    });
+    // Data Karyawan (tanpa cekRole)
+    Route::resource('/data-karyawan', KaryawanController::class)->names([
+        'index' => 'karyawan.index',
+        'create' => 'karyawan.create',
+        'store' => 'karyawan.store',
+        'edit' => 'karyawan.edit',
+        'update' => 'karyawan.update',
+        'destroy' => 'karyawan.destroy',
+    ]);
 
-    // Absensi (semua role yang login bisa)
-    Route::prefix('absensi')->group(function () {
-        Route::get('/', [AbsensiController::class, 'index'])->name('absensi.index');
-        Route::post('/', [AbsensiController::class, 'store'])->name('absensi.store');
-        Route::get('/scan/{kode_qr}', [AbsensiController::class, 'scan'])->name('absensi.scan');
-        Route::get('/konfirmasi', [AbsensiController::class, 'konfirmasi'])->name('absensi.konfirmasi');
-    });
+    // Absensi (tanpa cekRole)
+    Route::resource('/absensi', AbsensiController::class)->names([
+        'index' => 'absensi.index',
+        'create' => 'absensi.create',
+        'store' => 'absensi.store',
+        'edit' => 'absensi.edit',
+        'update' => 'absensi.update',
+        'destroy' => 'absensi.destroy',
+    ]);
+
+    // Permohonan Cuti (tanpa cekRole)
+    Route::resource('/permohonan-cuti', PermohonanCutiController::class)->names([
+        'index' => 'permohonan-cuti.index',
+        'create' => 'permohonan-cuti.create',
+        'store' => 'permohonan-cuti.store',
+        'edit' => 'permohonan-cuti.edit',
+        'update' => 'permohonan-cuti.update',
+        'destroy' => 'permohonan-cuti.destroy',
+    ]);
 });
