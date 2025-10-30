@@ -2,83 +2,54 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\Karyawan;
 use App\Models\Absensi;
-use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use App\Models\Karyawan;
+use Illuminate\Http\Request;
 use Carbon\Carbon;
 
 class AbsensiController extends Controller
 {
-    // Halaman daftar QR Code
+    // Menampilkan daftar absensi
     public function index()
     {
-        $karyawans = Karyawan::all();
-        return view('absensi.index', compact('karyawans'));
+        $absensi = Absensi::with('karyawan')->latest()->get();
+        return view('absensi.index', compact('absensi'));
     }
 
-    // Simpan absensi manual (opsional)
-    public function store(Request $request)
-    {
-        $kode_qr = $request->input('kode_qr');
-        $karyawan = Karyawan::where('kode_qr', $kode_qr)->first();
-
-        if ($karyawan) {
-            Absensi::create([
-                'karyawan_id' => $karyawan->id,
-                'waktu_masuk' => Carbon::now(),
-            ]);
-
-            return redirect()->back()->with('success', 'Absensi berhasil untuk: ' . $karyawan->nama);
-        } else {
-            return redirect()->back()->with('error', 'Kode QR tidak ditemukan');
-        }
-    }
-
-    // Tambah karyawan + generate QR unik
-    public function createKaryawan(Request $request)
-    {
-        $request->validate([
-            'nama' => 'required',
-            'email' => 'nullable|email',
-            'jabatan' => 'nullable|string'
-        ]);
-
-        $kode_qr = uniqid('QR_');
-        $karyawan = Karyawan::create([
-            'nama' => $request->nama,
-            'email' => $request->email,
-            'jabatan' => $request->jabatan,
-            'kode_qr' => $kode_qr,
-        ]);
-
-        // Ganti IP sesuai IP laptop kamu agar bisa diakses lewat HP
-        $ipLaptop = '192.168.1.10'; // 👉 ganti dengan IP lokal kamu
-        $url = "http://{$ipLaptop}:8000/absensi/scan/{$kode_qr}";
-
-        // Generate QR Code yang bisa di-scan HP
-        $qrCode = QrCode::size(200)->generate($url);
-
-        return view('absensi.qr', compact('karyawan', 'qrCode'))
-            ->with('success', 'Karyawan berhasil ditambahkan dengan QR Code.');
-    }
-
-    // Fungsi otomatis saat QR di-scan lewat HP
+    // Ketika QR discan
     public function scan($kode_qr)
     {
         $karyawan = Karyawan::where('kode_qr', $kode_qr)->first();
 
         if (!$karyawan) {
-            return view('absensi.gagal', ['pesan' => 'Kode QR tidak ditemukan']);
+            return redirect()->back()->with('error', 'QR Code tidak valid!');
         }
 
-        // Simpan absensi otomatis
-        Absensi::create([
-            'karyawan_id' => $karyawan->id,
-            'waktu_masuk' => Carbon::now(),
-        ]);
+        $tanggal = Carbon::today()->toDateString();
 
-        // Tampilkan halaman sukses
-        return view('absensi.sukses', compact('karyawan'));
+        // Cek apakah sudah absen hari ini
+        $absensi = Absensi::where('id_karyawan', $karyawan->id_karyawan)
+            ->whereDate('tanggal', $tanggal)
+            ->first();
+
+        if (!$absensi) {
+            // Jika belum absen, simpan jam masuk
+            Absensi::create([
+                'id_karyawan' => $karyawan->id_karyawan,
+                'tanggal' => $tanggal,
+                'jam_masuk' => Carbon::now()->format('H:i:s'),
+                'status' => 'Masuk',
+            ]);
+
+            return redirect()->route('absensi.index')->with('success', $karyawan->nama_karyawan . ' berhasil absen masuk!');
+        } else {
+            // Jika sudah absen, update jam keluar
+            $absensi->update([
+                'jam_keluar' => Carbon::now()->format('H:i:s'),
+                'status' => 'Pulang',
+            ]);
+
+            return redirect()->route('absensi.index')->with('success', $karyawan->nama_karyawan . ' berhasil absen pulang!');
+        }
     }
 }

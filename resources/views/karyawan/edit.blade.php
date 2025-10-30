@@ -1,54 +1,53 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <h3 class="fw-bold mb-4">Edit Karyawan</h3>
+<div class="container mt-4">
+    <h2 class="mb-4">Edit Jadwal Kerja</h2>
 
-    <form action="{{ route('karyawan.update', $karyawan->id_karyawan) }}" method="POST">
+    {{-- Form Edit Jadwal Kerja --}}
+    <form action="{{ route('jadwal.update', ['jadwal_kerja' => $jadwal->id]) }}" method="POST">
         @csrf
         @method('PUT')
 
+        {{-- Pilih Karyawan --}}
         <div class="mb-3">
-            <label class="form-label">Nama Karyawan</label>
-            <input type="text" name="nama_karyawan" value="{{ $karyawan->nama_karyawan }}" class="form-control" required>
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">User</label>
-            <select name="id_user" class="form-select" required>
-                <option value="">-- Pilih Pengguna --</option>
-                @foreach($users as $user)
-                    <option value="{{ $user->id }}" {{ $karyawan->id_user == $user->id ? 'selected' : '' }}>
-                        {{ $user->nama_pengguna }}
+            <label for="id_karyawan" class="form-label">Nama Karyawan</label>
+            <select name="id_karyawan" id="id_karyawan" class="form-select" required>
+                @foreach ($karyawan as $k)
+                    <option value="{{ $k->id_karyawan }}" {{ $k->id_karyawan == $jadwal->id_karyawan ? 'selected' : '' }}>
+                        {{ $k->nama_karyawan }}
                     </option>
                 @endforeach
             </select>
         </div>
 
+        {{-- Tanggal --}}
         <div class="mb-3">
-            <label class="form-label">Jabatan</label>
-            <select name="id_jabatan" class="form-select" required>
-                <option value="">-- Pilih Jabatan --</option>
-                @foreach($jabatan as $item)
-                    <option value="{{ $item->id_jabatan }}" {{ $karyawan->id_jabatan == $item->id_jabatan ? 'selected' : '' }}>
-                        {{ $item->nama_jabatan }}
-                    </option>
-                @endforeach
-            </select>
+            <label for="tanggal" class="form-label">Tanggal</label>
+            <input type="date" name="tanggal" id="tanggal" class="form-control" value="{{ $jadwal->tanggal }}" required>
         </div>
 
+        {{-- Jam Masuk --}}
         <div class="mb-3">
-            <label class="form-label">No Telepon</label>
-            <input type="text" name="no_telepon" value="{{ $karyawan->no_telepon }}" class="form-control">
+            <label for="jam_masuk" class="form-label">Jam Masuk</label>
+            <input type="time" name="jam_masuk" id="jam_masuk" class="form-control" value="{{ $jadwal->jam_masuk }}" required>
         </div>
 
+        {{-- Jam Keluar --}}
         <div class="mb-3">
-            <label class="form-label">Alamat</label>
-            <textarea name="alamat" class="form-control">{{ $karyawan->alamat }}</textarea>
+            <label for="jam_keluar" class="form-label">Jam Keluar</label>
+            <input type="time" name="jam_keluar" id="jam_keluar" class="form-control" value="{{ $jadwal->jam_keluar }}" required>
         </div>
 
-        <button class="btn btn-primary">Perbarui</button>
-        <a href="{{ route('karyawan.index') }}" class="btn btn-secondary">Batal</a>
+        {{-- Shift --}}
+        <div class="mb-3">
+            <label for="shift" class="form-label">Shift</label>
+            <input type="text" name="shift" id="shift" class="form-control" value="{{ $jadwal->shift }}" required>
+        </div>
+
+        {{-- Tombol Simpan --}}
+        <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+        <a href="{{ route('jadwal.index') }}" class="btn btn-secondary">Batal</a>
     </form>
 </div>
 @endsection

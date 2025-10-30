@@ -6,6 +6,8 @@ use App\Http\Controllers\KaryawanController;
 use App\Http\Controllers\AbsensiController;
 use App\Http\Controllers\PermohonanCutiController;
 use App\Http\Controllers\JabatanController;
+use App\Http\Controllers\JadwalKerjaController; // ✅ Tambahan
+
 use Illuminate\Support\Facades\Auth;
 
 // 🔹 Auth bawaan Laravel
@@ -27,20 +29,26 @@ Route::middleware('auth')->group(function () {
         'index' => 'karyawan.index',
         'create' => 'karyawan.create',
         'store' => 'karyawan.store',
+        'show' => 'karyawan.show',
         'edit' => 'karyawan.edit',
         'update' => 'karyawan.update',
         'destroy' => 'karyawan.destroy',
     ]);
 
-    // 🕒 Absensi
+    // 🕒 Data Absensi
     Route::resource('absensi', AbsensiController::class)->names([
         'index' => 'absensi.index',
         'create' => 'absensi.create',
         'store' => 'absensi.store',
+        'show' => 'absensi.show',
         'edit' => 'absensi.edit',
         'update' => 'absensi.update',
         'destroy' => 'absensi.destroy',
     ]);
+
+    // 📲 Tambahan khusus fitur Scan QR untuk absen
+    Route::get('/absensi/scan/{kode_qr}', [AbsensiController::class, 'scan'])->name('absensi.scan');
+    Route::post('/absensi/scan/{kode_qr}', [AbsensiController::class, 'prosesScan'])->name('absensi.prosesScan');
 
     // 📄 Permohonan Cuti
     Route::resource('permohonan-cuti', PermohonanCutiController::class)->names([
@@ -61,4 +69,18 @@ Route::middleware('auth')->group(function () {
         'update' => 'jabatan.update',
         'destroy' => 'jabatan.destroy',
     ]);
+
+    // 📅 Jadwal Kerja
+    Route::resource('jadwal-kerja', JadwalKerjaController::class)
+    ->parameters(['jadwal-kerja' => 'jadwal'])
+    ->names([
+        'index' => 'jadwal.index',
+        'create' => 'jadwal.create',
+        'store' => 'jadwal.store',
+        'show' => 'jadwal.show',
+        'edit' => 'jadwal.edit',
+        'update' => 'jadwal.update',
+        'destroy' => 'jadwal.destroy',
+    ]);
+
 });

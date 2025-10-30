@@ -5,43 +5,45 @@ namespace App\Http\Controllers;
 use App\Models\Karyawan;
 use App\Models\Jabatan;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Illuminate\Support\Str;
 
 class KaryawanController extends Controller
 {
     // Menampilkan daftar karyawan
     public function index()
     {
-        $karyawan = Karyawan::with(['jabatan'])->get();  // Mengambil data karyawan dengan relasi jabatan
+        $karyawan = Karyawan::with('jabatan')->get();
         return view('karyawan.index', compact('karyawan'));
     }
 
     // Menampilkan form tambah karyawan
     public function create()
     {
-        $jabatan = Jabatan::all();  // Ambil semua data jabatan
-        return view('karyawan.create', compact('jabatan'));  // Kirim data jabatan ke tampilan
+        $jabatan = Jabatan::all();
+        return view('karyawan.create', compact('jabatan'));
     }
 
     // Menyimpan data karyawan baru
     public function store(Request $request)
     {
-        // Validasi input
         $request->validate([
-            'id_jabatan' => 'required|exists:jabatans,id_jabatan',  // Pastikan id_jabatan valid
+            'id_jabatan' => 'required|exists:jabatans,id_jabatan',
             'nama_karyawan' => 'required|string|max:255',
-            'no_telepon' => 'nullable|string|max:20',
+            'no_telepon' => 'nullable|string|max:20|unique:karyawans,no_telepon',
             'alamat' => 'nullable|string|max:255',
         ]);
 
-        // Menyimpan data karyawan, id_user diisi dengan ID pengguna yang sedang login
-        Karyawan::create([
-            'id_user' => Auth::id(),  // Ambil ID pengguna yang sedang login
+        $karyawan = Karyawan::create([
             'id_jabatan' => $request->id_jabatan,
             'nama_karyawan' => $request->nama_karyawan,
             'no_telepon' => $request->no_telepon,
             'alamat' => $request->alamat,
         ]);
+
+        // Generate QR code otomatis
+        $this->generateQrCode($karyawan);
+        $karyawan->save();
 
         return redirect()->route('karyawan.index')->with('success', 'Data karyawan berhasil ditambahkan!');
     }
@@ -50,18 +52,17 @@ class KaryawanController extends Controller
     public function edit($id)
     {
         $karyawan = Karyawan::findOrFail($id);
-        $jabatan = Jabatan::all();  // Ambil data jabatan
+        $jabatan = Jabatan::all();
         return view('karyawan.edit', compact('karyawan', 'jabatan'));
     }
 
     // Update data karyawan
     public function update(Request $request, $id)
     {
-        // Validasi input
         $request->validate([
-            'id_jabatan' => 'required|exists:jabatans,id_jabatan',  // Pastikan id_jabatan valid
+            'id_jabatan' => 'required|exists:jabatans,id_jabatan',
             'nama_karyawan' => 'required|string|max:255',
-            'no_telepon' => 'nullable|string|max:20',
+            'no_telepon' => 'nullable|string|max:20|unique:karyawans,no_telepon,' . $id . ',id_karyawan',
             'alamat' => 'nullable|string|max:255',
         ]);
 
@@ -83,5 +84,34 @@ class KaryawanController extends Controller
         $karyawan->delete();
 
         return redirect()->route('karyawan.index')->with('success', 'Data karyawan berhasil dihapus!');
+    }
+
+    // Menampilkan detail karyawan
+    public function show(Karyawan $karyawan)
+    {
+        if (empty($karyawan->kode_qr)) {
+            $this->generateQrCode($karyawan);
+            $karyawan->save();
+        }
+
+        try {
+            $qrCode = QrCode::size(200)->generate($karyawan->kode_qr);
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Gagal membuat QR Code: ' . $e->getMessage());
+        }
+
+        return view('karyawan.show', compact('karyawan', 'qrCode'));
+    }
+
+    // Generate kode QR unik
+    private function generateQrCode(Karyawan $karyawan)
+    {
+        if (empty($karyawan->kode_qr)) {
+            do {
+                $kode_qr = Str::random(20);
+            } while (Karyawan::where('kode_qr', $kode_qr)->exists());
+
+            $karyawan->kode_qr = $kode_qr;
+        }
     }
 }

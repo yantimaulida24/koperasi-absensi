@@ -1,37 +1,42 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Daftar Karyawan & QR</title>
-</head>
-<body>
-    <h2>Daftar Karyawan</h2>
+@extends('layouts.app')
 
-    <form action="{{ route('karyawan.store') }}" method="POST">
-        @csrf
-        <input type="text" name="nama" placeholder="Nama" required>
-        <input type="email" name="email" placeholder="Email">
-        <input type="text" name="jabatan" placeholder="Jabatan">
-        <button type="submit">Tambah Karyawan</button>
-    </form>
+@section('content')
+<div class="container">
+    <h3 class="fw-bold mb-4">Daftar Absensi</h3>
 
-    <table border="1" cellpadding="5" cellspacing="0">
-        <tr>
-            <th>Nama</th>
-            <th>Email</th>
-            <th>Jabatan</th>
-            <th>QR Code</th>
-        </tr>
-        @foreach ($karyawans as $data)
-    <tr>
-        <td>{{ $data->nama }}</td>
-        <td>{{ $data->email }}</td>
-        <td>{{ $data->jabatan }}</td>
-        <td>
-            {!! QrCode::size(150)->generate('http://192.168.1.10:8000/absensi/scan/' . $data->id) !!}
-        </td>
-    </tr>
-@endforeach
+    @if(session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @elseif(session('error'))
+        <div class="alert alert-danger">{{ session('error') }}</div>
+    @endif
 
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>ID Absensi</th>
+                <th>Nama Karyawan</th>
+                <th>Tanggal</th>
+                <th>Jam Masuk</th>
+                <th>Jam Keluar</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse($absensi as $item)
+                <tr>
+                    <td>{{ $item->id_absensi }}</td>
+                    <td>{{ $item->karyawan->nama_karyawan ?? '-' }}</td>
+                    <td>{{ $item->tanggal }}</td>
+                    <td>{{ $item->jam_masuk ?? '-' }}</td>
+                    <td>{{ $item->jam_keluar ?? '-' }}</td>
+                    <td>{{ $item->status }}</td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="6" class="text-center text-muted">Belum ada data absensi</td>
+                </tr>
+            @endforelse
+        </tbody>
     </table>
-</body>
-</html>
+</div>
+@endsection
