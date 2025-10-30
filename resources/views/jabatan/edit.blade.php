@@ -10,7 +10,11 @@
 
         <div class="mb-3">
             <label for="nama_jabatan" class="form-label">Nama Jabatan</label>
-            <input type="text" id="nama_jabatan" name="nama_jabatan" class="form-control" value="{{ $jabatan->nama_jabatan }}" required>
+            <input type="text" id="nama_jabatan" name="nama_jabatan" class="form-control"
+                   value="{{ old('nama_jabatan', $jabatan->nama_jabatan) }}" required>
+            @error('nama_jabatan')
+                <div class="text-danger mt-1">{{ $message }}</div>
+            @enderror
         </div>
 
         <button class="btn btn-primary">Perbarui</button>

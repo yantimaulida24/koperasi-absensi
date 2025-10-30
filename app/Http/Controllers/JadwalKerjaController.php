@@ -9,54 +9,76 @@ class JadwalKerjaController extends Controller
 {
     public function index()
     {
-        $jadwal = JadwalKerja::all();
+        // Urutan hari kerja agar selalu Senin → Minggu
+        $hariUrutan = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
+
+        // Ambil semua data dan urutkan sesuai array
+        $jadwal = JadwalKerja::orderByRaw("FIELD(hari_kerja, '".implode("','", $hariUrutan)."')")->get();
+
         return view('jadwal.index', compact('jadwal'));
     }
 
     public function create()
     {
+        // Tampilkan form tambah jadwal
         return view('jadwal.create');
     }
 
     public function store(Request $request)
     {
+        // Validasi input
         $request->validate([
-            'hari_kerja' => 'required',
-            'jam_masuk' => 'required',
-            'jam_keluar' => 'required'
+            'hari_kerja' => 'required|string|max:20',
+            'jam_masuk'  => 'required|date_format:H:i',  
+            'jam_keluar' => 'required|date_format:H:i|after:jam_masuk',  
         ]);
 
-        JadwalKerja::create($request->all());
+        // Cek hari kerja sudah ada
+        if (JadwalKerja::where('hari_kerja', $request->hari_kerja)->exists()) {
+            return redirect()->back()->withInput()->with('error', 'Hari kerja tersebut sudah terdaftar!');
+        }
 
-        return redirect()->route('jadwal.index')
-                         ->with('success', 'Jadwal berhasil ditambahkan.');
+        // Simpan data
+        JadwalKerja::create($request->only(['hari_kerja', 'jam_masuk', 'jam_keluar']));
+
+        return redirect()->route('jadwal.index')->with('success', 'Jadwal berhasil ditambahkan.');
     }
 
-    public function edit(JadwalKerja $jadwal)
-{
-    return view('jadwal.edit', compact('jadwal'));
-}
-
-public function update(Request $request, JadwalKerja $jadwal)
-{
-    $request->validate([
-        'hari_kerja' => 'required',
-        'jam_masuk' => 'required',
-        'jam_keluar' => 'required'
-    ]);
-
-    $jadwal->update($request->all());
-
-    return redirect()->route('jadwal.index')
-                     ->with('success', 'Jadwal berhasil diperbarui.');
-}
-
-
-    public function destroy($id)
+    public function edit(JadwalKerja $jadwal_kerja)
     {
-        JadwalKerja::destroy($id);
+        // Tampilkan form edit
+        return view('jadwal.edit', compact('jadwal_kerja'));
+    }
 
-        return redirect()->route('jadwal.index')
-                         ->with('success', 'Jadwal berhasil dihapus.');
+    public function update(Request $request, JadwalKerja $jadwal_kerja)
+    {
+        // Validasi input
+        $request->validate([
+            'hari_kerja' => 'required|string|max:20',
+            'jam_masuk'  => 'required|date_format:H:i',
+            'jam_keluar' => 'required|date_format:H:i|after:jam_masuk',
+        ]);
+
+        // Cek duplikat hari
+        if (JadwalKerja::where('hari_kerja', $request->hari_kerja)
+                       ->where('id_jadwal', '!=', $jadwal_kerja->id_jadwal)
+                       ->exists()) {
+            return redirect()->back()->withInput()->with('error', 'Hari kerja tersebut sudah digunakan!');
+        }
+
+        // Update data
+        $jadwal_kerja->update($request->only(['hari_kerja', 'jam_masuk', 'jam_keluar']));
+
+        return redirect()->route('jadwal.index')->with('success', 'Jadwal berhasil diperbarui.');
+    }
+
+    public function destroy(JadwalKerja $jadwal_kerja)
+    {
+        try {
+            $jadwal_kerja->delete();
+            return redirect()->route('jadwal.index')->with('success', 'Jadwal berhasil dihapus.');
+        } catch (\Exception $e) {
+            return redirect()->route('jadwal.index')->with('error', 'Terjadi kesalahan saat menghapus jadwal.');
+        }
     }
 }

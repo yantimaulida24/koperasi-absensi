@@ -21,7 +21,9 @@ class JabatanController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nama_jabatan' => 'required|string|max:100',
+            'nama_jabatan' => 'required|string|max:100|unique:jabatans,nama_jabatan',
+        ], [
+            'nama_jabatan.unique' => 'Nama Jabatan sudah ada, silakan masukkan nama lain',
         ]);
 
         Jabatan::create($request->only('nama_jabatan'));
@@ -39,7 +41,9 @@ class JabatanController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'nama_jabatan' => 'required|string|max:100',
+            'nama_jabatan' => 'required|string|max:100|unique:jabatans,nama_jabatan,' . $id . ',id_jabatan',
+        ], [
+            'nama_jabatan.unique' => 'Nama Jabatan sudah ada, silakan masukkan nama lain',
         ]);
 
         $jabatan = Jabatan::findOrFail($id);

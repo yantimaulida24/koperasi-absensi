@@ -2,52 +2,58 @@
 
 @section('content')
 <div class="container mt-4">
-    <h2 class="mb-4">Edit Jadwal Kerja</h2>
+    <h2 class="mb-4">Edit Data Karyawan</h2>
 
-    {{-- Form Edit Jadwal Kerja --}}
-    <form action="{{ route('jadwal.update', ['jadwal_kerja' => $jadwal->id]) }}" method="POST">
+    <form action="{{ route('karyawan.update', $karyawan->id_karyawan) }}" method="POST">
         @csrf
         @method('PUT')
 
-        {{-- Pilih Karyawan --}}
+        <!-- Nama Karyawan -->
         <div class="mb-3">
-            <label for="id_karyawan" class="form-label">Nama Karyawan</label>
-            <select name="id_karyawan" id="id_karyawan" class="form-select" required>
-                @foreach ($karyawan as $k)
-                    <option value="{{ $k->id_karyawan }}" {{ $k->id_karyawan == $jadwal->id_karyawan ? 'selected' : '' }}>
-                        {{ $k->nama_karyawan }}
+            <label class="form-label">Nama Karyawan</label>
+            <input type="text" name="nama_karyawan" class="form-control"
+                   value="{{ old('nama_karyawan', $karyawan->nama_karyawan) }}" required>
+            @error('nama_karyawan')
+                <div class="text-danger mt-1">{{ $message }}</div>
+            @enderror
+        </div>
+
+        <!-- Jabatan -->
+        <div class="mb-3">
+            <label class="form-label">Jabatan</label>
+            <select name="id_jabatan" class="form-select" required>
+                @foreach ($jabatan as $j)
+                    <option value="{{ $j->id_jabatan }}" {{ (old('id_jabatan', $karyawan->id_jabatan) == $j->id_jabatan) ? 'selected' : '' }}>
+                        {{ $j->nama_jabatan }}
                     </option>
                 @endforeach
             </select>
+            @error('id_jabatan')
+                <div class="text-danger mt-1">{{ $message }}</div>
+            @enderror
         </div>
 
-        {{-- Tanggal --}}
+        <!-- No Telepon -->
         <div class="mb-3">
-            <label for="tanggal" class="form-label">Tanggal</label>
-            <input type="date" name="tanggal" id="tanggal" class="form-control" value="{{ $jadwal->tanggal }}" required>
+            <label class="form-label">No Telepon</label>
+            <input type="text" name="no_telepon" class="form-control"
+                   value="{{ old('no_telepon', $karyawan->no_telepon) }}">
+            @error('no_telepon')
+                <div class="text-danger mt-1">{{ $message }}</div>
+            @enderror
         </div>
 
-        {{-- Jam Masuk --}}
+        <!-- Alamat -->
         <div class="mb-3">
-            <label for="jam_masuk" class="form-label">Jam Masuk</label>
-            <input type="time" name="jam_masuk" id="jam_masuk" class="form-control" value="{{ $jadwal->jam_masuk }}" required>
+            <label class="form-label">Alamat</label>
+            <textarea name="alamat" class="form-control">{{ old('alamat', $karyawan->alamat) }}</textarea>
+            @error('alamat')
+                <div class="text-danger mt-1">{{ $message }}</div>
+            @enderror
         </div>
 
-        {{-- Jam Keluar --}}
-        <div class="mb-3">
-            <label for="jam_keluar" class="form-label">Jam Keluar</label>
-            <input type="time" name="jam_keluar" id="jam_keluar" class="form-control" value="{{ $jadwal->jam_keluar }}" required>
-        </div>
-
-        {{-- Shift --}}
-        <div class="mb-3">
-            <label for="shift" class="form-label">Shift</label>
-            <input type="text" name="shift" id="shift" class="form-control" value="{{ $jadwal->shift }}" required>
-        </div>
-
-        {{-- Tombol Simpan --}}
         <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
-        <a href="{{ route('jadwal.index') }}" class="btn btn-secondary">Batal</a>
+        <a href="{{ route('karyawan.index') }}" class="btn btn-secondary">Batal</a>
     </form>
 </div>
 @endsection

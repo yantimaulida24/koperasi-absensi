@@ -4,14 +4,16 @@
 <div class="container">
     <h3 class="fw-bold mb-4">Data Jadwal Kerja</h3>
 
-    <a href="{{ route('jadwal.create') }}" class="btn btn-primary mb-3">+ Tambah Jadwal</a>
+    <div class="mb-3">
+        <a href="{{ route('jadwal.create') }}" class="btn btn-primary">+ Tambah Jadwal</a>
+    </div>
 
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
-    <table class="table table-bordered">
-        <thead class="text-center">
+    <table class="table table-bordered align-middle">
+        <thead class="table-light">
             <tr>
                 <th>No</th>
                 <th>Hari Kerja</th>
@@ -23,11 +25,11 @@
         <tbody>
             @foreach($jadwal as $index => $data)
             <tr>
-                <td class="text-center">{{ $index + 1 }}</td>
+                <td>{{ $index + 1 }}</td>
                 <td>{{ $data->hari_kerja }}</td>
-                <td>{{ $data->jam_masuk }}</td>
-                <td>{{ $data->jam_keluar }}</td>
-                <td class="text-center">
+                <td>{{ \Carbon\Carbon::parse($data->jam_masuk)->format('H:i') }}</td>
+                <td>{{ \Carbon\Carbon::parse($data->jam_keluar)->format('H:i') }}</td>
+                <td>
                     <a href="{{ route('jadwal.edit', $data->id_jadwal) }}" class="btn btn-warning btn-sm">Edit</a>
                     <form action="{{ route('jadwal.destroy', $data->id_jadwal) }}" method="POST" class="d-inline">
                         @csrf
