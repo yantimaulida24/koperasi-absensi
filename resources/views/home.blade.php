@@ -1,81 +1,103 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
+<div class="container-fluid py-4">
 
-    <h3 class="mb-4 fw-bold">Dashboard</h3>
-
-    <div class="row">
+    <!-- Statistik Cards -->
+    <div class="row g-3">
         <div class="col-md-3">
-            <div class="card text-white bg-primary shadow p-3">
-                <h6>Total Pengguna</h6>
-                <h2>{{ $totalPengguna }}</h2>
+            <div class="card bg-primary text-white shadow-sm border-0 rounded-3">
+                <div class="card-body text-center">
+                    <h6 class="fw-semibold">Total Pengguna</h6>
+                    <h2 class="fw-bold mt-2">{{ $totalPengguna }}</h2>
+                </div>
             </div>
         </div>
 
         <div class="col-md-3">
-            <div class="card text-white bg-success shadow p-3">
-                <h6>Total Karyawan</h6>
-                <h2>{{ $totalKaryawan }}</h2>
+            <div class="card bg-success text-white shadow-sm border-0 rounded-3">
+                <div class="card-body text-center">
+                    <h6 class="fw-semibold">Total Karyawan</h6>
+                    <h2 class="fw-bold mt-2">{{ $totalKaryawan }}</h2>
+                </div>
             </div>
         </div>
 
         <div class="col-md-3">
-            <div class="card text-white bg-info shadow p-3">
-                <h6>Masuk Hari Ini ✅</h6>
-                <h2>{{ $totalMasuk }}</h2>
+            <div class="card bg-info text-white shadow-sm border-0 rounded-3">
+                <div class="card-body text-center">
+                    <h6 class="fw-semibold">Masuk Hari Ini ✅</h6>
+                    <h2 class="fw-bold mt-2">{{ $totalMasuk }}</h2>
+                </div>
             </div>
         </div>
 
         <div class="col-md-3">
-            <div class="card text-white bg-danger shadow p-3">
-                <h6>Tidak Masuk ❌</h6>
-                <h2>{{ $totalTidakMasuk }}</h2>
+            <div class="card bg-danger text-white shadow-sm border-0 rounded-3">
+                <div class="card-body text-center">
+                    <h6 class="fw-semibold">Tidak Masuk ❌</h6>
+                    <h2 class="fw-bold mt-2">{{ $totalTidakMasuk }}</h2>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="card shadow mt-4">
-        <div class="card-header fw-bold">
-            Grafik Absensi Mingguan 📊
+    <!-- Grafik Absensi -->
+    <div class="card shadow-sm border-0 mt-5">
+        <div class="card-header bg-white fw-bold text-primary">
+            <i class="fas fa-chart-bar me-2"></i> Grafik Absensi Mingguan 📊
         </div>
         <div class="card-body">
-            <canvas id="chartAbsensi"></canvas>
+            <canvas id="chartAbsensi" height="100"></canvas>
         </div>
     </div>
 
-    <div class="card shadow mt-4 mb-5">
-        <div class="card-header fw-bold">
-            Absensi Terbaru 📝
+    <!-- Absensi Terbaru -->
+    <div class="card shadow-sm border-0 mt-4 mb-5">
+        <div class="card-header bg-white fw-bold text-primary">
+            <i class="fas fa-clipboard-list me-2"></i> Absensi Terbaru 📝
         </div>
         <div class="card-body">
-            <table class="table table-hover table-bordered">
-                <thead class="table-primary">
-                    <tr>
-                        <th>Nama</th>
-                        <th>Status</th>
-                        <th>Waktu</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($absensiTerbaru as $absen)
-                    <tr>
-                        <td>{{ $absen->user->name }}</td>
-                        <td>{{ $absen->status }}</td>
-                        <td>{{ $absen->created_at->format('H:i d-m-Y') }}</td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered align-middle">
+                    <thead class="table-primary text-center">
+                        <tr>
+                            <th>Nama</th>
+                            <th>Status</th>
+                            <th>Waktu</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($absensiTerbaru as $absen)
+                        <tr class="text-center">
+                            <td>{{ $absen->user->name ?? 'Tidak Diketahui' }}</td>
+                            <td>
+                                @if($absen->status == 'Masuk')
+                                    <span class="badge bg-success">Masuk</span>
+                                @else
+                                    <span class="badge bg-danger">Tidak Masuk</span>
+                                @endif
+                            </td>
+                            <td>{{ $absen->created_at->format('H:i - d M Y') }}</td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="3" class="text-center text-muted">Belum ada data absensi terbaru</td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
 </div>
 
+<!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     const ctx = document.getElementById('chartAbsensi');
-    const chartAbsensi = new Chart(ctx, {
+    new Chart(ctx, {
         type: 'bar',
         data: {
             labels: @json($labelMinggu),
@@ -83,14 +105,30 @@
                 {
                     label: 'Masuk',
                     data: @json($dataMasuk),
+                    backgroundColor: 'rgba(54, 162, 235, 0.8)',
+                    borderRadius: 5
                 },
                 {
                     label: 'Tidak Masuk',
                     data: @json($dataTidakMasuk),
+                    backgroundColor: 'rgba(255, 99, 132, 0.8)',
+                    borderRadius: 5
                 }
             ]
         },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top'
+                },
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
     });
 </script>
-
 @endsection
