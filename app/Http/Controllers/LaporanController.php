@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Absensi;
-use Barryvdh\DomPDF\Facade\Pdf; // pastikan sudah install dompdf
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class LaporanController extends Controller
 {
@@ -14,7 +14,7 @@ class LaporanController extends Controller
         $tanggal_selesai = $request->get('tanggal_selesai', date('Y-m-t'));
 
         $absensi = Absensi::with('karyawan')
-            ->whereBetween('waktu_masuk', [$tanggal_mulai, $tanggal_selesai])
+            ->whereBetween('tanggal', [$tanggal_mulai, $tanggal_selesai])
             ->get();
 
         return view('laporan.index', compact('absensi', 'tanggal_mulai', 'tanggal_selesai'));
@@ -26,7 +26,7 @@ class LaporanController extends Controller
         $tanggal_selesai = $request->get('tanggal_selesai', date('Y-m-t'));
 
         $absensi = Absensi::with('karyawan')
-            ->whereBetween('waktu_masuk', [$tanggal_mulai, $tanggal_selesai])
+            ->whereBetween('tanggal', [$tanggal_mulai, $tanggal_selesai])
             ->get();
 
         $pdf = Pdf::loadView('laporan.cetak', compact('absensi', 'tanggal_mulai', 'tanggal_selesai'));

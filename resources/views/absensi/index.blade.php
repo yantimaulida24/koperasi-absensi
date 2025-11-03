@@ -13,22 +13,20 @@
     <table class="table table-bordered">
         <thead>
             <tr>
-                <th>ID Absensi</th>
                 <th>Nama Karyawan</th>
                 <th>Tanggal</th>
-                <th>Jam Masuk</th>
-                <th>Jam Keluar</th>
+                <th>Waktu Masuk</th>
+                <th>Waktu Keluar</th>
                 <th>Status</th>
             </tr>
         </thead>
         <tbody>
             @forelse($absensi as $item)
                 <tr>
-                    <td>{{ $item->id_absensi }}</td>
                     <td>{{ $item->karyawan->nama_karyawan ?? '-' }}</td>
                     <td>{{ $item->tanggal }}</td>
-                    <td>{{ $item->jam_masuk ?? '-' }}</td>
-                    <td>{{ $item->jam_keluar ?? '-' }}</td>
+                    <td>{{ $item->waktu_masuk ?? '-' }}</td>
+                    <td>{{ $item->waktu_keluar ?? '-' }}</td>
                     <td>{{ $item->status }}</td>
                 </tr>
             @empty

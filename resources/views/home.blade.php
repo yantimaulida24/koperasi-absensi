@@ -62,15 +62,15 @@
                 <table class="table table-hover table-bordered align-middle">
                     <thead class="table-primary text-center">
                         <tr>
-                            <th>Nama</th>
+                            <th>Nama Karyawan</th>
                             <th>Status</th>
-                            <th>Waktu</th>
+                            <th>Waktu Masuk</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($absensiTerbaru as $absen)
                         <tr class="text-center">
-                            <td>{{ $absen->user->name ?? 'Tidak Diketahui' }}</td>
+                            <td>{{ $absen->karyawan->nama_karyawan ?? 'Tidak Diketahui' }}</td>
                             <td>
                                 @if($absen->status == 'Masuk')
                                     <span class="badge bg-success">Masuk</span>
@@ -78,7 +78,9 @@
                                     <span class="badge bg-danger">Tidak Masuk</span>
                                 @endif
                             </td>
-                            <td>{{ $absen->created_at->format('H:i - d M Y') }}</td>
+                            <td>
+                                {{ $absen->waktu_masuk ? \Carbon\Carbon::parse($absen->waktu_masuk)->format('H:i - d M Y') : '-' }}
+                            </td>
                         </tr>
                         @empty
                         <tr>

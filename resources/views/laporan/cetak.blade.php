@@ -19,8 +19,8 @@
                 <th>No</th>
                 <th>Nama Karyawan</th>
                 <th>Tanggal</th>
-                <th>Jam Masuk</th>
-                <th>Jam Keluar</th>
+                <th>Waktu Masuk</th>
+                <th>Waktu Keluar</th>
                 <th>Status</th>
             </tr>
         </thead>
@@ -28,10 +28,10 @@
             @foreach($absensi as $a)
             <tr>
                 <td>{{ $loop->iteration }}</td>
-                <td>{{ $a->karyawan->nama ?? '-' }}</td>
+                <td>{{ $a->karyawan->nama_karyawan ?? '-' }}</td>
                 <td>{{ $a->tanggal }}</td>
-                <td>{{ $a->jam_masuk }}</td>
-                <td>{{ $a->jam_keluar }}</td>
+                <td>{{ $a->waktu_masuk }}</td>
+                <td>{{ $a->waktu_keluar }}</td>
                 <td>{{ $a->status }}</td>
             </tr>
             @endforeach

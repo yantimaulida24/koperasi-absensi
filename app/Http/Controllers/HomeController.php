@@ -20,16 +20,16 @@ class HomeController extends Controller
         // Total karyawan berdasarkan tabel karyawan
         $totalKaryawan = Karyawan::count();
 
-        // Absensi hari ini
+        // 🔹 Gunakan waktu_masuk sebagai acuan absensi hari ini
         $totalMasuk = Absensi::where('status', 'Masuk')
-            ->whereDate('created_at', Carbon::today())
+            ->whereDate('waktu_masuk', Carbon::today())
             ->count();
 
         $totalTidakMasuk = Absensi::where('status', 'Tidak Masuk')
-            ->whereDate('created_at', Carbon::today())
+            ->whereDate('waktu_masuk', Carbon::today())
             ->count();
 
-        // Grafik mingguan
+        // 🔹 Grafik mingguan
         $labelMinggu = [];
         $dataMasuk = [];
         $dataTidakMasuk = [];
@@ -39,23 +39,26 @@ class HomeController extends Controller
             $labelMinggu[] = Carbon::now()->subDays($i)->format('d M');
 
             $dataMasuk[] = Absensi::where('status', 'Masuk')
-                ->whereDate('created_at', $tanggal)
+                ->whereDate('waktu_masuk', $tanggal)
                 ->count();
 
             $dataTidakMasuk[] = Absensi::where('status', 'Tidak Masuk')
-                ->whereDate('created_at', $tanggal)
+                ->whereDate('waktu_masuk', $tanggal)
                 ->count();
         }
 
-        // Absensi terbaru (5 terakhir)
-        $absensiTerbaru = Absensi::with('user')->latest()->take(5)->get();
+        // 🔹 Absensi terbaru (5 terakhir)
+        $absensiTerbaru = Absensi::with('karyawan')
+            ->orderBy('waktu_masuk', 'desc')
+            ->take(5)
+            ->get();
 
-        // Permohonan cuti terbaru
+        // 🔹 Permohonan cuti terbaru
         if (Auth::user()->role == 'karyawan') {
             $permohonanCuti = PermohonanCuti::where('id_karyawan', Auth::id())
-                                ->latest()
-                                ->take(5)
-                                ->get();
+                ->latest()
+                ->take(5)
+                ->get();
         } else {
             $permohonanCuti = PermohonanCuti::latest()->take(5)->get();
         }
