@@ -22,7 +22,7 @@
     <hr class="sidebar-divider">
 
     <!-- ADMIN MENU -->
-    @if(Auth::check() && Auth::user()->role === 'admin')
+    @if(auth()->check() && auth()->user()->role === 'admin')
         <div class="sidebar-heading">Menu Admin</div>
 
         <!-- 👥 Data Karyawan -->
@@ -64,10 +64,18 @@
                 <span>Permohonan Cuti</span>
             </a>
         </li>
+
+        <!-- 📄 Laporan Absensi -->
+        <li class="nav-item">
+            <a class="nav-link" href="{{ route('laporan.index') }}">
+                <i class="fas fa-fw fa-file-alt"></i>
+                <span>Laporan Absensi</span>
+            </a>
+        </li>
     @endif
 
     <!-- KARYAWAN MENU -->
-    @if(Auth::check() && Auth::user()->role === 'karyawan')
+    @if(auth()->check() && auth()->user()->role === 'karyawan')
         <div class="sidebar-heading">Menu Karyawan</div>
 
         <!-- 📅 Absensi -->

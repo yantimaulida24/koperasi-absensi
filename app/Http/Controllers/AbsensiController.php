@@ -9,14 +9,12 @@ use Carbon\Carbon;
 
 class AbsensiController extends Controller
 {
-    // Menampilkan daftar absensi
     public function index()
     {
         $absensi = Absensi::with('karyawan')->latest()->get();
         return view('absensi.index', compact('absensi'));
     }
 
-    // Ketika QR discan
     public function scan($kode_qr)
     {
         $karyawan = Karyawan::where('kode_qr', $kode_qr)->first();
@@ -27,29 +25,31 @@ class AbsensiController extends Controller
 
         $tanggal = Carbon::today()->toDateString();
 
-        // Cek apakah sudah absen hari ini
+        // cek absensi hari ini
         $absensi = Absensi::where('id_karyawan', $karyawan->id_karyawan)
             ->whereDate('tanggal', $tanggal)
             ->first();
 
         if (!$absensi) {
-            // Jika belum absen, simpan jam masuk
+            // jika belum absen, simpan waktu masuk
             Absensi::create([
                 'id_karyawan' => $karyawan->id_karyawan,
                 'tanggal' => $tanggal,
-                'jam_masuk' => Carbon::now()->format('H:i:s'),
+                'waktu_masuk' => Carbon::now()->format('H:i:s'),
                 'status' => 'Masuk',
             ]);
 
-            return redirect()->route('absensi.index')->with('success', $karyawan->nama_karyawan . ' berhasil absen masuk!');
+            return redirect()->route('absensi.index')
+                ->with('success', $karyawan->nama_karyawan . ' berhasil absen masuk!');
         } else {
-            // Jika sudah absen, update jam keluar
+            // jika sudah absen, update waktu keluar
             $absensi->update([
-                'jam_keluar' => Carbon::now()->format('H:i:s'),
+                'waktu_keluar' => Carbon::now()->format('H:i:s'),
                 'status' => 'Pulang',
             ]);
 
-            return redirect()->route('absensi.index')->with('success', $karyawan->nama_karyawan . ' berhasil absen pulang!');
+            return redirect()->route('absensi.index')
+                ->with('success', $karyawan->nama_karyawan . ' berhasil absen pulang!');
         }
     }
 }
