@@ -40,6 +40,7 @@ class KaryawanController extends Controller
         $karyawan->no_telepon = $request->no_telepon;
         $karyawan->alamat = $request->alamat;
 
+        // Generate kode QR unik
         $this->generateQrCode($karyawan);
 
         $karyawan->save();
@@ -71,7 +72,6 @@ class KaryawanController extends Controller
         $karyawan->nama_karyawan = $request->nama_karyawan;
         $karyawan->no_telepon = $request->no_telepon;
         $karyawan->alamat = $request->alamat;
-
         $karyawan->save();
 
         return redirect()->route('karyawan.index')->with('success', 'Data karyawan berhasil diperbarui!');
@@ -85,21 +85,33 @@ class KaryawanController extends Controller
         return redirect()->route('karyawan.index')->with('success', 'Data karyawan berhasil dihapus!');
     }
 
-    public function show(Karyawan $karyawan)
-    {
-        if (empty($karyawan->kode_qr)) {
-            $this->generateQrCode($karyawan);
-            $karyawan->save();
-        }
+    public function show(Karyawan $data_karyawan)
+{
+    $karyawan = $data_karyawan->load('jabatan');
 
-        try {
-            $qrCode = QrCode::size(200)->generate($karyawan->kode_qr);
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Gagal membuat QR Code: ' . $e->getMessage());
-        }
+    // ✅ IP laptop kamu (sesuai ipconfig)
+    $ipLaptop = '192.168.43.66';
+    $port = '8000'; // port Laravel kamu
 
-        return view('karyawan.show', compact('karyawan', 'qrCode'));
+    // URL tujuan absensi (misal: route absensi.scan)
+    $urlQr = "http://{$ipLaptop}:{$port}/absensi/scan/" . $karyawan->kode_qr;
+
+    // Jika belum ada kode QR, buat baru
+    if (empty($karyawan->kode_qr)) {
+        $this->generateQrCode($karyawan);
+        $karyawan->update(['kode_qr' => $karyawan->kode_qr]);
     }
+
+    // Generate QR code dari URL
+    try {
+        $qrCode = QrCode::size(200)->generate($urlQr);
+    } catch (\Exception $e) {
+        return redirect()->back()->with('error', 'Gagal membuat QR Code: ' . $e->getMessage());
+    }
+
+    return view('karyawan.show', compact('karyawan', 'qrCode'));
+}
+
 
     private function generateQrCode(Karyawan $karyawan)
     {
