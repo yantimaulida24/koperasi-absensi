@@ -7,18 +7,11 @@ use App\Http\Controllers\AbsensiController;
 use App\Http\Controllers\PermohonanCutiController;
 use App\Http\Controllers\JabatanController;
 use App\Http\Controllers\JadwalKerjaController;
-use App\Http\Controllers\LaporanController; // ✅ Tambahkan controller laporan
+use App\Http\Controllers\LaporanController;
+use App\Http\Controllers\KritikSaranController;
 use Illuminate\Support\Facades\Auth;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-| File ini digunakan untuk mendefinisikan semua route web aplikasi absensi.
-| Setiap route akan diarahkan ke controller yang sesuai.
-*/
-
-// 🔐 Route bawaan Laravel untuk login, register, dll.
+// 🔐 Route bawaan Laravel (login, register, logout, dll)
 Auth::routes();
 
 // 🔹 Redirect root (/) ke dashboard
@@ -97,5 +90,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/laporan-absensi', [LaporanController::class, 'index'])->name('laporan.index');
     Route::get('/laporan-absensi/cetak-pdf', [LaporanController::class, 'cetak'])->name('laporan.cetak');
 
-
+    // 💬 Kritik & Saran (CRUD sederhana, tanpa Auth)
+Route::get('/kritik-saran', [KritikSaranController::class, 'index'])->name('kritik_saran.index');
+Route::get('/kritik-saran/tambah', [KritikSaranController::class, 'create'])->name('kritik_saran.create');
+Route::post('/kritik-saran/store', [KritikSaranController::class, 'store'])->name('kritik_saran.store');
+Route::post('/kritik-saran/komentar/{id}', [KritikSaranController::class, 'komentar'])->name('kritik_saran.komentar');
+Route::delete('/kritik-saran/{id}', [KritikSaranController::class, 'destroy'])->name('kritik_saran.destroy');
 });

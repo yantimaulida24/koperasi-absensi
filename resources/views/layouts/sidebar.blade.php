@@ -72,6 +72,14 @@
                 <span>Laporan Absensi</span>
             </a>
         </li>
+
+        <!-- 💬 Kritik & Saran -->
+        <li class="nav-item">
+            <a class="nav-link" href="{{ route('kritik_saran.index') }}">
+                <i class="fas fa-fw fa-comments"></i>
+                <span>Kritik & Saran</span>
+            </a>
+        </li>
     @endif
 
     <!-- KARYAWAN MENU -->
@@ -91,6 +99,14 @@
             <a class="nav-link" href="{{ route('permohonan-cuti.index') }}">
                 <i class="fas fa-fw fa-envelope-open"></i>
                 <span>Permohonan Cuti</span>
+            </a>
+        </li>
+
+        <!-- 💬 Kritik & Saran -->
+        <li class="nav-item">
+            <a class="nav-link" href="{{ route('kritik_saran.index') }}">
+                <i class="fas fa-fw fa-comments"></i>
+                <span>Kritik & Saran</span>
             </a>
         </li>
     @endif
