@@ -17,7 +17,7 @@
             @enderror
         </div>
 
-        <button class="btn btn-primary">Perbarui</button>
+        <button class="btn btn-primary">Simpan Perubahan</button>
         <a href="{{ route('jabatan.index') }}" class="btn btn-secondary">Batal</a>
     </form>
 </div>

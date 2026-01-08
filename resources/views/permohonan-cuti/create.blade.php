@@ -9,7 +9,7 @@
 
         <div class="mb-3">
             <label class="form-label">Nama Karyawan</label>
-            <select name="id_karyawan" class="form-select" required>
+            <select name="id_karyawan" class="form-control" required>
                 <option value="">-- Pilih Karyawan --</option>
                 @foreach($karyawan as $k)
                     <option value="{{ $k->id_karyawan }}">{{ $k->nama_karyawan }}</option>

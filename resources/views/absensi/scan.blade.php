@@ -1,73 +1,54 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <title>Scan QR Absensi</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+@extends('layouts.app')
 
-    <!-- Library QR Scanner -->
-    <script src="https://unpkg.com/html5-qrcode"></script>
+@section('content')
+<div class="container text-center">
+    <h3 class="fw-bold mb-4">Scan QR Absensi</h3>
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding: 15px;
-        }
-        #reader {
-            width: 100%;
-            max-width: 350px;
-            margin: auto;
-        }
-    </style>
-</head>
-<body>
+    <!-- AREA KAMERA -->
+    <div id="reader" style="
+        width: 320px;
+        margin: auto;
+        border: 2px solid #0d6efd;
+        padding: 10px;
+        border-radius: 8px;
+    "></div>
 
-<h3>📷 Scan QR Code Absensi</h3>
-<p>Arahkan kamera ke QR Code</p>
+    <p class="text-muted mt-3">
+        Arahkan kamera ke QR Code karyawan
+    </p>
 
-<div id="reader"></div>
-<p id="status"></p>
+    <!-- FORM TERSEMBUNYI -->
+    <form id="form-absensi" action="{{ route('absen.proses') }}" method="POST">
+        @csrf
+        <input type="hidden" name="qr_code" id="qr_code">
+    </form>
+</div>
+
+<!-- LIBRARY QR SCANNER -->
+<script src="https://unpkg.com/html5-qrcode"></script>
 
 <script>
-    function onScanSuccess(decodedText) {
-        document.getElementById('status').innerHTML = "⏳ Memproses absensi...";
+    const qrCodeScanner = new Html5Qrcode("reader");
 
-        fetch("{{ url('/absen/proses') }}", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRF-TOKEN": "{{ csrf_token() }}"
-            },
-            body: JSON.stringify({
-                kode_qr: decodedText
-            })
-        })
-        .then(res => res.json())
-        .then(data => {
-            alert(data.message);
-            document.getElementById('status').innerHTML = data.message;
-        })
-        .catch(err => {
-            alert("Gagal scan");
-            console.error(err);
-        });
-    }
-
-    const html5QrCode = new Html5Qrcode("reader");
-
-    html5QrCode.start(
+    qrCodeScanner.start(
         { facingMode: "environment" }, // kamera belakang
         {
             fps: 10,
             qrbox: 250
         },
-        onScanSuccess
-    ).catch(err => {
-        document.getElementById('status').innerHTML =
-            "❌ Kamera tidak bisa diakses: " + err;
-    });
-</script>
+        (decodedText) => {
+            // isi input hidden dengan hasil scan
+            document.getElementById('qr_code').value = decodedText;
 
-</body>
-</html>
+            // kirim otomatis
+            document.getElementById('form-absensi').submit();
+
+            // matikan kamera
+            qrCodeScanner.stop();
+        },
+        (errorMessage) => {
+            // error diabaikan biar ga spam
+        }
+    );
+</script>
+@endsection

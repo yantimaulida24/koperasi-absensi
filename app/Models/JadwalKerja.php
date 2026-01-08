@@ -9,22 +9,12 @@ class JadwalKerja extends Model
 {
     use HasFactory;
 
-    // Nama tabel di database
     protected $table = 'jadwal_kerjas';
-
-    // Primary key
     protected $primaryKey = 'id_jadwal';
 
-    // Kolom yang dapat diisi
     protected $fillable = [
         'hari_kerja',
         'jam_masuk',
         'jam_keluar',
     ];
-
-    // Relasi ke model Absensi
-    public function absensis()
-    {
-        return $this->hasMany(Absensi::class, 'id_jadwal', 'id_jadwal');
-    }
 }

@@ -9,21 +9,16 @@ class Absensi extends Model
 {
     use HasFactory;
 
-    protected $table = 'absensis'; // pastikan nama tabel sesuai di database
-    protected $primaryKey = 'id_absensi';
-    public $timestamps = true;
+    protected $table = 'absensis';
 
     protected $fillable = [
-        'id_karyawan',
-        'tanggal',
+        'karyawan_id',
         'waktu_masuk',
         'waktu_keluar',
-        'status',
     ];
 
     public function karyawan()
     {
-        // 🟢 relasi yang benar (karena kolom di tabel Absensi adalah id_karyawan)
-        return $this->belongsTo(Karyawan::class, 'id_karyawan', 'id_karyawan');
+        return $this->belongsTo(Karyawan::class, 'karyawan_id', 'id_karyawan');
     }
 }

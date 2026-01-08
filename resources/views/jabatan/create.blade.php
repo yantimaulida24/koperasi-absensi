@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container">
-    <h3 class="mb-4 fw-bold">Tambah Jabatan</h3>
+    <h3 class="mb-4 fw-bold">+ Tambah Jabatan</h3>
 
     <form action="{{ route('jabatan.store') }}" method="POST">
         @csrf

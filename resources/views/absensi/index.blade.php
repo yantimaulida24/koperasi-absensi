@@ -1,8 +1,13 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <h3 class="fw-bold mb-4">Daftar Absensi</h3>
+<div class="d-flex justify-content-between mb-3">
+    <h3 class="fw-bold">Daftar Absensi</h3>
+
+    <a href="{{ route('absen.scan') }}" class="btn btn-primary">
+        + Tambah Absensi
+    </a>
+</div>
 
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
@@ -24,7 +29,7 @@
             @forelse($absensi as $item)
                 <tr>
                     <td>{{ $item->karyawan->nama_karyawan ?? '-' }}</td>
-                    <td>{{ $item->tanggal }}</td>
+                    <td>{{ $item->created_at->format('d-m-Y') }}</td>
                     <td>{{ $item->waktu_masuk ?? '-' }}</td>
                     <td>{{ $item->waktu_keluar ?? '-' }}</td>
                     <td>{{ $item->status }}</td>
