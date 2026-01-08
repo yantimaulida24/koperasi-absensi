@@ -6,7 +6,7 @@
         <div class="sidebar-brand-icon rotate-n-15">
             <i class="fas fa-laugh-wink"></i>
         </div>
-        <div class="sidebar-brand-text mx-3">Sistem Absensi</div>
+        <div class="sidebar-brand-text mx-3">SIABSAR</div>
     </a>
 
     <hr class="sidebar-divider my-0">
@@ -51,7 +51,7 @@
 
         <!-- 🕓 Jadwal Kerja -->
         <li class="nav-item">
-            <a class="nav-link" href="{{ route('jadwal.index') }}">
+            <a class="nav-link" href="{{ route('jadwal-kerja.index') }}">
                 <i class="fas fa-fw fa-clock"></i>
                 <span>Jadwal Kerja</span>
             </a>
@@ -75,7 +75,7 @@
 
         <!-- 💬 Kritik & Saran -->
         <li class="nav-item">
-            <a class="nav-link" href="{{ route('kritik_saran.index') }}">
+            <a class="nav-link" href="{{ route('kritik-saran.index') }}">
                 <i class="fas fa-fw fa-comments"></i>
                 <span>Kritik & Saran</span>
             </a>
