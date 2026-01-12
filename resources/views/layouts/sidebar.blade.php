@@ -33,6 +33,8 @@
             </a>
         </li>
 
+
+
         <!-- 💼 Data Jabatan -->
         <li class="nav-item">
             <a class="nav-link" href="{{ route('jabatan.index') }}">
@@ -93,7 +95,21 @@
                 <span>Absensi</span>
             </a>
         </li>
+<!-- 📷 Scan QR Absensi -->
+<li class="nav-item">
+    <a class="nav-link" href="{{ route('absen.scan') }}">
+        <i class="fas fa-qrcode"></i>
+        <span>Scan QR Absensi</span>
+    </a>
+</li>
 
+<!-- 📅 Riwayat Absensi -->
+<li class="nav-item">
+    <a class="nav-link" href="{{ route('absensi.index') }}">
+        <i class="fas fa-calendar-check"></i>
+        <span>Absensi</span>
+    </a>
+</li>
         <!-- 📨 Permohonan Cuti -->
         <li class="nav-item">
             <a class="nav-link" href="{{ route('permohonan-cuti.index') }}">
@@ -104,7 +120,7 @@
 
         <!-- 💬 Kritik & Saran -->
         <li class="nav-item">
-            <a class="nav-link" href="{{ route('kritik_saran.index') }}">
+            <a class="nav-link" href="{{ route('kritik-saran.index') }}">
                 <i class="fas fa-fw fa-comments"></i>
                 <span>Kritik & Saran</span>
             </a>

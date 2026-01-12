@@ -21,57 +21,51 @@ class AbsensiController extends Controller
      * 🔄 PROSES HASIL SCAN
      * ============================== */
     public function prosesScan(Request $request)
-    {
-        $request->validate([
-            'kode_qr' => 'required'
-        ]);
+{
+    $kodeQR = trim($request->kode_qr);
 
-        $karyawan = Karyawan::where('kode_qr', $request->kode_qr)->first();
-
-        if (!$karyawan) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'QR Code tidak valid'
-            ]);
-        }
-
-        $tanggal = Carbon::today()->toDateString();
-
-        $absensi = Absensi::where('id_karyawan', $karyawan->id_karyawan)
-            ->whereDate('tanggal', $tanggal)
-            ->first();
-
-        if (!$absensi) {
-            Absensi::create([
-                'id_karyawan' => $karyawan->id_karyawan,
-                'tanggal' => $tanggal,
-                'waktu_masuk' => Carbon::now()->format('H:i:s'),
-                'status' => 'Masuk'
-            ]);
-
-            return response()->json([
-                'status' => 'success',
-                'message' => $karyawan->nama_karyawan . ' berhasil absen masuk'
-            ]);
-        }
-
-        if ($absensi->waktu_keluar == null) {
-            $absensi->update([
-                'waktu_keluar' => Carbon::now()->format('H:i:s'),
-                'status' => 'Pulang'
-            ]);
-
-            return response()->json([
-                'status' => 'success',
-                'message' => $karyawan->nama_karyawan . ' berhasil absen pulang'
-            ]);
-        }
-
-        return response()->json([
-            'status' => 'info',
-            'message' => 'Anda sudah absen hari ini'
-        ]);
+    if (!preg_match('/^KRY-\d+$/', $kodeQR)) {
+        return back()->with('error', 'QR Code tidak valid');
     }
+
+    $idKaryawan = (int) str_replace('KRY-', '', $kodeQR);
+
+    $karyawan = Karyawan::where('id_karyawan', $idKaryawan)->first();
+    if (!$karyawan) {
+        return back()->with('error', 'Karyawan tidak ditemukan');
+    }
+
+    $tanggal = Carbon::today()->toDateString();
+    $waktu   = Carbon::now()->format('H:i:s');
+
+    $absen = Absensi::where('id_karyawan', $idKaryawan)
+        ->whereDate('tanggal', $tanggal)
+        ->first();
+
+    if (!$absen) {
+        Absensi::create([
+            'id_karyawan' => $idKaryawan,
+            'tanggal'     => $tanggal,
+            'waktu_masuk' => $waktu,
+            'status'      => 'Masuk'
+        ]);
+
+        return back()->with('success', 'Absensi masuk berhasil');
+    }
+
+    if (!$absen->waktu_keluar) {
+        $absen->update([
+            'waktu_keluar' => $waktu,
+            'status'       => 'Pulang'
+        ]);
+
+        return back()->with('success', 'Absensi pulang berhasil');
+    }
+
+    return back()->with('error', 'Anda sudah absen hari ini');
+}
+
+
 
     /* ==============================
      * 🖥️ ADMIN: LIST ABSENSI
@@ -86,8 +80,17 @@ class AbsensiController extends Controller
      * 🖥️ ADMIN: TAMPILKAN BARCODE
      * ============================== */
     public function barcode($id)
-    {
-        $karyawan = Karyawan::findOrFail($id);
-        return view('absensi.qr', compact('karyawan'));
+{
+    $karyawan = Karyawan::findOrFail($id);
+
+    // pastikan kode_qr konsisten
+    if (!$karyawan->kode_qr) {
+        $karyawan->update([
+            'kode_qr' => 'KRY-' . $karyawan->id_karyawan
+        ]);
     }
+
+    return view('absensi.qr', compact('karyawan'));
+}
+
 }
