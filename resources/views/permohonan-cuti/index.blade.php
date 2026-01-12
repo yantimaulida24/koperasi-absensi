@@ -4,7 +4,7 @@
 <div class="container">
     <h3 class="mb-4">Daftar Permohonan Cuti</h3>
 
-    <a href="{{ route('permohonan-cuti.create') }}" class="btn btn-success mb-3">Tambah Permohonan Cuti</a>
+    <a href="{{ route('permohonan-cuti.create') }}" class="btn btn-primary mb-3">+ Tambah Permohonan</a>
 
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
@@ -34,7 +34,7 @@
                 <td>{{ $c->status_cuti }}</td>
                 <td>{{ $c->alasan_cuti }}</td>
                 <td>
-                    <a href="{{ route('permohonan-cuti.edit', $c->id_cuti) }}" class="btn btn-primary btn-sm">Edit</a>
+                    <a href="{{ route('permohonan-cuti.edit', $c->id_cuti) }}" class="btn btn-warning btn-sm">Edit</a>
                     <form action="{{ route('permohonan-cuti.destroy', $c->id_cuti) }}" method="POST" style="display:inline;">
                         @csrf
                         @method('DELETE')

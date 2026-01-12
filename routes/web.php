@@ -61,7 +61,7 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('permohonan-cuti', PermohonanCutiController::class);
     Route::resource('jabatan', JabatanController::class);
-    Route::resource('jadwal-kerja', JadwalKerjaController::class);
+    Route::resource('jadwal', JadwalKerjaController::class);
 
     Route::get('/laporan-absensi', [LaporanController::class, 'index'])
         ->name('laporan.index');

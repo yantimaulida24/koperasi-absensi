@@ -19,7 +19,7 @@
         <!-- Jabatan -->
         <div class="mb-3">
             <label class="form-label">Jabatan</label>
-            <select name="id_jabatan" class="form-select" required>
+            <select name="id_jabatan" class="form-control" required>
                 <option value="">-- Pilih Jabatan --</option>
                 @foreach($jabatan as $item)
                     <option value="{{ $item->id_jabatan }}" {{ old('id_jabatan') == $item->id_jabatan ? 'selected' : '' }}>

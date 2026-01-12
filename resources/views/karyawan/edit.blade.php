@@ -21,7 +21,7 @@
         <!-- Jabatan -->
         <div class="mb-3">
             <label class="form-label">Jabatan</label>
-            <select name="id_jabatan" class="form-select" required>
+            <select name="id_jabatan" class="form-control" required>
                 @foreach ($jabatan as $j)
                     <option value="{{ $j->id_jabatan }}" {{ (old('id_jabatan', $karyawan->id_jabatan) == $j->id_jabatan) ? 'selected' : '' }}>
                         {{ $j->nama_jabatan }}
@@ -52,7 +52,7 @@
             @enderror
         </div>
 
-        <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+        <button type="submit" class="btn btn-success">Simpan Perubahan</button>
         <a href="{{ route('karyawan.index') }}" class="btn btn-secondary">Batal</a>
     </form>
 </div>
