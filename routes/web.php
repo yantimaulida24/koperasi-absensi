@@ -23,7 +23,7 @@ Auth::routes();
 | 📲 SCAN QR ABSENSI (HP) - TANPA LOGIN
 |--------------------------------------------------------------------------
 | WAJIB di luar middleware auth
-| (TIDAK MENGUBAH route sebelumnya, hanya MENAMBAHKAN name)
+| HANYA TAMBAH name (tidak mengubah fungsi lama)
 */
 Route::get('/absen/scan', [AbsensiController::class, 'scanPage'])
     ->name('absen.scan');
@@ -55,7 +55,7 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('absensi', AbsensiController::class);
 
-    // 🖥️ BARCODE UNTUK ADMIN (DITAMBAHKAN name, TIDAK DIUBAH)
+    // 🖥️ QR CODE UNTUK ADMIN
     Route::get('/absen/barcode/{id}', [AbsensiController::class, 'barcode'])
         ->name('absen.barcode');
 
@@ -70,6 +70,6 @@ Route::middleware('auth')->group(function () {
         ->name('laporan.cetak');
 
     Route::resource('kritik-saran', KritikSaranController::class)->only([
-        'index','create','store','destroy'
+        'index', 'create', 'store', 'destroy'
     ]);
 });
