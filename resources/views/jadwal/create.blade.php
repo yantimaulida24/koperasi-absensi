@@ -2,32 +2,49 @@
 
 @section('content')
 <div class="container">
-    <h4>Tambah Jadwal Kerja</h4>
+    <h3 class="fw-bold mb-4">Tambah Jadwal Kerja</h3>
 
-    @if(session('error'))
+    <!-- Menampilkan pesan sukses atau error jika ada -->
+    @if (session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @elseif (session('error'))
         <div class="alert alert-danger">{{ session('error') }}</div>
     @endif
 
-    <form action="{{ route('jadwal-kerja.store') }}" method="POST">
+    <form action="{{ route('jadwal.store') }}" method="POST">
         @csrf
-
+        <!-- Input Hari Kerja -->
         <div class="mb-3">
-            <label>Hari Kerja</label>
-            <input type="text" name="hari_kerja" class="form-control" required>
+            <label class="form-label">Hari Kerja</label>
+            <input type="text" name="hari_kerja" class="form-control" value="{{ old('hari_kerja') }}" required>
+            @error('hari_kerja')
+                <div class="text-danger">{{ $message }}</div>
+            @enderror
         </div>
 
+        <!-- Input Jam Masuk -->
         <div class="mb-3">
-            <label>Jam Masuk</label>
-            <input type="time" name="jam_masuk" class="form-control" required>
+            <label class="form-label">Jam Masuk</label>
+            <input type="time" name="jam_masuk" class="form-control" value="{{ old('jam_masuk') }}" required>
+            @error('jam_masuk')
+                <div class="text-danger">{{ $message }}</div>
+            @enderror
         </div>
 
+        <!-- Input Jam Keluar -->
         <div class="mb-3">
-            <label>Jam Keluar</label>
-            <input type="time" name="jam_keluar" class="form-control" required>
+            <label class="form-label">Jam Keluar</label>
+            <input type="time" name="jam_keluar" class="form-control" value="{{ old('jam_keluar') }}" required>
+            @error('jam_keluar')
+                <div class="text-danger">{{ $message }}</div>
+            @enderror
         </div>
 
-        <button class="btn btn-success">Simpan</button>
-        <a href="{{ route('jadwal-kerja.index') }}" class="btn btn-secondary">Batal</a>
+        <!-- Button Submit -->
+        <div class="mb-3">
+            <button type="submit" class="btn btn-success">Simpan</button>
+            <a href="{{ route('jadwal.index') }}" class="btn btn-secondary">Batal</a>
+        </div>
     </form>
 </div>
 @endsection

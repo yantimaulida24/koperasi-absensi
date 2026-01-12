@@ -10,7 +10,7 @@ use Carbon\Carbon;
 class AbsensiController extends Controller
 {
     /* ==============================
-     * 📱 HALAMAN SCAN QR
+     * 📱 HALAMAN SCAN (HP)
      * ============================== */
     public function scanPage()
     {
@@ -18,49 +18,60 @@ class AbsensiController extends Controller
     }
 
     /* ==============================
-     * 🔄 PROSES HASIL SCAN QR
+     * 🔄 PROSES HASIL SCAN
      * ============================== */
     public function prosesScan(Request $request)
     {
         $request->validate([
-            'qr_code' => 'required'
+            'kode_qr' => 'required'
         ]);
 
-        $karyawan = Karyawan::where('kode_qr', $request->qr_code)->first();
+        $karyawan = Karyawan::where('kode_qr', $request->kode_qr)->first();
 
         if (!$karyawan) {
-            return back()->with('error', 'QR Code tidak valid');
+            return response()->json([
+                'status' => 'error',
+                'message' => 'QR Code tidak valid'
+            ]);
         }
 
-        $absensi = Absensi::where('karyawan_id', $karyawan->id_karyawan)
-            ->whereDate('created_at', now()->toDateString())
+        $tanggal = Carbon::today()->toDateString();
+
+        $absensi = Absensi::where('id_karyawan', $karyawan->id_karyawan)
+            ->whereDate('tanggal', $tanggal)
             ->first();
 
-        // ABSEN MASUK
         if (!$absensi) {
             Absensi::create([
-                'karyawan_id' => $karyawan->id_karyawan,
-                'waktu_masuk' => now()->format('H:i:s'),
+                'id_karyawan' => $karyawan->id_karyawan,
+                'tanggal' => $tanggal,
+                'waktu_masuk' => Carbon::now()->format('H:i:s'),
+                'status' => 'Masuk'
             ]);
 
-            return redirect()->route('absensi.index')
-                ->with('success', $karyawan->nama_karyawan . ' absen masuk');
+            return response()->json([
+                'status' => 'success',
+                'message' => $karyawan->nama_karyawan . ' berhasil absen masuk'
+            ]);
         }
 
-        // ABSEN PULANG
-        if ($absensi->waktu_keluar === null) {
+        if ($absensi->waktu_keluar == null) {
             $absensi->update([
-                'waktu_keluar' => now()->format('H:i:s'),
+                'waktu_keluar' => Carbon::now()->format('H:i:s'),
+                'status' => 'Pulang'
             ]);
 
-            return redirect()->route('absensi.index')
-                ->with('success', $karyawan->nama_karyawan . ' absen pulang');
+            return response()->json([
+                'status' => 'success',
+                'message' => $karyawan->nama_karyawan . ' berhasil absen pulang'
+            ]);
         }
 
-        return redirect()->route('absensi.index')
-            ->with('error', 'Sudah absen hari ini');
+        return response()->json([
+            'status' => 'info',
+            'message' => 'Anda sudah absen hari ini'
+        ]);
     }
-
 
     /* ==============================
      * 🖥️ ADMIN: LIST ABSENSI
@@ -72,7 +83,7 @@ class AbsensiController extends Controller
     }
 
     /* ==============================
-     * 🖥️ QR CODE KARYAWAN
+     * 🖥️ ADMIN: TAMPILKAN BARCODE
      * ============================== */
     public function barcode($id)
     {

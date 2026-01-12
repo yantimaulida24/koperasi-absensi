@@ -25,19 +25,19 @@
     @if(auth()->check() && auth()->user()->role === 'admin')
         <div class="sidebar-heading">Menu Admin</div>
 
-                <!-- 💼 Data Jabatan -->
-        <li class="nav-item">
-            <a class="nav-link" href="{{ route('jabatan.index') }}">
-                <i class="fas fa-fw fa-briefcase"></i>
-                <span>Data Jabatan</span>
-            </a>
-        </li>
-
         <!-- 👥 Data Karyawan -->
         <li class="nav-item">
             <a class="nav-link" href="{{ route('karyawan.index') }}">
                 <i class="fas fa-fw fa-users"></i>
                 <span>Data Karyawan</span>
+            </a>
+        </li>
+
+        <!-- 💼 Data Jabatan -->
+        <li class="nav-item">
+            <a class="nav-link" href="{{ route('jabatan.index') }}">
+                <i class="fas fa-fw fa-briefcase"></i>
+                <span>Data Jabatan</span>
             </a>
         </li>
 

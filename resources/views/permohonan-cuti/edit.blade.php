@@ -10,7 +10,7 @@
 
         <div class="mb-3">
             <label class="form-label">Nama Karyawan</label>
-            <select name="id_karyawan" class="form-control" required>
+            <select name="id_karyawan" class="form-select" required>
                 @foreach($karyawan as $k)
                     <option value="{{ $k->id_karyawan }}" {{ $k->id_karyawan == $cuti->id_karyawan ? 'selected' : '' }}>
                         {{ $k->nama_karyawan }}
@@ -31,7 +31,7 @@
 
         <div class="mb-3">
             <label class="form-label">Status Cuti</label>
-            <select name="status_cuti" class="form-control" required>
+            <select name="status_cuti" class="form-select" required>
                 <option value="belum disetujui" {{ $cuti->status_cuti == 'belum disetujui' ? 'selected' : '' }}>Belum Disetujui</option>
                 <option value="disetujui" {{ $cuti->status_cuti == 'disetujui' ? 'selected' : '' }}>Disetujui</option>
             </select>
@@ -42,7 +42,7 @@
             <textarea name="alasan_cuti" class="form-control" rows="4" required>{{ $cuti->alasan_cuti }}</textarea>
         </div>
 
-        <button class="btn btn-primary">Simpan Perubahan</button>
+        <button class="btn btn-success">Update</button>
         <a href="{{ route('permohonan-cuti.index') }}" class="btn btn-secondary">Batal</a>
     </form>
 </div>
