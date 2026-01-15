@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Karyawan;
 use App\Models\Absensi;
@@ -14,63 +13,101 @@ class HomeController extends Controller
 {
     public function index()
     {
-        // Total pengguna
-        $totalPengguna = User::count();
+        // =========================
+        // TANGGAL HARI INI
+        // =========================
+        $hariIni = Carbon::today()->toDateString();
 
-        // Total karyawan berdasarkan tabel karyawan
+        // =========================
+        // TOTAL DATA
+        // =========================
+        $totalPengguna = User::count();
         $totalKaryawan = Karyawan::count();
 
-        // 🔹 Gunakan waktu_masuk sebagai acuan absensi hari ini
-        $totalMasuk = Absensi::where('status', 'Masuk')
-            ->whereDate('waktu_masuk', Carbon::today())
+        // =========================
+        // TOTAL HADIR HARI INI
+        // =========================
+        $totalHadir = Absensi::where('tanggal', $hariIni)
             ->count();
 
-        $totalTidakMasuk = Absensi::where('status', 'Tidak Masuk')
-            ->whereDate('waktu_masuk', Carbon::today())
-            ->count();
+        // =========================
+        // TOTAL PERMOHONAN CUTI HARI INI
+        // =========================
+        $totalPermohonan = PermohonanCuti::whereDate(
+            'tanggal_mulai',
+            '<=',
+            $hariIni
+        )->whereDate(
+            'tanggal_selesai',
+            '>=',
+            $hariIni
+        )->count();
 
-        // 🔹 Grafik mingguan
+        // =========================
+        // GRAFIK MINGGUAN
+        // =========================
         $labelMinggu = [];
-        $dataMasuk = [];
-        $dataTidakMasuk = [];
+        $dataHadir = [];
+        $dataPermohonan = [];
 
         for ($i = 6; $i >= 0; $i--) {
-            $tanggal = Carbon::now()->subDays($i)->format('Y-m-d');
-            $labelMinggu[] = Carbon::now()->subDays($i)->format('d M');
+            $tanggal = Carbon::today()->subDays($i)->toDateString();
 
-            $dataMasuk[] = Absensi::where('status', 'Masuk')
-                ->whereDate('waktu_masuk', $tanggal)
+            $hadirHarian = Absensi::where('tanggal', $tanggal)
                 ->count();
 
-            $dataTidakMasuk[] = Absensi::where('status', 'Tidak Masuk')
-                ->whereDate('waktu_masuk', $tanggal)
-                ->count();
+            $permohonanHarian = PermohonanCuti::whereDate(
+                'tanggal_mulai',
+                '<=',
+                $tanggal
+            )->whereDate(
+                'tanggal_selesai',
+                '>=',
+                $tanggal
+            )->count();
+
+            $labelMinggu[]        = Carbon::parse($tanggal)->format('d M');
+            $dataHadir[]          = $hadirHarian;
+            $dataPermohonan[]     = $permohonanHarian;
         }
 
-        // 🔹 Absensi terbaru (5 terakhir)
+        // =========================
+        // ABSENSI TERBARU
+        // =========================
         $absensiTerbaru = Absensi::with('karyawan')
+            ->orderBy('tanggal', 'desc')
             ->orderBy('waktu_masuk', 'desc')
-            ->take(5)
+            ->limit(5)
             ->get();
 
-        // 🔹 Permohonan cuti terbaru
-        if (Auth::user()->role == 'karyawan') {
-            $permohonanCuti = PermohonanCuti::where('id_karyawan', Auth::id())
+        // =========================
+        // PERMOHONAN CUTI TERBARU
+        // =========================
+        if (Auth::user()->role === 'karyawan') {
+            $permohonanCuti = PermohonanCuti::where(
+                    'id_karyawan',
+                    Auth::user()->id_karyawan
+                )
                 ->latest()
-                ->take(5)
+                ->limit(5)
                 ->get();
         } else {
-            $permohonanCuti = PermohonanCuti::latest()->take(5)->get();
+            $permohonanCuti = PermohonanCuti::latest()
+                ->limit(5)
+                ->get();
         }
 
+        // =========================
+        // VIEW
+        // =========================
         return view('home', compact(
             'totalPengguna',
             'totalKaryawan',
-            'totalMasuk',
-            'totalTidakMasuk',
+            'totalHadir',
+            'totalPermohonan',
             'labelMinggu',
-            'dataMasuk',
-            'dataTidakMasuk',
+            'dataHadir',
+            'dataPermohonan',
             'absensiTerbaru',
             'permohonanCuti'
         ));

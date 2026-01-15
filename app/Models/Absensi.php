@@ -10,11 +10,11 @@ class Absensi extends Model
     use HasFactory;
 
     protected $table = 'absensis';
-    protected $primaryKey = 'id';   // ✅ FIX SESUAI DATABASE
+    protected $primaryKey = 'id';
     public $timestamps = true;
 
     protected $fillable = [
-        'id_karyawan',
+        'karyawan_id',   // ✅ SESUAI MIGRASI
         'tanggal',
         'waktu_masuk',
         'waktu_keluar',
@@ -23,6 +23,10 @@ class Absensi extends Model
 
     public function karyawan()
     {
-        return $this->belongsTo(Karyawan::class, 'id_karyawan', 'id_karyawan');
+        return $this->belongsTo(
+            Karyawan::class,
+            'karyawan_id',   // FK di absensis
+            'id_karyawan'    // PK di karyawans
+        );
     }
 }

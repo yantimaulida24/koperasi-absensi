@@ -16,21 +16,24 @@ class AbsensiController extends Controller
 
     public function prosesScan(Request $request)
     {
-        // Ambil hasil scan
+        // =====================
+        // AMBIL & NORMALISASI QR
+        // =====================
         $kodeQR = trim($request->kode_qr);
 
-        // Jika QR berupa URL → ambil bagian terakhir
         if (str_contains($kodeQR, '/')) {
             $kodeQR = basename($kodeQR);
         }
 
         $kodeQR = strtoupper($kodeQR);
 
-        // Validasi format
         if (!preg_match('/^KRY-\d+$/', $kodeQR)) {
             return back()->with('error', 'QR Code tidak valid');
         }
 
+        // =====================
+        // AMBIL ID KARYAWAN
+        // =====================
         $idKaryawan = (int) str_replace('KRY-', '', $kodeQR);
 
         $karyawan = Karyawan::where('id_karyawan', $idKaryawan)->first();
@@ -38,30 +41,36 @@ class AbsensiController extends Controller
             return back()->with('error', 'Karyawan tidak ditemukan');
         }
 
-        $tanggal = Carbon::today()->toDateString();
+        $hariIni = Carbon::today()->toDateString();
         $waktu   = Carbon::now()->format('H:i:s');
 
-        $absen = Absensi::where('id_karyawan', $idKaryawan)
-            ->whereDate('tanggal', $tanggal)
+        // =====================
+        // CEK ABSENSI HARI INI (PAKAI TANGGAL)
+        // =====================
+        $absen = Absensi::where('karyawan_id', $idKaryawan)
+            ->where('tanggal', $hariIni)
             ->first();
 
+        // =====================
         // ABSEN MASUK
+        // =====================
         if (!$absen) {
             Absensi::create([
-                'id_karyawan' => $idKaryawan,
-                'tanggal'     => $tanggal,
+                'karyawan_id' => $idKaryawan,
+                'tanggal'     => $hariIni,
                 'waktu_masuk' => $waktu,
-                'status'      => 'Hadir'
+                'status'      => 'Hadir',
             ]);
 
             return back()->with('success', 'Absensi masuk berhasil');
         }
 
+        // =====================
         // ABSEN PULANG
+        // =====================
         if (!$absen->waktu_keluar) {
             $absen->update([
                 'waktu_keluar' => $waktu,
-                'status'       => 'Hadir'
             ]);
 
             return back()->with('success', 'Absensi pulang berhasil');
@@ -72,7 +81,10 @@ class AbsensiController extends Controller
 
     public function index()
     {
-        $absensi = Absensi::with('karyawan')->latest()->get();
+        $absensi = Absensi::with('karyawan')
+            ->orderBy('tanggal', 'desc')
+            ->get();
+
         return view('absensi.index', compact('absensi'));
     }
 
