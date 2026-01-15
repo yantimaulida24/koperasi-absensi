@@ -6,16 +6,16 @@
 </head>
 <body>
 
-    <h3>QR Code untuk {{ $karyawan->nama_karyawan }}</h3>
+<h3>QR Code untuk {{ $karyawan->nama_karyawan }}</h3>
 
-    <img
-        src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data={{ urlencode('KRY-' . $karyawan->id_karyawan) }}"
-        alt="QR Absensi"
-    >
+<img
+    src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data={{ $karyawan->kode_qr }}"
+    alt="QR Absensi"
+>
 
-    <p><strong>Isi QR:</strong> KRY-{{ $karyawan->id_karyawan }}</p>
+<p><strong>Isi QR:</strong> {{ $karyawan->kode_qr }}</p>
 
-    <a href="{{ route('absensi.index') }}">Kembali</a>
+<a href="{{ route('absensi.index') }}">Kembali</a>
 
 </body>
 </html>

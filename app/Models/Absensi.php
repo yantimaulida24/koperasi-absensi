@@ -9,8 +9,8 @@ class Absensi extends Model
 {
     use HasFactory;
 
-    protected $table = 'absensis'; // pastikan nama tabel sesuai di database
-    protected $primaryKey = 'id_absensi';
+    protected $table = 'absensis';
+    protected $primaryKey = 'id';   // ✅ FIX SESUAI DATABASE
     public $timestamps = true;
 
     protected $fillable = [
@@ -23,7 +23,6 @@ class Absensi extends Model
 
     public function karyawan()
     {
-        // 🟢 relasi yang benar (karena kolom di tabel Absensi adalah id_karyawan)
         return $this->belongsTo(Karyawan::class, 'id_karyawan', 'id_karyawan');
     }
 }
