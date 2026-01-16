@@ -1,11 +1,18 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="card shadow-sm">
-  <div class="card-header bg-primary text-white fw-bold">Dashboard</div>
-  <div class="card-body">
-    <h5>Selamat datang, {{ Auth::user()->name }} 👋</h5>
-    <p>Anda berhasil login ke sistem absensi karyawan.</p>
-  </div>
+<div class="card dashboard-card">
+    <div class="card-header dashboard-header">
+        Dashboard
+    </div>
+
+    <div class="card-body">
+        <h5 class="fw-bold text-dark">
+            Selamat datang, <span class="text-primary">{{ Auth::user()->name }}</span> 👋
+        </h5>
+        <p class="text-muted mb-0">
+            Anda berhasil login ke sistem absensi karyawan.
+        </p>
+    </div>
 </div>
 @endsection

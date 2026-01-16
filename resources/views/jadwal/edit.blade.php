@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container">
-    <h3 class="fw-bold mb-4">Edit Jadwal Kerja</h3>
+    
 
     <form action="{{ route('jadwal.update', $jadwal->id_jadwal) }}" method="POST">
         @csrf
@@ -35,8 +35,24 @@
             @enderror
         </div>
 
-        <button type="submit" class="btn btn-success">Simpan Perubahan</button>
+        <button type="submit" class="btn btn-jabatan">Simpan </button>
         <a href="{{ route('jadwal.index') }}" class="btn btn-secondary">Kembali</a>
     </form>
 </div>
+
+{{-- STYLE TOMBOL HIJAU --}}
+<style>
+    .btn-jabatan {
+        background-color: #1b5e20;
+        color: #ffffff;
+        font-weight: 500;
+        border-radius: 6px;
+        padding: 8px 18px;
+    }
+
+    .btn-jabatan:hover {
+        background-color: #154a19;
+        color: #ffffff;
+    }
+</style>
 @endsection

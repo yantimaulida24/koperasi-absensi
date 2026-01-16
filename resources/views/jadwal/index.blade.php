@@ -2,10 +2,9 @@
 
 @section('content')
 <div class="container">
-    <h3 class="fw-bold mb-4">Data Jadwal Kerja</h3>
 
     <div class="mb-3">
-        <a href="{{ route('jadwal.create') }}" class="btn btn-primary">
+        <a href="{{ route('jadwal.create') }}" class="btn btn-jabatan">
             + Tambah Jadwal
         </a>
     </div>
@@ -63,4 +62,20 @@
         </tbody>
     </table>
 </div>
+
+{{-- STYLE TOMBOL HIJAU --}}
+<style>
+    .btn-jabatan {
+        background-color: #1b5e20;
+        color: #ffffff;
+        font-weight: 500;
+        border-radius: 6px;
+        padding: 8px 18px;
+    }
+
+    .btn-jabatan:hover {
+        background-color: #154a19;
+        color: #ffffff;
+    }
+</style>
 @endsection

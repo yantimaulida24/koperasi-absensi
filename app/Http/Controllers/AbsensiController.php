@@ -45,9 +45,9 @@ class AbsensiController extends Controller
         $waktu   = Carbon::now()->format('H:i:s');
 
         // =====================
-        // CEK ABSENSI HARI INI (PAKAI TANGGAL)
+        // CEK ABSENSI HARI INI
         // =====================
-        $absen = Absensi::where('karyawan_id', $idKaryawan)
+        $absen = Absensi::where('id_karyawan', $idKaryawan)
             ->where('tanggal', $hariIni)
             ->first();
 
@@ -56,7 +56,7 @@ class AbsensiController extends Controller
         // =====================
         if (!$absen) {
             Absensi::create([
-                'karyawan_id' => $idKaryawan,
+                'id_karyawan' => $idKaryawan,
                 'tanggal'     => $hariIni,
                 'waktu_masuk' => $waktu,
                 'status'      => 'Hadir',

@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container">
-    <h3 class="fw-bold mb-4">Daftar Absensi</h3>
+   
 
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>

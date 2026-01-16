@@ -14,7 +14,7 @@ class Absensi extends Model
     public $timestamps = true;
 
     protected $fillable = [
-        'karyawan_id',   // ✅ SESUAI MIGRASI
+        'id_karyawan',   // ✅ SESUAI DATABASE
         'tanggal',
         'waktu_masuk',
         'waktu_keluar',
@@ -25,8 +25,8 @@ class Absensi extends Model
     {
         return $this->belongsTo(
             Karyawan::class,
-            'karyawan_id',   // FK di absensis
-            'id_karyawan'    // PK di karyawans
+            'id_karyawan',   // ✅ FK di tabel absensis
+            'id_karyawan'    // ✅ PK di tabel karyawans
         );
     }
 }

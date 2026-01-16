@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container">
-    <h3 class="mb-4">Tambah Permohonan Cuti</h3>
+   
 
     <form action="{{ route('permohonan-cuti.store') }}" method="POST">
         @csrf
@@ -19,12 +19,14 @@
 
         <div class="mb-3">
             <label class="form-label">Tanggal Mulai</label>
-            <input type="date" name="tanggal_mulai" class="form-control" min="{{ date('Y-m-d') }}" required>
+            <input type="date" name="tanggal_mulai"
+                   class="form-control" min="{{ date('Y-m-d') }}" required>
         </div>
 
         <div class="mb-3">
             <label class="form-label">Tanggal Selesai</label>
-            <input type="date" name="tanggal_selesai" class="form-control" min="{{ date('Y-m-d') }}" required>
+            <input type="date" name="tanggal_selesai"
+                   class="form-control" min="{{ date('Y-m-d') }}" required>
         </div>
 
         <div class="mb-3">
@@ -32,8 +34,24 @@
             <textarea name="alasan_cuti" class="form-control" rows="4" required></textarea>
         </div>
 
-        <button class="btn btn-success">Simpan</button>
+        <button class="btn btn-jabatan">Simpan</button>
         <a href="{{ route('permohonan-cuti.index') }}" class="btn btn-secondary">Batal</a>
     </form>
 </div>
+
+{{-- STYLE TOMBOL (KONSISTEN) --}}
+<style>
+    .btn-jabatan {
+        background-color: #1b5e20;
+        color: #ffffff;
+        font-weight: 500;
+        border-radius: 6px;
+        padding: 8px 18px;
+    }
+
+    .btn-jabatan:hover {
+        background-color: #154a19;
+        color: #ffffff;
+    }
+</style>
 @endsection

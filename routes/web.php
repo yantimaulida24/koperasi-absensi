@@ -22,8 +22,6 @@ Auth::routes();
 |--------------------------------------------------------------------------
 | 📲 SCAN QR ABSENSI (HP) - TANPA LOGIN
 |--------------------------------------------------------------------------
-| WAJIB di luar middleware auth
-| HANYA TAMBAH name (tidak mengubah fungsi lama)
 */
 Route::get('/absen/scan', [AbsensiController::class, 'scanPage'])
     ->name('absen.scan');
@@ -43,6 +41,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [HomeController::class, 'index'])
         ->name('dashboard');
 
+    /*
+    |--------------------------------------------------------------------------
+    | 👨‍💼 DATA KARYAWAN
+    |--------------------------------------------------------------------------
+    */
     Route::resource('data-karyawan', KaryawanController::class)->names([
         'index'   => 'karyawan.index',
         'create'  => 'karyawan.create',
@@ -53,22 +56,51 @@ Route::middleware('auth')->group(function () {
         'destroy' => 'karyawan.destroy',
     ]);
 
+    /*
+    |--------------------------------------------------------------------------
+    | ⬇️ DOWNLOAD QR KARYAWAN (INI YANG DITAMBAHKAN)
+    |--------------------------------------------------------------------------
+    */
+    Route::get(
+        '/data-karyawan/{data_karyawan}/download-qr',
+        [KaryawanController::class, 'downloadQr']
+    )->name('karyawan.downloadQr');
+
+    /*
+    |--------------------------------------------------------------------------
+    | 📊 ABSENSI
+    |--------------------------------------------------------------------------
+    */
     Route::resource('absensi', AbsensiController::class);
 
-    // 🖥️ QR CODE UNTUK ADMIN
     Route::get('/absen/barcode/{id}', [AbsensiController::class, 'barcode'])
         ->name('absen.barcode');
 
+    /*
+    |--------------------------------------------------------------------------
+    | 📝 CUTI, JABATAN, JADWAL
+    |--------------------------------------------------------------------------
+    */
     Route::resource('permohonan-cuti', PermohonanCutiController::class);
     Route::resource('jabatan', JabatanController::class);
     Route::resource('jadwal', JadwalKerjaController::class);
 
+    /*
+    |--------------------------------------------------------------------------
+    | 📄 LAPORAN
+    |--------------------------------------------------------------------------
+    */
     Route::get('/laporan-absensi', [LaporanController::class, 'index'])
         ->name('laporan.index');
 
     Route::get('/laporan-absensi/cetak-pdf', [LaporanController::class, 'cetak'])
         ->name('laporan.cetak');
 
+    /*
+    |--------------------------------------------------------------------------
+    | 💬 KRITIK & SARAN
+    |--------------------------------------------------------------------------
+    */
     Route::resource('kritik-saran', KritikSaranController::class)->only([
         'index', 'create', 'store', 'destroy'
     ]);

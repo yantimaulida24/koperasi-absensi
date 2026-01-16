@@ -1,75 +1,69 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Sistem Absensi Karyawan</title>
+    <title>
+        Sistem Absensi Karyawan
+        @if (trim($__env->yieldContent('title')))
+            | @yield('title')
+        @endif
+    </title>
 
-    <!-- Font & Style -->
-    <link href="{{ asset('vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet">
+    <!-- FONT AWESOME -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+    <!-- SB ADMIN 2 -->
     <link href="{{ asset('css/sb-admin-2.min.css') }}" rel="stylesheet">
 
     <style>
-        /* Layout penuh layar */
         html, body {
             height: 100%;
             margin: 0;
             overflow: hidden;
-            background-color: #f8f9fc;
+            background-color: #f4f6f9;
+            font-family: 'Segoe UI', sans-serif;
         }
 
-        /* Struktur utama */
         #wrapper {
             display: flex;
             height: 100vh;
-            overflow: hidden;
         }
 
-        /* Sidebar tetap di kiri dan tidak ikut scroll */
+        /* SIDEBAR */
         .sidebar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            height: 100vh;
             width: 230px;
-            z-index: 1000;
-            overflow-y: auto;
-            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
+            position: fixed;
+            height: 100vh;
+            background: linear-gradient(180deg, #0f2a24, #164a41, #1f6f63);
+            box-shadow: 3px 0 15px rgba(0,0,0,.25);
         }
 
-        /* Konten utama di kanan */
+        /* CONTENT */
         #content-wrapper {
             margin-left: 230px;
             width: calc(100% - 230px);
-            overflow-y: auto;
-            height: 100vh;
-            background-color: #f8f9fc;
             display: flex;
             flex-direction: column;
+            background-color: #f4f6f9;
         }
 
-        /* Hapus jarak putih di atas konten */
         #content {
             flex: 1;
-            margin: 0;
-            padding: 0;
+            overflow-y: auto;
         }
 
-        /* Navbar agar menempel di atas */
+        /* NAVBAR */
         .navbar {
-            position: sticky;
-            top: 0;
-            z-index: 999;
-            margin: 0;
+            background: #ffffff;
             border-bottom: 1px solid #e3e6f0;
-            background-color: #fff;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 4px 10px rgba(0,0,0,.06);
         }
 
-        /* Konten isi halaman */
         .container-fluid {
-            padding: 25px 30px;
+            padding: 30px;
         }
     </style>
 </head>
@@ -78,28 +72,38 @@
 
 <div id="wrapper">
 
-    {{-- Sidebar --}}
+    {{-- SIDEBAR --}}
     @include('layouts.sidebar')
 
-    {{-- Konten utama --}}
-    <div id="content-wrapper" class="d-flex flex-column">
+    {{-- CONTENT --}}
+    <div id="content-wrapper">
 
         <div id="content">
 
-            {{-- Navbar --}}
+            {{-- NAVBAR --}}
             @include('layouts.navbar')
 
-            {{-- Isi halaman --}}
-            <div class="container-fluid">
+            {{-- PAGE TITLE (HANYA MUNCUL JIKA ADA) --}}
+            @if (trim($__env->yieldContent('title')))
+                <div class="container-fluid pb-0">
+                    <h1 class="h3 mb-4 text-gray-800">
+                        @yield('title')
+                    </h1>
+                </div>
+            @endif
+
+            {{-- PAGE CONTENT --}}
+            <div class="container-fluid pt-0">
                 @yield('content')
             </div>
 
         </div>
 
     </div>
+
 </div>
 
-<!-- Script -->
+<!-- SCRIPT -->
 <script src="{{ asset('vendor/jquery/jquery.min.js') }}"></script>
 <script src="{{ asset('vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 <script src="{{ asset('js/sb-admin-2.min.js') }}"></script>

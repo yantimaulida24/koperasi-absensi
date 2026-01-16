@@ -2,9 +2,10 @@
 
 @section('content')
 <div class="container">
-    <h3 class="mb-4">Daftar Permohonan Cuti</h3>
 
-    <a href="{{ route('permohonan-cuti.create') }}" class="btn btn-primary mb-3">+ Tambah Permohonan</a>
+    <a href="{{ route('permohonan-cuti.create') }}" class="btn btn-jabatan mb-3">
+        + Tambah Permohonan
+    </a>
 
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
@@ -34,11 +35,19 @@
                 <td>{{ $c->status_cuti }}</td>
                 <td>{{ $c->alasan_cuti }}</td>
                 <td>
-                    <a href="{{ route('permohonan-cuti.edit', $c->id_cuti) }}" class="btn btn-warning btn-sm">Edit</a>
-                    <form action="{{ route('permohonan-cuti.destroy', $c->id_cuti) }}" method="POST" style="display:inline;">
+                    <a href="{{ route('permohonan-cuti.edit', $c->id_cuti) }}"
+                       class="btn btn-warning btn-sm">
+                        Edit
+                    </a>
+
+                    <form action="{{ route('permohonan-cuti.destroy', $c->id_cuti) }}"
+                          method="POST" class="d-inline">
                         @csrf
                         @method('DELETE')
-                        <button class="btn btn-danger btn-sm" onclick="return confirm('Yakin ingin hapus?')">Hapus</button>
+                        <button class="btn btn-danger btn-sm"
+                                onclick="return confirm('Yakin ingin hapus?')">
+                            Hapus
+                        </button>
                     </form>
                 </td>
             </tr>
@@ -46,4 +55,20 @@
         </tbody>
     </table>
 </div>
+
+{{-- STYLE TOMBOL HIJAU --}}
+<style>
+    .btn-jabatan {
+        background-color: #1b5e20;
+        color: #ffffff;
+        font-weight: 500;
+        border-radius: 6px;
+        padding: 8px 18px;
+    }
+
+    .btn-jabatan:hover {
+        background-color: #154a19;
+        color: #ffffff;
+    }
+</style>
 @endsection
