@@ -9,24 +9,20 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('absensis', function (Blueprint $table) {
-            $table->id(); // Primary key absensi
+            $table->id();
 
-            $table->unsignedBigInteger('karyawan_id'); // Relasi ke karyawans
+            // 🔥 WAJIB id_karyawan (BUKAN karyawan_id)
+            $table->unsignedBigInteger('id_karyawan');
 
-            // 👉 TANGGAL ABSENSI
             $table->date('tanggal');
-
-            // Waktu absensi (jam saja)
             $table->time('waktu_masuk')->nullable();
             $table->time('waktu_keluar')->nullable();
 
-            // Status hanya "Hadir"
             $table->enum('status', ['Hadir'])->default('Hadir');
 
             $table->timestamps();
 
-            // Foreign key
-            $table->foreign('karyawan_id')
+            $table->foreign('id_karyawan')
                   ->references('id_karyawan')
                   ->on('karyawans')
                   ->onDelete('cascade');

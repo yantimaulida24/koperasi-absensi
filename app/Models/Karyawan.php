@@ -17,27 +17,25 @@ class Karyawan extends Model
         'nama_karyawan',
         'no_telepon',
         'alamat',
-        'kode_qr', // ✅ boleh diisi oleh sistem
+        'kode_qr',
     ];
 
     /**
-     * Auto-generate kode QR saat create
+     * Auto-generate kode QR setelah data tersimpan
      */
     protected static function booted()
     {
-        static::creating(function ($karyawan) {
-            // ❗ belum ada id, jadi jangan di sini
-        });
-
         static::created(function ($karyawan) {
-            // 1x query, tanpa loop event
-            $karyawan->kode_qr = 'KRY-' . $karyawan->id_karyawan;
-            $karyawan->saveQuietly(); // ✅ tanpa trigger event lagi
+            if (!$karyawan->kode_qr) {
+                $karyawan->updateQuietly([
+                    'kode_qr' => 'KRY-' . $karyawan->id_karyawan
+                ]);
+            }
         });
     }
 
     /**
-     * Relasi ke tabel jabatan
+     * Relasi ke jabatan
      */
     public function jabatan()
     {
@@ -45,10 +43,10 @@ class Karyawan extends Model
     }
 
     /**
-     * Relasi ke absensi
+     * ✅ RELASI YANG BENAR (INI PENTING)
      */
     public function absensis()
     {
-        return $this->hasMany(Absensi::class, 'karyawan_id', 'id_karyawan');
+        return $this->hasMany(Absensi::class, 'id_karyawan', 'id_karyawan');
     }
 }

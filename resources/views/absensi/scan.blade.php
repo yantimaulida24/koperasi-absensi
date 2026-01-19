@@ -17,7 +17,6 @@
 <h4 class="text-center mb-2">📸 Scan QR Code Absensi</h4>
 <p class="text-center text-muted">Arahkan kamera ke QR Code</p>
 
-<!-- READER HARUS PUNYA HEIGHT -->
 <div
     id="reader"
     style="width:100%; max-width:400px; height:300px; margin:auto; background:#000;">
@@ -30,14 +29,12 @@
 
 <p class="mt-3 text-center" id="status">📷 Menyiapkan kamera...</p>
 
-<!-- HTML5 QR CODE -->
 <script src="https://unpkg.com/html5-qrcode"></script>
 
 <script>
 let sudahScan = false;
 const statusEl = document.getElementById('status');
 
-// Ambil kamera
 Html5Qrcode.getCameras().then(devices => {
     if (!devices || devices.length === 0) {
         statusEl.innerText = "❌ Kamera tidak ditemukan";
@@ -45,11 +42,10 @@ Html5Qrcode.getCameras().then(devices => {
         return;
     }
 
-    const cameraId = devices[0].id;
     const qr = new Html5Qrcode("reader");
 
     qr.start(
-        cameraId,
+        devices[0].id,
         {
             fps: 10,
             qrbox: { width: 230, height: 230 }
@@ -58,11 +54,16 @@ Html5Qrcode.getCameras().then(devices => {
             if (sudahScan) return;
             sudahScan = true;
 
+            // 🔥 NORMALISASI DI CLIENT
+            let kode = decodedText
+                .replace(/\s+/g, '')   // hapus spasi & newline
+                .toUpperCase();
+
+            document.getElementById('kode_qr').value = kode;
+            document.getElementById('formScan').submit();
+
             statusEl.innerText = "⏳ Memproses absensi...";
             statusEl.style.color = "blue";
-
-            document.getElementById('kode_qr').value = decodedText.trim();
-            document.getElementById('formScan').submit();
 
             qr.stop();
         }
@@ -72,13 +73,13 @@ Html5Qrcode.getCameras().then(devices => {
     }).catch(err => {
         statusEl.innerText = "❌ Kamera gagal dijalankan";
         statusEl.style.color = "red";
-        console.error("START ERROR:", err);
+        console.error(err);
     });
 
 }).catch(err => {
     statusEl.innerText = "❌ Izin kamera ditolak browser";
     statusEl.style.color = "red";
-    console.error("GET CAMERA ERROR:", err);
+    console.error(err);
 });
 </script>
 

@@ -35,7 +35,7 @@
             @enderror
         </div>
 
-        <button type="submit" class="btn btn-jabatan">Simpan </button>
+        <button class="btn btn-success">Simpan Perubahan</button>
         <a href="{{ route('jadwal.index') }}" class="btn btn-secondary">Kembali</a>
     </form>
 </div>

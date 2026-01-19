@@ -28,10 +28,7 @@
             @enderror
         </div>
 
-        {{-- BUTTON --}}
-        <button type="submit" class="btn btn-jabatan">
-            Simpan
-        </button>
+        <button class="btn btn-success">Simpan Perubahan</button>
 
         <a href="{{ route('jabatan.index') }}" class="btn btn-secondary ml-2">
             Batal

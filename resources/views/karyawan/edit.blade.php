@@ -33,7 +33,7 @@
             <textarea name="alamat" class="form-control">{{ old('alamat', $karyawan->alamat) }}</textarea>
         </div>
 
-        <button class="btn btn-jabatan">Simpan</button>
+        <button class="btn btn-success">Simpan Perubahan</button>
         <a href="{{ route('data-karyawan.index') }}" class="btn btn-secondary">Batal</a>
     </form>
 </div>
