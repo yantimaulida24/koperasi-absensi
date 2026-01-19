@@ -35,7 +35,7 @@
 
         <!-- 👥 Data Karyawan -->
         <li class="nav-item">
-            <a class="nav-link" href="{{ route('karyawan.index') }}">
+            <a class="nav-link" href="{{ route('data-karyawan.index') }}">
                 <i class="fas fa-fw fa-users"></i>
                 <span>Data Karyawan</span>
             </a>
@@ -75,7 +75,7 @@
 
         <!-- 💬 Kritik & Saran -->
         <li class="nav-item">
-            <a class="nav-link" href="{{ route('kritik-saran.index') }}">
+            <a class="nav-link" href="{{ route('kritik_saran.index') }}">
                 <i class="fas fa-fw fa-comments"></i>
                 <span>Kritik & Saran</span>
             </a>
@@ -88,7 +88,7 @@
         
         <!-- 👥 Data Karyawan -->
         <li class="nav-item">
-            <a class="nav-link" href="{{ route('karyawan.index') }}">
+            <a class="nav-link" href="{{ route('data-karyawan.index') }}">
                 <i class="fas fa-fw fa-users"></i>
                 <span>Data Karyawan</span>
             </a>
@@ -119,7 +119,7 @@
 
         <!-- 💬 Kritik & Saran -->
         <li class="nav-item">
-            <a class="nav-link" href="{{ route('kritik-saran.index') }}">
+            <a class="nav-link" href="{{ route('kritik_saran.index') }}">
                 <i class="fas fa-fw fa-comments"></i>
                 <span>Kritik & Saran</span>
             </a>

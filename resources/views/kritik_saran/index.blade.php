@@ -18,17 +18,24 @@
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
-    {{-- Daftar kritik & saran --}}
     <div class="card shadow-sm">
-        <div class="card-header bg-secondary text-white">Daftar Kritik & Saran</div>
+        <div class="card-header bg-secondary text-white">
+            Daftar Kritik & Saran
+        </div>
+
         <div class="card-body">
             @forelse($data as $item)
                 <div class="border-bottom pb-3 mb-3">
+
+                    {{-- Nama & waktu --}}
                     <p>
-                        <strong>{{ $item->user->name ?? 'Anonim' }}</strong><br>
-                        <small class="text-muted">{{ $item->created_at->format('d M Y H:i') }}</small>
+                        <strong>{{ optional($item->user)->name ?? 'Anonim' }}</strong><br>
+                        <small class="text-muted">
+                            {{ $item->created_at->format('d M Y H:i') }}
+                        </small>
                     </p>
 
+                    {{-- Isi kritik --}}
                     <p>{{ $item->isi }}</p>
 
                     {{-- Komentar admin --}}
@@ -39,44 +46,58 @@
                         </div>
                     @endif
 
-                    {{-- Form komentar untuk admin --}}
+                    {{-- Form komentar admin --}}
                     @if(auth()->user()->role === 'admin')
                         <form action="{{ route('kritik_saran.komentar', $item->id) }}" method="POST" class="mt-2">
                             @csrf
                             <div class="input-group mb-2">
-                                <input type="text" name="komentar_admin" class="form-control" placeholder="Balas kritik/saran..." required>
-                                <button type="submit" class="btn btn-success">Kirim Balasan</button>
+                                <input type="text"
+                                       name="komentar_admin"
+                                       class="form-control"
+                                       placeholder="Balas kritik/saran..."
+                                       required>
+                                <button type="submit" class="btn btn-success">
+                                    Kirim Balasan
+                                </button>
                             </div>
                         </form>
                     @endif
 
-                    {{-- Tombol hapus untuk admin dan karyawan --}}
-                    <div class="d-flex gap-2">
-                        {{-- Jika karyawan yang menulis --}}
-                        @if(auth()->user()->role === 'karyawan' && auth()->user()->id === $item->user_id)
-                            <form action="{{ route('kritik_saran.destroy', $item->id) }}" method="POST" class="mt-2">
+                    {{-- Tombol hapus --}}
+                    <div class="d-flex gap-2 mt-2">
+
+                        {{-- Karyawan hanya bisa hapus miliknya --}}
+                        @if(auth()->user()->role === 'karyawan' && auth()->id() === $item->user_id)
+                            <form action="{{ route('kritik_saran.destroy', $item->id) }}" method="POST">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Yakin ingin menghapus kritik/saran ini?')">
+                                <button type="submit"
+                                        class="btn btn-danger btn-sm"
+                                        onclick="return confirm('Yakin ingin menghapus?')">
                                     <i class="fas fa-trash"></i> Hapus
                                 </button>
                             </form>
                         @endif
 
-                        {{-- Jika admin --}}
+                        {{-- Admin bisa hapus semua --}}
                         @if(auth()->user()->role === 'admin')
-                            <form action="{{ route('kritik_saran.destroy', $item->id) }}" method="POST" class="mt-2">
+                            <form action="{{ route('kritik_saran.destroy', $item->id) }}" method="POST">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('Hapus kritik/saran ini?')">
+                                <button type="submit"
+                                        class="btn btn-outline-danger btn-sm"
+                                        onclick="return confirm('Hapus kritik/saran ini?')">
                                     <i class="fas fa-trash"></i> Hapus
                                 </button>
                             </form>
                         @endif
                     </div>
+
                 </div>
             @empty
-                <p class="text-center text-muted">Belum ada kritik atau saran.</p>
+                <p class="text-center text-muted">
+                    Belum ada kritik atau saran.
+                </p>
             @endforelse
         </div>
     </div>
