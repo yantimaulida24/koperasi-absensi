@@ -22,7 +22,7 @@
                 </div>
 
                 {{-- TOMBOL DOWNLOAD QR --}}
-                <a href="{{ route('karyawan.downloadQr', $karyawan->id_karyawan) }}"
+                <a href="{{ route('data-karyawan.downloadQr', $karyawan->id_karyawan) }}"
                    class="btn btn-success">
                     Download QR Code
                 </a>
@@ -34,7 +34,7 @@
     </div>
 
     <div class="mt-4">
-        <a href="{{ route('karyawan.index') }}" class="btn btn-secondary">
+        <a href="{{ route('data-karyawan.index') }}" class="btn btn-secondary">
             Kembali ke Daftar Karyawan
         </a>
     </div>

@@ -20,88 +20,95 @@ Auth::routes();
 
 /*
 |--------------------------------------------------------------------------
-| 📲 SCAN QR ABSENSI (HP) - TANPA LOGIN
+| SCAN QR (TANPA LOGIN)
 |--------------------------------------------------------------------------
 */
-Route::get('/absen/scan', [AbsensiController::class, 'scanPage'])
-    ->name('absen.scan');
-
-Route::post('/absen/proses', [AbsensiController::class, 'prosesScan'])
-    ->name('absen.proses');
+Route::get('/absen/scan', [AbsensiController::class, 'scanPage'])->name('absen.scan');
+Route::post('/absen/proses', [AbsensiController::class, 'prosesScan'])->name('absen.proses');
 
 /*
 |--------------------------------------------------------------------------
-| 🔒 ROUTE SETELAH LOGIN
+| SETELAH LOGIN
 |--------------------------------------------------------------------------
 */
 Route::middleware('auth')->group(function () {
-
     Route::get('/', fn () => redirect()->route('dashboard'));
+    Route::get('/dashboard', [HomeController::class, 'index'])->name('dashboard');
+});
 
-    Route::get('/dashboard', [HomeController::class, 'index'])
-        ->name('dashboard');
+/*
+|--------------------------------------------------------------------------
+| DATA KARYAWAN
+| ADMIN & KARYAWAN : index, show
+| ADMIN SAJA       : create, store, edit, update, destroy, download QR
+|--------------------------------------------------------------------------
+*/
+// ================================
+// ADMIN: create & store
+// ================================
+Route::middleware(['auth','cekrole:admin'])->group(function () {
+    Route::get('data-karyawan/create', [KaryawanController::class, 'create'])->name('data-karyawan.create');
+    Route::post('data-karyawan', [KaryawanController::class, 'store'])->name('data-karyawan.store');
 
-    /*
-    |--------------------------------------------------------------------------
-    | 👨‍💼 DATA KARYAWAN
-    |--------------------------------------------------------------------------
-    */
-    Route::resource('data-karyawan', KaryawanController::class)->names([
-        'index'   => 'karyawan.index',
-        'create'  => 'karyawan.create',
-        'store'   => 'karyawan.store',
-        'show'    => 'karyawan.show',
-        'edit'    => 'karyawan.edit',
-        'update'  => 'karyawan.update',
-        'destroy' => 'karyawan.destroy',
-    ]);
+    Route::get('data-karyawan/{data_karyawan}/edit', [KaryawanController::class, 'edit'])->name('data-karyawan.edit');
+    Route::put('data-karyawan/{data_karyawan}', [KaryawanController::class, 'update'])->name('data-karyawan.update');
 
-    /*
-    |--------------------------------------------------------------------------
-    | ⬇️ DOWNLOAD QR KARYAWAN (INI YANG DITAMBAHKAN)
-    |--------------------------------------------------------------------------
-    */
-    Route::get(
-        '/data-karyawan/{data_karyawan}/download-qr',
-        [KaryawanController::class, 'downloadQr']
-    )->name('karyawan.downloadQr');
+    Route::delete('data-karyawan/{data_karyawan}', [KaryawanController::class, 'destroy'])->name('data-karyawan.destroy');
 
-    /*
-    |--------------------------------------------------------------------------
-    | 📊 ABSENSI
-    |--------------------------------------------------------------------------
-    */
+    Route::get('data-karyawan/{data_karyawan}/download-qr', [KaryawanController::class,'downloadQr'])
+        ->name('data-karyawan.downloadQr');
+});
+
+// ================================
+// ADMIN & KARYAWAN: index & show
+// ================================
+Route::middleware(['auth','cekrole:admin,karyawan'])->group(function () {
+    Route::get('data-karyawan', [KaryawanController::class, 'index'])->name('data-karyawan.index');
+    Route::get('data-karyawan/{data_karyawan}', [KaryawanController::class, 'show'])->name('data-karyawan.show');
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| ABSENSI
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth','cekrole:admin,karyawan'])->group(function () {
     Route::resource('absensi', AbsensiController::class);
+    Route::get('/absen/barcode/{id}', [AbsensiController::class,'barcode'])->name('absen.barcode');
+});
 
-    Route::get('/absen/barcode/{id}', [AbsensiController::class, 'barcode'])
-        ->name('absen.barcode');
-
-    /*
-    |--------------------------------------------------------------------------
-    | 📝 CUTI, JABATAN, JADWAL
-    |--------------------------------------------------------------------------
-    */
+/*
+|--------------------------------------------------------------------------
+| PERMOHONAN CUTI
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth','cekrole:admin,karyawan'])->group(function () {
     Route::resource('permohonan-cuti', PermohonanCutiController::class);
+});
+
+/*
+|--------------------------------------------------------------------------
+| MASTER DATA (ADMIN)
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth','cekrole:admin'])->group(function () {
     Route::resource('jabatan', JabatanController::class);
     Route::resource('jadwal', JadwalKerjaController::class);
 
-    /*
-    |--------------------------------------------------------------------------
-    | 📄 LAPORAN
-    |--------------------------------------------------------------------------
-    */
-    Route::get('/laporan-absensi', [LaporanController::class, 'index'])
-        ->name('laporan.index');
+    Route::get('/laporan-absensi', [LaporanController::class,'index'])->name('laporan.index');
+    Route::get('/laporan-absensi/cetak-pdf', [LaporanController::class,'cetak'])->name('laporan.cetak');
+});
 
-    Route::get('/laporan-absensi/cetak-pdf', [LaporanController::class, 'cetak'])
-        ->name('laporan.cetak');
-
-    /*
-    |--------------------------------------------------------------------------
-    | 💬 KRITIK & SARAN
-    |--------------------------------------------------------------------------
-    */
-    Route::resource('kritik-saran', KritikSaranController::class)->only([
-        'index', 'create', 'store', 'destroy'
-    ]);
+/*
+|--------------------------------------------------------------------------
+| KRITIK & SARAN
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth','cekrole:admin,karyawan'])->group(function () {
+    Route::get('/kritik-saran', [KritikSaranController::class,'index'])->name('kritik_saran.index');
+    Route::get('/kritik-saran/create', [KritikSaranController::class,'create'])->name('kritik_saran.create');
+    Route::post('/kritik-saran', [KritikSaranController::class,'store'])->name('kritik_saran.store');
+    Route::delete('/kritik-saran/{id}', [KritikSaranController::class,'destroy'])->name('kritik_saran.destroy');
+    Route::post('/kritik-saran/{id}/komentar', [KritikSaranController::class,'komentar'])->name('kritik_saran.komentar');
 });

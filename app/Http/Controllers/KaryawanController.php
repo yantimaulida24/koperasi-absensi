@@ -7,173 +7,115 @@ use App\Models\Jabatan;
 use Illuminate\Http\Request;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Auth; // tambahkan ini
+use Illuminate\Support\Facades\Auth;
 
 class KaryawanController extends Controller
 {
-    /* =========================
-       INDEX
-       ========================= */
     public function index()
     {
         $karyawan = Karyawan::with('jabatan')->get();
         return view('karyawan.index', compact('karyawan'));
     }
 
-    /* =========================
-       CREATE (ADMIN ONLY)
-       ========================= */
     public function create()
     {
         $this->onlyAdmin();
-
         $jabatan = Jabatan::all();
         return view('karyawan.create', compact('jabatan'));
     }
 
-    /* =========================
-       STORE (ADMIN ONLY)
-       ========================= */
     public function store(Request $request)
     {
         $this->onlyAdmin();
 
         $request->validate([
-            'id_jabatan'     => 'required|exists:jabatans,id_jabatan',
-            'nama_karyawan'  => 'required|string|max:255|unique:karyawans,nama_karyawan',
-            'no_telepon'     => 'nullable|string|max:20|unique:karyawans,no_telepon',
-            'alamat'         => 'nullable|string|max:255',
+            'id_jabatan' => 'required|exists:jabatans,id_jabatan',
+            'nama_karyawan' => 'required|string|max:255|unique:karyawans,nama_karyawan',
+            'no_telepon' => 'nullable|string|max:20|unique:karyawans,no_telepon',
+            'alamat' => 'nullable|string|max:255',
         ]);
 
-        $karyawan = new Karyawan();
-        $karyawan->id_jabatan    = $request->id_jabatan;
-        $karyawan->nama_karyawan = $request->nama_karyawan;
-        $karyawan->no_telepon    = $request->no_telepon;
-        $karyawan->alamat        = $request->alamat;
-
+        $karyawan = Karyawan::create($request->only(['id_jabatan','nama_karyawan','no_telepon','alamat']));
         $this->generateQrCode($karyawan);
         $karyawan->save();
 
-        return redirect()->route('karyawan.index')
-            ->with('success', 'Data karyawan berhasil ditambahkan');
+        return redirect()->route('data-karyawan.index')->with('success', 'Data karyawan berhasil ditambahkan');
     }
 
-    /* =========================
-       SHOW
-       ========================= */
     public function show(Karyawan $data_karyawan)
     {
         $karyawan = $data_karyawan->load('jabatan');
 
-        if (empty($karyawan->kode_qr)) {
+        if(empty($karyawan->kode_qr)){
             $this->generateQrCode($karyawan);
             $karyawan->save();
         }
 
         $urlQr = url('/absen/scan?kode=' . $karyawan->kode_qr);
-
-        $qrCode = QrCode::format('svg')
-            ->size(250)
-            ->generate($urlQr);
+        $qrCode = QrCode::format('svg')->size(250)->generate($urlQr);
 
         return view('karyawan.show', compact('karyawan', 'qrCode'));
     }
 
-    /* =========================
-       DOWNLOAD QR (SVG)
-       ========================= */
-    public function downloadQr($id)
-    {
-        $karyawan = Karyawan::findOrFail($id);
-
-        if (empty($karyawan->kode_qr)) {
-            $this->generateQrCode($karyawan);
-            $karyawan->save();
-        }
-
-        $urlQr = url('/absen/scan?kode=' . $karyawan->kode_qr);
-
-        $qrSvg = QrCode::format('svg')
-            ->size(300)
-            ->generate($urlQr);
-
-        $filename = 'QR_' . str_replace(' ', '_', $karyawan->nama_karyawan) . '.svg';
-
-        return response($qrSvg)
-            ->header('Content-Type', 'image/svg+xml')
-            ->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
-    }
-
-    /* =========================
-       EDIT (ADMIN ONLY)
-       ========================= */
-    public function edit($id)
+    public function edit(Karyawan $data_karyawan)
     {
         $this->onlyAdmin();
-
-        $karyawan = Karyawan::findOrFail($id);
-        $jabatan  = Jabatan::all();
-
-        return view('karyawan.edit', compact('karyawan', 'jabatan'));
+        $jabatan = Jabatan::all();
+        return view('karyawan.edit', ['karyawan' => $data_karyawan, 'jabatan' => $jabatan]);
     }
 
-    /* =========================
-       UPDATE (ADMIN ONLY)
-       ========================= */
-    public function update(Request $request, $id)
+    public function update(Request $request, Karyawan $data_karyawan)
     {
         $this->onlyAdmin();
 
         $request->validate([
-            'id_jabatan'     => 'required|exists:jabatans,id_jabatan',
-            'nama_karyawan'  => 'required|string|max:255|unique:karyawans,nama_karyawan,' . (int)$id . ',id_karyawan',
-            'no_telepon'     => 'nullable|string|max:20|unique:karyawans,no_telepon,' . (int)$id . ',id_karyawan',
-            'alamat'         => 'nullable|string|max:255',
+            'id_jabatan' => 'required|exists:jabatans,id_jabatan',
+            'nama_karyawan' => 'required|string|max:255|unique:karyawans,nama_karyawan,' . $data_karyawan->id_karyawan . ',id_karyawan',
+            'no_telepon' => 'nullable|string|max:20|unique:karyawans,no_telepon,' . $data_karyawan->id_karyawan . ',id_karyawan',
+            'alamat' => 'nullable|string|max:255',
         ]);
 
-        $karyawan = Karyawan::findOrFail($id);
-        $karyawan->update($request->only([
-            'id_jabatan',
-            'nama_karyawan',
-            'no_telepon',
-            'alamat'
-        ]));
-
-        return redirect()->route('karyawan.index')
-            ->with('success', 'Data karyawan berhasil diperbarui');
+        $data_karyawan->update($request->only(['id_jabatan','nama_karyawan','no_telepon','alamat']));
+        return redirect()->route('data-karyawan.index')->with('success', 'Data karyawan berhasil diperbarui');
     }
 
-    /* =========================
-       DELETE (ADMIN ONLY)
-       ========================= */
-    public function destroy($id)
+    public function destroy(Karyawan $data_karyawan)
     {
         $this->onlyAdmin();
-
-        Karyawan::findOrFail($id)->delete();
-
-        return redirect()->route('karyawan.index')
-            ->with('success', 'Data karyawan berhasil dihapus');
+        $data_karyawan->delete();
+        return redirect()->route('data-karyawan.index')->with('success', 'Data karyawan berhasil dihapus');
     }
 
-    /* =========================
-       HELPER
-       ========================= */
+    public function downloadQr(Karyawan $data_karyawan)
+    {
+        if(empty($data_karyawan->kode_qr)){
+            $this->generateQrCode($data_karyawan);
+            $data_karyawan->save();
+        }
+
+        $urlQr = url('/absen/scan?kode=' . $data_karyawan->kode_qr);
+        $qrSvg = QrCode::format('svg')->size(300)->generate($urlQr);
+        $filename = 'QR_' . str_replace(' ', '_', $data_karyawan->nama_karyawan) . '.svg';
+
+        return response($qrSvg)
+            ->header('Content-Type','image/svg+xml')
+            ->header('Content-Disposition','attachment; filename="'.$filename.'"');
+    }
+
+    // Helper
     private function onlyAdmin()
     {
-        // Perbaikan baris merah di IDE
-        if (!Auth::check() || Auth::user()?->role !== 'admin') {
+        if(!Auth::check() || Auth::user()->role !== 'admin'){
             abort(403, 'Akses ditolak');
         }
     }
 
     private function generateQrCode(Karyawan $karyawan)
     {
-        if (empty($karyawan->kode_qr)) {
+        if(empty($karyawan->kode_qr)){
             do {
                 $kode = Str::random(20);
-            } while (Karyawan::where('kode_qr', $kode)->exists());
-
+            } while(Karyawan::where('kode_qr', $kode)->exists());
             $karyawan->kode_qr = $kode;
         }
     }
