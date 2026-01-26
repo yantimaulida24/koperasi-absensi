@@ -8,6 +8,7 @@
     "require": {
         "php": "^8.2",
         "barryvdh/laravel-dompdf": "^3.1",
+        "endroid/qr-code": "^5.0",
         "laravel/framework": "*",
         "laravel/tinker": "^2.10.1",
         "laravel/ui": "^4.6",
