@@ -34,50 +34,40 @@
 <script>
 let sudahScan = false;
 const statusEl = document.getElementById('status');
+let html5QrCode = new Html5Qrcode("reader");
 
-Html5Qrcode.getCameras().then(devices => {
-    if (!devices || devices.length === 0) {
-        statusEl.innerText = "❌ Kamera tidak ditemukan";
-        statusEl.style.color = "red";
-        return;
+// ===============================
+// START KAMERA BELAKANG
+// ===============================
+html5QrCode.start(
+    { facingMode: "environment" }, // 🔥 PAKSA KAMERA BELAKANG
+    {
+        fps: 10,
+        qrbox: { width: 230, height: 230 },
+        disableFlip: false
+    },
+    (decodedText) => {
+        if (sudahScan) return;
+        sudahScan = true;
+
+        // 🔥 NORMALISASI QR
+        let kode = decodedText
+            .replace(/\s+/g, '')   // hapus spasi & newline
+            .toUpperCase();
+
+        document.getElementById('kode_qr').value = kode;
+        document.getElementById('formScan').submit();
+
+        statusEl.innerText = "⏳ Memproses absensi...";
+        statusEl.style.color = "blue";
+
+        html5QrCode.stop();
     }
-
-    const qr = new Html5Qrcode("reader");
-
-    qr.start(
-        devices[0].id,
-        {
-            fps: 10,
-            qrbox: { width: 230, height: 230 }
-        },
-        (decodedText) => {
-            if (sudahScan) return;
-            sudahScan = true;
-
-            // 🔥 NORMALISASI DI CLIENT
-            let kode = decodedText
-                .replace(/\s+/g, '')   // hapus spasi & newline
-                .toUpperCase();
-
-            document.getElementById('kode_qr').value = kode;
-            document.getElementById('formScan').submit();
-
-            statusEl.innerText = "⏳ Memproses absensi...";
-            statusEl.style.color = "blue";
-
-            qr.stop();
-        }
-    ).then(() => {
-        statusEl.innerText = "📸 Kamera aktif, silakan scan QR";
-        statusEl.style.color = "green";
-    }).catch(err => {
-        statusEl.innerText = "❌ Kamera gagal dijalankan";
-        statusEl.style.color = "red";
-        console.error(err);
-    });
-
+).then(() => {
+    statusEl.innerText = "📸 Kamera belakang aktif, silakan scan QR";
+    statusEl.style.color = "green";
 }).catch(err => {
-    statusEl.innerText = "❌ Izin kamera ditolak browser";
+    statusEl.innerText = "❌ Kamera gagal dijalankan";
     statusEl.style.color = "red";
     console.error(err);
 });
