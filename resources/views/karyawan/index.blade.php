@@ -3,6 +3,22 @@
 @section('content')
 <div class="container">
 
+    {{-- ================= SEARCH KARYAWAN ================= --}}
+    <form method="GET" action="{{ route('data-karyawan.index') }}" class="mb-3 d-flex">
+        <input 
+            type="text" 
+            name="search" 
+            class="form-control me-2"
+            placeholder="Cari nama karyawan..."
+            value="{{ request('search') }}"
+        >
+        <button class="btn btn-success">Cari</button>
+        @if(request('search'))
+            <a href="{{ route('data-karyawan.index') }}" class="btn btn-secondary ms-2">Reset</a>
+        @endif
+    </form>
+    {{-- =================================================== --}}
+
     @if(auth()->user()->role === 'admin')
         <a href="{{ route('data-karyawan.create') }}" class="btn btn-jabatan mb-3">+ Tambah Karyawan</a>
     @endif
@@ -44,7 +60,9 @@
             </tr>
         @empty
             <tr>
-                <td colspan="6" class="text-center text-muted">Tidak ada data karyawan</td>
+                <td colspan="6" class="text-center text-muted">
+                    Tidak ada data karyawan
+                </td>
             </tr>
         @endforelse
         </tbody>

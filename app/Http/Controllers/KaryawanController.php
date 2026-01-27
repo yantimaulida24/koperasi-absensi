@@ -20,9 +20,14 @@ use Barryvdh\DomPDF\Facade\Pdf;
 
 class KaryawanController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $karyawan = Karyawan::with('jabatan')->get();
+        $karyawan = Karyawan::with('jabatan')
+            ->when($request->search, function ($query) use ($request) {
+                $query->where('nama_karyawan', 'like', '%' . $request->search . '%');
+            })
+            ->get();
+
         return view('karyawan.index', compact('karyawan'));
     }
 
