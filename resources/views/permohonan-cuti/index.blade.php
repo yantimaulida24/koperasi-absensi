@@ -3,23 +3,20 @@
 @section('content')
 <div class="container">
 
-    <a href="{{ route('permohonan-cuti.create') }}" class="btn btn-jabatan mb-3">
+    <a href="{{ route('permohonan-cuti.create') }}"
+       class="btn btn-primary mb-3">
         + Tambah Permohonan
     </a>
 
-    @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
-    @endif
-
-    <table class="table table-bordered">
+    <table class="table custom-table">
         <thead>
             <tr>
-                <th>ID Cuti</th>
-                <th>Nama Karyawan</th>
-                <th>Tanggal Pengajuan</th>
-                <th>Tanggal Mulai</th>
-                <th>Tanggal Selesai</th>
-                <th>Status Cuti</th>
+                <th>ID</th>
+                <th>Nama</th>
+                <th>Pengajuan</th>
+                <th>Mulai</th>
+                <th>Selesai</th>
+                <th>Status</th>
                 <th>Alasan</th>
                 <th>Aksi</th>
             </tr>
@@ -36,39 +33,11 @@
                 <td>{{ $c->alasan_cuti }}</td>
                 <td>
                     <a href="{{ route('permohonan-cuti.edit', $c->id_cuti) }}"
-                       class="btn btn-warning btn-sm">
-                        Edit
-                    </a>
-
-                    <form action="{{ route('permohonan-cuti.destroy', $c->id_cuti) }}"
-                          method="POST" class="d-inline">
-                        @csrf
-                        @method('DELETE')
-                        <button class="btn btn-danger btn-sm"
-                                onclick="return confirm('Yakin ingin hapus?')">
-                            Hapus
-                        </button>
-                    </form>
+                       class="btn btn-warning btn-sm">Edit</a>
                 </td>
             </tr>
             @endforeach
         </tbody>
     </table>
 </div>
-
-{{-- STYLE TOMBOL HIJAU --}}
-<style>
-    .btn-jabatan {
-        background-color: #1b5e20;
-        color: #ffffff;
-        font-weight: 500;
-        border-radius: 6px;
-        padding: 8px 18px;
-    }
-
-    .btn-jabatan:hover {
-        background-color: #154a19;
-        color: #ffffff;
-    }
-</style>
 @endsection

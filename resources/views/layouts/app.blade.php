@@ -19,6 +19,7 @@
     <link href="{{ asset('css/sb-admin-2.min.css') }}" rel="stylesheet">
 
     <style>
+        /* ================= BASIC LAYOUT ================= */
         html, body {
             height: 100%;
             margin: 0;
@@ -65,6 +66,83 @@
         .container-fluid {
             padding: 30px;
         }
+
+        /* ================= TABLE GLOBAL STYLE ================= */
+        .table,
+        .custom-table,
+        .table-custom {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #ffffff;
+            font-size: 14px;
+            color: #212529;
+        }
+
+        .table th,
+        .table td,
+        .custom-table th,
+        .custom-table td,
+        .table-custom th,
+        .table-custom td {
+            border: 1px solid #dee2e6;
+            padding: 10px 12px;
+            vertical-align: middle;
+        }
+
+        .table thead th,
+        .custom-table thead th,
+        .table-custom thead th {
+            background-color: #f8f9fa;
+            color: #495057;
+            font-weight: 600;
+            text-align: center;
+            border-bottom: 2px solid #ced4da;
+        }
+
+        .table tbody tr:hover,
+        .custom-table tbody tr:hover,
+        .table-custom tbody tr:hover {
+            background-color: #f1f3f5;
+        }
+
+        /* Kolom aksi */
+        .table td:last-child,
+        .custom-table td:last-child,
+        .table-custom td:last-child {
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        /* ================= BUTTON ================= */
+        .btn {
+            border-radius: 6px;
+            font-size: 13px;
+            padding: 6px 12px;
+        }
+
+        .btn-jabatan {
+            background-color: #1b5e20;
+            color: #ffffff;
+            font-weight: 500;
+            border: none;
+        }
+
+        .btn-jabatan:hover {
+            background-color: #154a19;
+            color: #ffffff;
+        }
+
+        /* ================= SWITCH / TOGGLE ================= */
+        .form-switch .form-check-input {
+            width: 42px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .form-switch .form-check-input:checked {
+            background-color: #0d6efd;
+            border-color: #0d6efd;
+        }
     </style>
 </head>
 
@@ -83,7 +161,7 @@
             {{-- NAVBAR --}}
             @include('layouts.navbar')
 
-            {{-- PAGE TITLE (HANYA MUNCUL JIKA ADA) --}}
+            {{-- PAGE TITLE --}}
             @if (trim($__env->yieldContent('title')))
                 <div class="container-fluid pb-0">
                     <h1 class="h3 mb-4 text-gray-800">
@@ -104,7 +182,7 @@
 </div>
 
 <!-- SCRIPT -->
-<script src="{{ asset('vendor/jquery/jquery.min.js') }}"></script>
+<script src="{{ asset('vendor/jquery/jquery.min.js') }}"></cript>
 <script src="{{ asset('vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 <script src="{{ asset('js/sb-admin-2.min.js') }}"></script>
 
