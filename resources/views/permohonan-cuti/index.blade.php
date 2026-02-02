@@ -3,10 +3,11 @@
 @section('content')
 <div class="container">
 
-    <a href="{{ route('permohonan-cuti.create') }}"
-       class="btn btn-primary mb-3">
-        + Tambah Permohonan
-    </a>
+    @if(auth()->user()->role === 'karyawan')
+        <a href="{{ route('permohonan-cuti.create') }}" class="btn btn-primary mb-3">
+            + Tambah Permohonan
+        </a>
+    @endif
 
     <table class="table custom-table">
         <thead>
@@ -32,8 +33,23 @@
                 <td>{{ $c->status_cuti }}</td>
                 <td>{{ $c->alasan_cuti }}</td>
                 <td>
-                    <a href="{{ route('permohonan-cuti.edit', $c->id_cuti) }}"
-                       class="btn btn-warning btn-sm">Edit</a>
+                <a href="{{ route('permohonan-cuti.edit', $c->id_cuti) }}"
+                class="btn btn-warning btn-sm">
+                    Edit
+                </a>
+
+                @if(auth()->user()->role === 'admin')
+                    <form action="{{ route('permohonan-cuti.destroy', $c->id_cuti) }}"
+                        method="POST"
+                        class="d-inline"
+                        onsubmit="return confirm('Yakin ingin menghapus data cuti ini?')">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-danger btn-sm">
+                            Hapus
+                        </button>
+                    </form>
+                @endif
                 </td>
             </tr>
             @endforeach
