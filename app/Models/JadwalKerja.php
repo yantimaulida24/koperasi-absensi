@@ -21,10 +21,4 @@ class JadwalKerja extends Model
         'jam_masuk',
         'jam_keluar',
     ];
-
-    // Relasi ke model Absensi
-    public function absensis()
-    {
-        return $this->hasMany(Absensi::class, 'id_jadwal', 'id_jadwal');
-    }
 }

@@ -11,10 +11,6 @@ return new class extends Migration
         Schema::create('jadwal_kerjas', function (Blueprint $table) {
             $table->id('id_jadwal');
             
-            // Relasi ke tabel karyawan (pastikan kolom di tabel karyawans bernama id_karyawan)
-            $table->unsignedBigInteger('id_karyawan')->nullable();
-            $table->foreign('id_karyawan')->references('id_karyawan')->on('karyawans')->onDelete('cascade');
-            
             // Data jadwal kerja
             $table->string('hari_kerja');
             $table->time('jam_masuk')->nullable();
