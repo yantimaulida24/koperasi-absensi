@@ -15,7 +15,7 @@ class User extends Authenticatable
         'email',
         'password',
         'role',     // ✅ tambahkan ini agar bisa digunakan di middleware cekRole
-        'kode_qr',  // untuk QR unik tiap karyawan
+        
     ];
 
     protected $hidden = [

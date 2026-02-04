@@ -23,7 +23,15 @@
 
     <!-- ADMIN MENU -->
     @if(auth()->check() && auth()->user()->role === 'admin')
+    
         <div class="sidebar-heading">Menu Admin</div>
+         <!-- 👤 Manajemen Akun -->
+<li class="nav-item">
+    <a class="nav-link" href="{{ route('akun.index') }}">
+        <i class="fas fa-fw fa-user-cog"></i>
+        <span>Akun</span>
+    </a>
+</li>
 
                 <!-- 💼 Data Jabatan -->
         <li class="nav-item">
