@@ -46,9 +46,7 @@
 
         <div class="mb-3">
             <label class="form-label">Alasan Cuti</label>
-            <textarea name="alasan_cuti" class="form-control" rows="4" required>
-                {{ $cuti->alasan_cuti }}
-            </textarea>
+            <textarea name="alasan_cuti" class="form-control" rows="4" required>{{ $cuti->alasan_cuti }}</textarea>
         </div>
 
         <button class="btn btn-jabatan">Simpan Perubahan</button>
