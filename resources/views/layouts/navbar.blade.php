@@ -29,6 +29,9 @@
     } elseif (request()->routeIs('kritik_saran.*')) {
         $pageTitle = 'Kritik & Saran';
 
+    } elseif (request()->routeIs('akun.*')) {
+        $pageTitle = 'Manajemen Akun';
+
     } else {
         $pageTitle = '';
     }
