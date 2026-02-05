@@ -1,62 +1,77 @@
 @extends('layouts.app')
 
 @section('content')
+
+{{-- =======================
+     CSS TAMBAHAN (AMAN)
+======================== --}}
+<style>
+.card-link {
+    text-decoration: none;
+}
+.card-link .card {
+    transition: transform .2s ease, box-shadow .2s ease;
+}
+.card-link .card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0,0,0,.15);
+}
+</style>
+
 <div class="container-fluid py-4">
     <!-- =======================
          STATISTIK CARDS
     ======================== -->
     <div class="row g-3">
+
         <!-- Total Pengguna -->
         <div class="col-md-3">
-            <div class="card shadow-sm border-0 rounded-3" style="background-color:#1b5e20; color:#fff;">
-                <div class="card-body text-center">
-                    <h6 class="fw-semibold">Total Pengguna</h6>
-                    <h2 class="fw-bold mt-2">{{ $totalPengguna }}</h2>
+            <a href="{{ route('akun.index') }}" class="card-link">
+                <div class="card shadow-sm border-0 rounded-3" style="background-color:#1b5e20; color:#fff;">
+                    <div class="card-body text-center">
+                        <h6 class="fw-semibold">Total Pengguna</h6>
+                        <h2 class="fw-bold mt-2">{{ $totalPengguna }}</h2>
+                    </div>
                 </div>
-            </div>
+            </a>
         </div>
 
         <!-- Total Karyawan -->
         <div class="col-md-3">
-            <div class="card shadow-sm border-0 rounded-3" style="background-color:#2e7d32; color:#fff;">
-                <div class="card-body text-center">
-                    <h6 class="fw-semibold">Total Karyawan</h6>
-                    <h2 class="fw-bold mt-2">{{ $totalKaryawan }}</h2>
+            <a href="{{ route('data-karyawan.index') }}" class="card-link">
+                <div class="card shadow-sm border-0 rounded-3" style="background-color:#2e7d32; color:#fff;">
+                    <div class="card-body text-center">
+                        <h6 class="fw-semibold">Total Karyawan</h6>
+                        <h2 class="fw-bold mt-2">{{ $totalKaryawan }}</h2>
+                    </div>
                 </div>
-            </div>
+            </a>
         </div>
 
         <!-- Hadir Hari Ini -->
         <div class="col-md-3">
-            <div class="card shadow-sm border-0 rounded-3" style="background-color:#81c784; color:#000;">
-                <div class="card-body text-center">
-                    <h6 class="fw-semibold">Hadir Hari Ini ✅</h6>
-                    <h2 class="fw-bold mt-2">{{ $totalHadir }}</h2>
+            <a href="{{ route('absensi.index', ['status' => 'Hadir']) }}" class="card-link">
+                <div class="card shadow-sm border-0 rounded-3" style="background-color:#81c784; color:#000;">
+                    <div class="card-body text-center">
+                        <h6 class="fw-semibold">Hadir Hari Ini ✅</h6>
+                        <h2 class="fw-bold mt-2">{{ $totalHadir }}</h2>
+                    </div>
                 </div>
-            </div>
+            </a>
         </div>
 
         <!-- Permohonan Cuti -->
         <div class="col-md-3">
-            <div class="card shadow-sm border-0 rounded-3" style="background-color:#ffb300; color:#000;">
-                <div class="card-body text-center">
-                    <h6 class="fw-semibold">Permohonan Cuti 📄</h6>
-                    <h2 class="fw-bold mt-2">{{ $totalPermohonan }}</h2>
+            <a href="{{ route('permohonan-cuti.index') }}" class="card-link">
+                <div class="card shadow-sm border-0 rounded-3" style="background-color:#ffb300; color:#000;">
+                    <div class="card-body text-center">
+                        <h6 class="fw-semibold">Permohonan Cuti 📄</h6>
+                        <h2 class="fw-bold mt-2">{{ $totalPermohonan }}</h2>
+                    </div>
                 </div>
-            </div>
+            </a>
         </div>
-    </div>
 
-    <!-- =======================
-         GRAFIK MINGGUAN
-    ======================== -->
-    <div class="card shadow-sm border-0 mt-5">
-        <div class="card-header bg-white fw-bold text-primary">
-            <i class="fas fa-chart-bar me-2"></i> Grafik Mingguan 📊
-        </div>
-        <div class="card-body">
-            <canvas id="chartAbsensi" height="100"></canvas>
-        </div>
     </div>
 
     <!-- =======================
@@ -124,13 +139,13 @@ new Chart(ctx, {
             {
                 label: 'Hadir',
                 data: @json($dataHadir),
-                backgroundColor: 'rgba(33, 150, 83, 0.9)', // hijau sawit
+                backgroundColor: 'rgba(33, 150, 83, 0.9)',
                 borderRadius: 6
             },
             {
                 label: 'Permohonan Cuti',
                 data: @json($dataPermohonan),
-                backgroundColor: 'rgba(255, 179, 0, 1)', // oranye sawit
+                backgroundColor: 'rgba(255, 179, 0, 1)',
                 borderRadius: 6
             }
         ]

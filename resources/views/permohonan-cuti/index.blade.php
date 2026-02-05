@@ -12,7 +12,7 @@
     <table class="table custom-table">
         <thead>
             <tr>
-                <th>ID</th>
+                <th>No</th>
                 <th>Nama</th>
                 <th>Pengajuan</th>
                 <th>Mulai</th>

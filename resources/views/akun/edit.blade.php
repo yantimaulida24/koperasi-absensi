@@ -33,8 +33,8 @@
             </select>
         </div>
 
-        <button class="btn btn-primary">Update</button>
-        <a href="{{ route('akun.index') }}" class="btn btn-secondary">Kembali</a>
+        <button class="btn btn-success">SImpan Perubahan</button>
+        <a href="{{ route('akun.index') }}" class="btn btn-secondary">Batal</a>
     </form>
 </div>
 @endsection
