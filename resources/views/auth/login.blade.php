@@ -56,9 +56,9 @@
 
 <div class="login-card row g-0">
     <div class="col-md-6 login-left d-flex flex-column justify-content-center">
-        <h2>SIABSAR</h2>
+        <h2>SIABSARKBAS</h2>
         <p>Sistem Informasi Absensi Berbasis QR Code</p>
-        <small>© {{ date('Y') }} SIABSAR</small>
+        <small>© {{ date('Y') }} SIABSARKBAS</small>
     </div>
 
     <div class="col-md-6 login-right">

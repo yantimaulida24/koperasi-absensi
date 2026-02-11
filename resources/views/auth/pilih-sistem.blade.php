@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Pilih Sistem | SIABSAR</title>
+    <title>Pilih Sistem | SIABSARKBAS</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -58,9 +58,9 @@
 
     <!-- LEFT SIDE -->
     <div class="col-md-6 login-left d-flex flex-column justify-content-center">
-        <h2>SIABSAR</h2>
+        <h2>SIABSARKBAS</h2>
         <p>Sistem Informasi Absensi Berbasis QR Code</p>
-        <small>© {{ date('Y') }} SIABSAR</small>
+        <small>© {{ date('Y') }} SIABSARKBAS</small>
     </div>
 
     <!-- RIGHT SIDE -->

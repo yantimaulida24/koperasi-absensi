@@ -2,7 +2,6 @@
 
 @section('content')
 <div class="container">
-    <h1 class="mb-4">Edit Akun</h1>
 
     <form action="{{ route('akun.update', $akun->id) }}" method="POST">
         @csrf
