@@ -34,7 +34,37 @@ Route::post('/absen/proses', [AbsensiController::class, 'prosesScan'])->name('ab
 |--------------------------------------------------------------------------
 */
 Route::middleware('auth')->group(function () {
-    Route::get('/', fn () => redirect()->route('dashboard'));
+
+    Route::get('/', fn () => redirect()->route('pilih.sistem'));
+
+    Route::get('/pilih-sistem', function () {
+        return view('auth.pilih-sistem');
+    })->name('pilih.sistem');
+
+    Route::get('/masuk-database', function () {
+
+        if (Auth::user()->role !== 'admin') {
+            return redirect()->route('pilih.sistem')
+                ->with('error', 'Hanya ADMIN yang dapat mengakses Database');
+        }
+
+        session(['role' => 'admin']);
+        return redirect()->route('dashboard');
+
+    })->name('masuk.database');
+
+    Route::get('/masuk-absensi', function () {
+
+        if (Auth::user()->role !== 'karyawan') {
+            return redirect()->route('pilih.sistem')
+                ->with('error', 'Hanya KARYAWAN yang dapat mengakses Absensi');
+        }
+
+        session(['role' => 'karyawan']);
+        return redirect()->route('dashboard');
+
+    })->name('masuk.absensi');
+
     Route::get('/dashboard', [HomeController::class, 'index'])->name('dashboard');
 });
 
@@ -43,10 +73,12 @@ Route::middleware('auth')->group(function () {
 | DATA KARYAWAN
 |--------------------------------------------------------------------------
 */
-// ================================
-// ADMIN: create, store, edit, update, delete, download QR
-// ================================
+
+/*
+| ADMIN → TAMBAH, EDIT, HAPUS
+*/
 Route::middleware(['auth','cekrole:admin'])->group(function () {
+
     Route::get('data-karyawan/create', [KaryawanController::class, 'create'])
         ->name('data-karyawan.create');
 
@@ -61,21 +93,22 @@ Route::middleware(['auth','cekrole:admin'])->group(function () {
 
     Route::delete('data-karyawan/{data_karyawan}', [KaryawanController::class, 'destroy'])
         ->name('data-karyawan.destroy');
-
-    Route::get('data-karyawan/{data_karyawan}/download-qr',
-        [KaryawanController::class,'downloadQr'])
-        ->name('data-karyawan.downloadQr');
 });
 
-// ================================
-// ADMIN & KARYAWAN: index & show
-// ================================
+/*
+| ADMIN & KARYAWAN → LIHAT + DOWNLOAD QR
+*/
 Route::middleware(['auth','cekrole:admin,karyawan'])->group(function () {
+
     Route::get('data-karyawan', [KaryawanController::class, 'index'])
         ->name('data-karyawan.index');
 
     Route::get('data-karyawan/{data_karyawan}', [KaryawanController::class, 'show'])
         ->name('data-karyawan.show');
+
+    Route::get('data-karyawan/{data_karyawan}/download-qr',
+        [KaryawanController::class,'downloadQr'])
+        ->name('data-karyawan.downloadQr');
 });
 
 /*
@@ -84,7 +117,21 @@ Route::middleware(['auth','cekrole:admin,karyawan'])->group(function () {
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth','cekrole:admin,karyawan'])->group(function () {
-    Route::resource('absensi', AbsensiController::class);
+
+    Route::get('absensi', [AbsensiController::class, 'index'])->name('absensi.index');
+
+    Route::get('absensi/{id}', [AbsensiController::class, 'show'])
+        ->name('absensi.show');
+
+    Route::post('absensi', [AbsensiController::class, 'store'])
+        ->name('absensi.store');
+
+    Route::put('absensi/{id}', [AbsensiController::class, 'update'])
+        ->name('absensi.update');
+
+    Route::delete('absensi/{id}', [AbsensiController::class, 'destroy'])
+        ->name('absensi.destroy');
+
     Route::get('/absen/barcode/{id}', [AbsensiController::class,'barcode'])
         ->name('absen.barcode');
 });
@@ -95,6 +142,7 @@ Route::middleware(['auth','cekrole:admin,karyawan'])->group(function () {
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth','cekrole:admin,karyawan'])->group(function () {
+
     Route::resource('permohonan-cuti', PermohonanCutiController::class);
 });
 
@@ -104,6 +152,7 @@ Route::middleware(['auth','cekrole:admin,karyawan'])->group(function () {
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth','cekrole:admin'])->group(function () {
+
     Route::resource('jabatan', JabatanController::class);
     Route::resource('jadwal', JadwalKerjaController::class);
 
@@ -116,10 +165,11 @@ Route::middleware(['auth','cekrole:admin'])->group(function () {
 
 /*
 |--------------------------------------------------------------------------
-| MANAJEMEN AKUN (ADMIN)
+| AKUN (ADMIN)
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth','cekrole:admin'])->group(function () {
+
     Route::resource('akun', AkunController::class);
 });
 
@@ -129,18 +179,20 @@ Route::middleware(['auth','cekrole:admin'])->group(function () {
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth','cekrole:admin,karyawan'])->group(function () {
-    Route::get('/kritik-saran', [KritikSaranController::class,'index'])
+
+    Route::get('kritik_saran', [KritikSaranController::class, 'index'])
         ->name('kritik_saran.index');
 
-    Route::get('/kritik-saran/create', [KritikSaranController::class,'create'])
+    Route::get('kritik_saran/create', [KritikSaranController::class, 'create'])
         ->name('kritik_saran.create');
 
-    Route::post('/kritik-saran', [KritikSaranController::class,'store'])
+    Route::post('kritik_saran', [KritikSaranController::class, 'store'])
         ->name('kritik_saran.store');
 
-    Route::delete('/kritik-saran/{id}', [KritikSaranController::class,'destroy'])
+    Route::delete('kritik_saran/{id}', [KritikSaranController::class, 'destroy'])
         ->name('kritik_saran.destroy');
 
-    Route::post('/kritik-saran/{id}/komentar', [KritikSaranController::class,'komentar'])
+    Route::post('kritik_saran/{id}/komentar',
+        [KritikSaranController::class,'komentar'])
         ->name('kritik_saran.komentar');
 });

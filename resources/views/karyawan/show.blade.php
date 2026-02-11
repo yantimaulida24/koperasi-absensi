@@ -22,7 +22,7 @@
                 </div>
 
                 {{-- TOMBOL DOWNLOAD QR --}}
-                <a href="{{ route('data-karyawan.downloadQr', $karyawan->id_karyawan) }}"
+                <a href="{{ route('data-karyawan.downloadQr', $karyawan) }}"
                    class="btn btn-success">
                     Download QR Code
                 </a>

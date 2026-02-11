@@ -5,15 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Karyawan;
 use App\Models\Jabatan;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 
-// QR untuk tampilan halaman
+// QR (tampilan & PNG)
 use SimpleSoftwareIO\QrCode\Facades\QrCode as QrCodeView;
-
-// QR untuk PDF
-use Endroid\QrCode\QrCode as EndroidQrCode;
-use Endroid\QrCode\Writer\PngWriter;
 
 // PDF
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -61,14 +56,7 @@ class KaryawanController extends Controller
             'alamat'         => 'nullable|string|max:255',
         ]);
 
-        $karyawan = Karyawan::create([
-            'id_jabatan'    => $request->id_jabatan,
-            'nama_karyawan' => $request->nama_karyawan,
-            'tempat_lahir'  => $request->tempat_lahir,
-            'tanggal_lahir' => $request->tanggal_lahir,
-            'no_telepon'    => $request->no_telepon,
-            'alamat'        => $request->alamat,
-        ]);
+        Karyawan::create($request->all());
 
         return redirect()
             ->route('data-karyawan.index')
@@ -124,14 +112,7 @@ class KaryawanController extends Controller
             'alamat'         => 'nullable|string|max:255',
         ]);
 
-        $data_karyawan->update([
-            'id_jabatan'    => $request->id_jabatan,
-            'nama_karyawan' => $request->nama_karyawan,
-            'tempat_lahir'  => $request->tempat_lahir,
-            'tanggal_lahir' => $request->tanggal_lahir,
-            'no_telepon'    => $request->no_telepon,
-            'alamat'        => $request->alamat,
-        ]);
+        $data_karyawan->update($request->all());
 
         return redirect()
             ->route('data-karyawan.index')
@@ -161,14 +142,12 @@ class KaryawanController extends Controller
 
         $urlQr = url('/absen/scan?kode=' . $karyawan->kode_qr);
 
-        $qrCode = new EndroidQrCode($urlQr);
-        $qrCode->setSize(300);
-        $qrCode->setMargin(10);
-
-        $writer = new PngWriter();
-        $result = $writer->write($qrCode);
-
-        $qrPng = base64_encode($result->getString());
+        // Generate QR PNG (tanpa Endroid)
+        $qrPng = base64_encode(
+            QrCodeView::format('png')
+                ->size(300)
+                ->generate($urlQr)
+        );
 
         $pdf = Pdf::loadView(
             'karyawan.qr-pdf',

@@ -2,6 +2,7 @@
 
 @section('content')
 
+{{-- ALERT --}}
 @if(session('success'))
     <div class="alert alert-success text-center">
         {{ session('success') }}
@@ -14,45 +15,67 @@
     </div>
 @endif
 
-<h4 class="text-center mb-2">📸 Scan QR Code Absensi</h4>
-<p class="text-center text-muted">Arahkan kamera ke QR Code</p>
+<h4 class="text-center mb-1">📸 Scan QR Code Absensi</h4>
+<p class="text-center text-muted mb-2">Arahkan kamera ke QR Code</p>
 
-<div
-    id="reader"
-    style="width:100%; max-width:400px; height:300px; margin:auto; background:#000;">
-</div>
+{{-- AREA KAMERA --}}
+<div id="reader" class="qr-reader"></div>
 
 <form method="POST" action="{{ route('absen.proses') }}" id="formScan">
     @csrf
     <input type="hidden" name="kode_qr" id="kode_qr">
 </form>
 
-<p class="mt-3 text-center" id="status">📷 Menyiapkan kamera...</p>
+<p class="mt-2 text-center" id="status">📷 Menyiapkan kamera...</p>
 
+{{-- CSS --}}
+<style>
+.qr-reader {
+    width: 100%;
+    height: 75vh;
+    max-height: 520px;
+    background: #000;
+    margin: auto;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+/* Samakan tampilan kamera depan & belakang */
+#reader video {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+}
+</style>
+
+{{-- SCRIPT --}}
 <script src="https://unpkg.com/html5-qrcode"></script>
 
 <script>
 let sudahScan = false;
 const statusEl = document.getElementById('status');
-let html5QrCode = new Html5Qrcode("reader");
+const html5QrCode = new Html5Qrcode("reader");
 
-// ===============================
-// START KAMERA BELAKANG
-// ===============================
-html5QrCode.start(
-    { facingMode: "environment" }, // 🔥 PAKSA KAMERA BELAKANG
-    {
-        fps: 10,
-        qrbox: { width: 230, height: 230 },
-        disableFlip: false
+// CONFIG SCAN RESPONSIVE
+const config = {
+    fps: 10,
+    qrbox: (vw, vh) => {
+        let size = Math.min(vw, vh) * 0.65;
+        return { width: size, height: size };
     },
+    aspectRatio: 1.0
+};
+
+// START KAMERA BELAKANG
+html5QrCode.start(
+    { facingMode: "environment" },
+    config,
     (decodedText) => {
         if (sudahScan) return;
         sudahScan = true;
 
-        // 🔥 NORMALISASI QR
         let kode = decodedText
-            .replace(/\s+/g, '')   // hapus spasi & newline
+            .replace(/\s+/g, '')
             .toUpperCase();
 
         document.getElementById('kode_qr').value = kode;
@@ -64,7 +87,7 @@ html5QrCode.start(
         html5QrCode.stop();
     }
 ).then(() => {
-    statusEl.innerText = "📸 Kamera belakang aktif, silakan scan QR";
+    statusEl.innerText = "📸 Kamera aktif, silakan scan QR";
     statusEl.style.color = "green";
 }).catch(err => {
     statusEl.innerText = "❌ Kamera gagal dijalankan";

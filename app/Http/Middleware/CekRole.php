@@ -8,30 +8,25 @@ use Illuminate\Support\Facades\Auth;
 
 class CekRole
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-     * @param  string  ...$roles
-     * @return mixed
-     */
     public function handle(Request $request, Closure $next, ...$roles)
     {
-        // Pastikan user sudah login
+        // Belum login
         if (!Auth::check()) {
             return redirect()->route('login');
         }
 
-        // Ambil role user
-        $userRole = Auth::user()->role;
+        // Sistem belum dipilih
+        if (!session()->has('role')) {
+            return redirect()->route('pilih.sistem');
+        }
 
-        // Cek apakah role user termasuk yang diizinkan
-        if (in_array($userRole, $roles)) {
+        // Cek akses
+        if (in_array(session('role'), $roles)) {
             return $next($request);
         }
 
-        // Kalau tidak sesuai, arahkan balik dengan pesan error
-        return redirect()->route('dashboard')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
+        // Redirect aman
+        return redirect()->route('pilih.sistem')
+            ->with('error', 'Anda tidak memiliki akses ke sistem ini.');
     }
 }

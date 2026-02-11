@@ -57,24 +57,27 @@ class PermohonanCutiController extends Controller
     // Update permohonan cuti (hanya status bisa diubah admin)
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'id_karyawan' => 'required|exists:karyawans,id_karyawan',
-            'tanggal_mulai' => 'required|date|after_or_equal:today',
-            'tanggal_selesai' => 'required|date|after_or_equal:tanggal_mulai',
-            'alasan_cuti' => 'required|string',
-            'status_cuti' => 'required|in:disetujui,belum disetujui',
-        ]);
+    $cuti = PermohonanCuti::findOrFail($id);
 
-        $cuti = PermohonanCuti::findOrFail($id);
-        $cuti->update([
-            'id_karyawan' => $request->id_karyawan,
-            'tanggal_mulai' => $request->tanggal_mulai,
-            'tanggal_selesai' => $request->tanggal_selesai,
-            'status_cuti' => $request->status_cuti,
-            'alasan_cuti' => $request->alasan_cuti,
-        ]);
+    $request->validate([
+        'id_karyawan'      => 'required|exists:karyawans,id_karyawan',
+        'tanggal_mulai'    => 'required|date',
+        'tanggal_selesai'  => 'required|date|after_or_equal:tanggal_mulai',
+        'alasan_cuti'      => 'required|string',
+        'status_cuti'      => 'required|in:disetujui,belum disetujui',
+    ]);
 
-        return redirect()->route('permohonan-cuti.index')->with('success', 'Permohonan cuti berhasil diperbarui!');
+    $cuti->update([
+        'id_karyawan'      => $request->id_karyawan,
+        'tanggal_mulai'    => $request->tanggal_mulai,
+        'tanggal_selesai'  => $request->tanggal_selesai,
+        'status_cuti'      => $request->status_cuti,
+        'alasan_cuti'      => $request->alasan_cuti,
+    ]);
+
+    return redirect()
+        ->route('permohonan-cuti.index')
+        ->with('success', 'Permohonan cuti berhasil diperbarui!');
     }
 
     // Hapus permohonan cuti
