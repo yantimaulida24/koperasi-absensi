@@ -22,7 +22,9 @@ class AbsensiController extends Controller
             return back()->with('error', 'QR kosong');
         }
 
-        // Ambil format KRY-<angka>
+        // =====================
+        // VALIDASI FORMAT QR
+        // =====================
         preg_match('/KRY-\d+/i', $raw, $match);
 
         if (!$match) {
@@ -32,24 +34,42 @@ class AbsensiController extends Controller
         $kodeQR     = strtoupper($match[0]);
         $idKaryawan = (int) str_replace('KRY-', '', $kodeQR);
 
-        // Cek karyawan
+        // =====================
+        // CEK KARYAWAN
+        // =====================
         $karyawan = Karyawan::where('id_karyawan', $idKaryawan)->first();
+
         if (!$karyawan) {
             return back()->with('error', 'Karyawan tidak ditemukan');
         }
 
-        // WITA
-        $tanggal = Carbon::today()->toDateString();
-        $waktu   = Carbon::now()->format('H:i:s');
+        // =====================
+        // PAKSA TIMEZONE WITA
+        // =====================
+        $now     = Carbon::now('Asia/Makassar');
+        $tanggal = $now->toDateString();
+        $waktu   = $now->format('H:i:s');
 
         $absen = Absensi::where('id_karyawan', $idKaryawan)
             ->where('tanggal', $tanggal)
             ->first();
 
         // =====================
+        // CEGAH DOUBLE SCAN (COOLDOWN 30 DETIK)
+        // =====================
+        if ($absen) {
+            $lastUpdate = Carbon::parse($absen->updated_at);
+
+            if ($lastUpdate->diffInSeconds($now) < 30) {
+                return back()->with('error', 'Tunggu 30 detik sebelum scan lagi');
+            }
+        }
+
+        // =====================
         // ABSEN MASUK
         // =====================
         if (!$absen) {
+
             Absensi::create([
                 'id_karyawan' => $idKaryawan,
                 'tanggal'     => $tanggal,
@@ -61,27 +81,30 @@ class AbsensiController extends Controller
         }
 
         // =====================
-        // ABSEN PULANG + HITUNG TOTAL JAM KERJA
+        // ABSEN PULANG
         // =====================
         if (is_null($absen->waktu_keluar)) {
 
             $masuk  = Carbon::createFromFormat('H:i:s', $absen->waktu_masuk);
             $keluar = Carbon::createFromFormat('H:i:s', $waktu);
 
-            // total menit kerja
+            // Hitung total menit kerja
             $totalMenit = $masuk->diffInMinutes($keluar);
 
-            // konversi ke jam desimal (misal 1.50)
+            // Konversi ke jam desimal
             $totalJamKerja = round($totalMenit / 60, 2);
 
             $absen->update([
                 'waktu_keluar'    => $waktu,
-                'total_jam_kerja' => $totalJamKerja, // ✅ DISIMPAN KE DB
+                'total_jam_kerja' => $totalJamKerja,
             ]);
 
             return back()->with('success', 'Absensi pulang berhasil');
         }
 
+        // =====================
+        // SUDAH ABSEN MASUK & PULANG
+        // =====================
         return back()->with('error', 'Anda sudah absen hari ini');
     }
 
