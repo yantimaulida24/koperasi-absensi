@@ -2,9 +2,6 @@
 
 @section('content')
 
-{{-- =======================
-     CSS TAMBAHAN (AMAN)
-======================== --}}
 <style>
 .card-link {
     text-decoration: none;
@@ -19,12 +16,12 @@
 </style>
 
 <div class="container-fluid py-4">
+
     <!-- =======================
          STATISTIK CARDS
     ======================== -->
     <div class="row g-3">
 
-        <!-- Total Pengguna -->
         <div class="col-md-3">
             <a href="{{ route('akun.index') }}" class="card-link">
                 <div class="card shadow-sm border-0 rounded-3" style="background-color:#1b5e20; color:#fff;">
@@ -36,7 +33,6 @@
             </a>
         </div>
 
-        <!-- Total Karyawan -->
         <div class="col-md-3">
             <a href="{{ route('data-karyawan.index') }}" class="card-link">
                 <div class="card shadow-sm border-0 rounded-3" style="background-color:#2e7d32; color:#fff;">
@@ -48,7 +44,6 @@
             </a>
         </div>
 
-        <!-- Hadir Hari Ini -->
         <div class="col-md-3">
             <a href="{{ route('absensi.index', ['status' => 'Hadir']) }}" class="card-link">
                 <div class="card shadow-sm border-0 rounded-3" style="background-color:#81c784; color:#000;">
@@ -60,7 +55,6 @@
             </a>
         </div>
 
-        <!-- Permohonan Cuti -->
         <div class="col-md-3">
             <a href="{{ route('permohonan-cuti.index') }}" class="card-link">
                 <div class="card shadow-sm border-0 rounded-3" style="background-color:#ffb300; color:#000;">
@@ -91,13 +85,14 @@
                             <th>Status</th>
                             <th>Waktu Masuk</th>
                             <th>Waktu Keluar</th>
+                            <th>Total Jam Kerja</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($absensiTerbaru as $absen)
                         <tr class="text-center">
                             <td>{{ $absen->karyawan->nama_karyawan ?? '-' }}</td>
-                            <td>{{ $absen->tanggal }}</td>
+                            <td>{{ \Carbon\Carbon::parse($absen->tanggal)->format('d-m-Y') }}</td>
                             <td>
                                 @if($absen->status == 'Hadir')
                                     <span class="badge" style="background-color:#2e7d32; color:#fff;">{{ $absen->status }}</span>
@@ -111,10 +106,25 @@
                             </td>
                             <td>{{ $absen->waktu_masuk ?? '-' }}</td>
                             <td>{{ $absen->waktu_keluar ?? '-' }}</td>
+
+                            {{-- ✅ FIX TOTAL JAM KERJA --}}
+                            <td>
+                                @if($absen->total_jam_kerja !== null && $absen->waktu_keluar)
+                                    @php
+                                        $jam = floor($absen->total_jam_kerja);
+                                        $menit = round(($absen->total_jam_kerja - $jam) * 60);
+                                    @endphp
+                                    {{ $jam }} jam {{ $menit }} menit
+                                @else
+                                    -
+                                @endif
+                            </td>
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="5" class="text-center text-muted">Belum ada data absensi</td>
+                            <td colspan="6" class="text-center text-muted">
+                                Belum ada data absensi
+                            </td>
                         </tr>
                         @endforelse
                     </tbody>
@@ -125,38 +135,5 @@
 
 </div>
 
-<!-- =======================
-     CHART.JS
-======================== -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-const ctx = document.getElementById('chartAbsensi');
-new Chart(ctx, {
-    type: 'bar',
-    data: {
-        labels: @json($labelMinggu),
-        datasets: [
-            {
-                label: 'Hadir',
-                data: @json($dataHadir),
-                backgroundColor: 'rgba(33, 150, 83, 0.9)',
-                borderRadius: 6
-            },
-            {
-                label: 'Permohonan Cuti',
-                data: @json($dataPermohonan),
-                backgroundColor: 'rgba(255, 179, 0, 1)',
-                borderRadius: 6
-            }
-        ]
-    },
-    options: {
-        responsive: true,
-        scales: {
-            x: { ticks: { color: '#000', font: { weight: 'bold' } } },
-            y: { ticks: { color: '#000', precision: 0, font: { weight: 'bold' } } }
-        }
-    }
-});
-</script>
 @endsection

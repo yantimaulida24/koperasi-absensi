@@ -14,10 +14,11 @@ class Absensi extends Model
     public $timestamps = true;
 
     protected $fillable = [
-        'id_karyawan',   // ✅ SESUAI DATABASE
+        'id_karyawan',
         'tanggal',
         'waktu_masuk',
         'waktu_keluar',
+        'total_jam_kerja', // ✅ INI YANG HILANG
         'status',
     ];
 
@@ -25,8 +26,8 @@ class Absensi extends Model
     {
         return $this->belongsTo(
             Karyawan::class,
-            'id_karyawan',   // ✅ FK di tabel absensis
-            'id_karyawan'    // ✅ PK di tabel karyawans
+            'id_karyawan',
+            'id_karyawan'
         );
     }
 }

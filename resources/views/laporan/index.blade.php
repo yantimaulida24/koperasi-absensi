@@ -40,14 +40,15 @@
 
     {{-- TABLE --}}
     <div class="table-responsive">
-        <table class="table">
-            <thead>
+        <table class="table table-bordered">
+            <thead class="table-light">
                 <tr>
                     <th>No</th>
                     <th>Nama Karyawan</th>
                     <th>Tanggal</th>
                     <th>Masuk</th>
                     <th>Keluar</th>
+                    <th>Total Jam Kerja</th> {{-- ✅ --}}
                     <th>Status</th>
                 </tr>
             </thead>
@@ -56,14 +57,28 @@
                 <tr>
                     <td>{{ $loop->iteration }}</td>
                     <td>{{ $a->karyawan->nama_karyawan ?? '-' }}</td>
-                    <td>{{ $a->tanggal }}</td>
+                    <td>{{ \Carbon\Carbon::parse($a->tanggal)->format('d-m-Y') }}</td>
                     <td>{{ $a->waktu_masuk ?? '-' }}</td>
                     <td>{{ $a->waktu_keluar ?? '-' }}</td>
+
+                    {{-- ✅ FIX TOTAL JAM KERJA --}}
+                    <td>
+                        @if($a->total_jam_kerja !== null && $a->waktu_keluar)
+                            @php
+                                $jam = floor($a->total_jam_kerja);
+                                $menit = round(($a->total_jam_kerja - $jam) * 60);
+                            @endphp
+                            {{ $jam }} jam {{ $menit }} menit
+                        @else
+                            -
+                        @endif
+                    </td>
+
                     <td>{{ $a->status }}</td>
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="6" class="text-center text-muted">
+                    <td colspan="7" class="text-center text-muted">
                         Tidak ada data
                     </td>
                 </tr>

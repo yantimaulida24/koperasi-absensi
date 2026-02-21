@@ -22,14 +22,14 @@ class AbsensiController extends Controller
             return back()->with('error', 'QR kosong');
         }
 
-        // Ambil KRY-<angka> dari teks / URL / scanner
+        // Ambil format KRY-<angka>
         preg_match('/KRY-\d+/i', $raw, $match);
 
         if (!$match) {
             return back()->with('error', 'QR Code tidak valid');
         }
 
-        $kodeQR = strtoupper($match[0]); // KRY-6
+        $kodeQR     = strtoupper($match[0]);
         $idKaryawan = (int) str_replace('KRY-', '', $kodeQR);
 
         // Cek karyawan
@@ -38,6 +38,7 @@ class AbsensiController extends Controller
             return back()->with('error', 'Karyawan tidak ditemukan');
         }
 
+        // WITA
         $tanggal = Carbon::today()->toDateString();
         $waktu   = Carbon::now()->format('H:i:s');
 
@@ -45,7 +46,9 @@ class AbsensiController extends Controller
             ->where('tanggal', $tanggal)
             ->first();
 
-        // Absen masuk
+        // =====================
+        // ABSEN MASUK
+        // =====================
         if (!$absen) {
             Absensi::create([
                 'id_karyawan' => $idKaryawan,
@@ -57,10 +60,23 @@ class AbsensiController extends Controller
             return back()->with('success', 'Absensi masuk berhasil');
         }
 
-        // Absen pulang
+        // =====================
+        // ABSEN PULANG + HITUNG TOTAL JAM KERJA
+        // =====================
         if (is_null($absen->waktu_keluar)) {
+
+            $masuk  = Carbon::createFromFormat('H:i:s', $absen->waktu_masuk);
+            $keluar = Carbon::createFromFormat('H:i:s', $waktu);
+
+            // total menit kerja
+            $totalMenit = $masuk->diffInMinutes($keluar);
+
+            // konversi ke jam desimal (misal 1.50)
+            $totalJamKerja = round($totalMenit / 60, 2);
+
             $absen->update([
-                'waktu_keluar' => $waktu,
+                'waktu_keluar'    => $waktu,
+                'total_jam_kerja' => $totalJamKerja, // ✅ DISIMPAN KE DB
             ]);
 
             return back()->with('success', 'Absensi pulang berhasil');
@@ -69,6 +85,9 @@ class AbsensiController extends Controller
         return back()->with('error', 'Anda sudah absen hari ini');
     }
 
+    // =====================
+    // HALAMAN DATA ABSENSI
+    // =====================
     public function index()
     {
         $absensi = Absensi::with('karyawan')
@@ -78,7 +97,9 @@ class AbsensiController extends Controller
         return view('absensi.index', compact('absensi'));
     }
 
-    // 🔧 FIX UTAMA DI SINI
+    // =====================
+    // QR CODE KARYAWAN
+    // =====================
     public function barcode($id)
     {
         $karyawan = Karyawan::where('id_karyawan', $id)->firstOrFail();
