@@ -133,25 +133,23 @@ class KaryawanController extends Controller
             ->with('success', 'Data karyawan berhasil dihapus');
     }
 
-    /* =========================
-       DOWNLOAD QR PDF
-       ========================= */
+        /* =========================
+    DOWNLOAD QR PDF
+    ========================= */
     public function downloadQr(Karyawan $data_karyawan)
     {
         $karyawan = $data_karyawan->load('jabatan');
 
         $urlQr = url('/absen/scan?kode=' . $karyawan->kode_qr);
 
-        // Generate QR PNG (tanpa Endroid)
-        $qrPng = base64_encode(
-            QrCodeView::format('png')
-                ->size(300)
-                ->generate($urlQr)
-        );
+        // Generate QR dalam format SVG (AMAN, tidak butuh imagick)
+        $qrSvg = QrCodeView::format('svg')
+            ->size(300)
+            ->generate($urlQr);
 
         $pdf = Pdf::loadView(
             'karyawan.qr-pdf',
-            compact('karyawan', 'qrPng')
+            compact('karyawan', 'qrSvg')
         )->setPaper('A4', 'portrait');
 
         return $pdf->download(

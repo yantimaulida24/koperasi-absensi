@@ -9,6 +9,7 @@
 
             <p><strong>Nama Karyawan:</strong> {{ $karyawan->nama_karyawan ?? '-' }}</p>
             <p><strong>Jabatan:</strong> {{ $karyawan->jabatan->nama_jabatan ?? '-' }}</p>
+            <p><strong>Tempat, Tanggal Lahir:</strong> {{ $karyawan->tempat_lahir ?? '-' }}, {{ $karyawan->tanggal_lahir ? \Carbon\Carbon::parse($karyawan->tanggal_lahir)->format('d-m-Y') : '-' }}</p>
             <p><strong>No Telepon:</strong> {{ $karyawan->no_telepon ?? '-' }}</p>
             <p><strong>Alamat:</strong> {{ $karyawan->alamat ?? '-' }}</p>
 

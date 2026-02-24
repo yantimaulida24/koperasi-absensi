@@ -34,10 +34,13 @@
             text-align: center;
         }
 
-        .qr img {
+        .qr {
+            margin-bottom: 10mm;
+        }
+
+        .qr svg {
             width: 40mm;
             height: 40mm;
-            margin-bottom: 6mm;
         }
 
         table {
@@ -82,7 +85,7 @@
         </div>
 
         <div class="qr">
-            <img src="data:image/png;base64,{{ $qrPng }}" alt="QR Code">
+            {!! $qrSvg !!}
         </div>
 
         <table>
@@ -94,7 +97,20 @@
             <tr>
                 <td class="label">Jabatan</td>
                 <td class="separator">:</td>
-                <td class="value">{{ $karyawan->jabatan->nama_jabatan ?? '-' }}</td>
+                <td class="value">
+                    {{ $karyawan->jabatan->nama_jabatan ?? '-' }}
+                </td>
+            </tr>
+            <tr>
+                <td class="label">Tempat, Tgl Lahir</td>
+                <td class="separator">:</td>
+                <td class="value">
+                    {{ $karyawan->tempat_lahir ?? '-' }},
+                    {{ $karyawan->tanggal_lahir 
+                        ? \Carbon\Carbon::parse($karyawan->tanggal_lahir)->format('d-m-Y') 
+                        : '-' 
+                    }}
+                </td>
             </tr>
             <tr>
                 <td class="label">No. Telepon</td>
