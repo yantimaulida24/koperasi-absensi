@@ -20,6 +20,7 @@ class Absensi extends Model
         'waktu_keluar',
         'total_jam_kerja', // ✅ INI YANG HILANG
         'status',
+        'foto_absen',
     ];
 
     public function karyawan()

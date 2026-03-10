@@ -16,6 +16,18 @@ class AbsensiController extends Controller
 
     public function prosesScan(Request $request)
     {
+        // =====================
+        // AMBIL FOTO SELFIE
+        // =====================
+        $fotoBase64 = null;
+
+        if ($request->has('foto_absen')) {
+            $fotoBase64 = $request->foto_absen;
+
+            $fotoBase64 = str_replace('data:image/png;base64,', '', $fotoBase64);
+            $fotoBase64 = str_replace(' ', '+', $fotoBase64);
+        }
+
         $raw = trim($request->kode_qr);
 
         if (empty($raw)) {
@@ -55,7 +67,7 @@ class AbsensiController extends Controller
             ->first();
 
         // =====================
-        // CEGAH DOUBLE SCAN (COOLDOWN 30 DETIK)
+        // CEGAH DOUBLE SCAN
         // =====================
         if ($absen) {
             $lastUpdate = Carbon::parse($absen->updated_at);
@@ -75,6 +87,7 @@ class AbsensiController extends Controller
                 'tanggal'     => $tanggal,
                 'waktu_masuk' => $waktu,
                 'status'      => 'Hadir',
+                'foto_absen'  => $fotoBase64
             ]);
 
             return back()->with('success', 'Absensi masuk berhasil');
@@ -97,13 +110,14 @@ class AbsensiController extends Controller
             $absen->update([
                 'waktu_keluar'    => $waktu,
                 'total_jam_kerja' => $totalJamKerja,
+                'foto_absen'      => $fotoBase64
             ]);
 
             return back()->with('success', 'Absensi pulang berhasil');
         }
 
         // =====================
-        // SUDAH ABSEN MASUK & PULANG
+        // SUDAH ABSEN
         // =====================
         return back()->with('error', 'Anda sudah absen hari ini');
     }

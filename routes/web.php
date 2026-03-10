@@ -22,11 +22,16 @@ Auth::routes();
 
 /*
 |--------------------------------------------------------------------------
-| SCAN QR (TANPA LOGIN)
+| SCAN QR ABSENSI (TANPA LOGIN)
 |--------------------------------------------------------------------------
 */
-Route::get('/absen/scan', [AbsensiController::class, 'scanPage'])->name('absen.scan');
-Route::post('/absen/proses', [AbsensiController::class, 'prosesScan'])->name('absen.proses');
+
+Route::get('/absen/scan', [AbsensiController::class, 'scanPage'])
+    ->name('absen.scan');
+
+Route::post('/absen/proses', [AbsensiController::class, 'prosesScan'])
+    ->name('absen.proses');
+
 
 /*
 |--------------------------------------------------------------------------
@@ -41,6 +46,7 @@ Route::middleware('auth')->group(function () {
         return view('auth.pilih-sistem');
     })->name('pilih.sistem');
 
+
     Route::get('/masuk-database', function () {
 
         if (Auth::user()->role !== 'admin') {
@@ -52,6 +58,7 @@ Route::middleware('auth')->group(function () {
         return redirect()->route('dashboard');
 
     })->name('masuk.database');
+
 
     Route::get('/masuk-absensi', function () {
 
@@ -65,8 +72,11 @@ Route::middleware('auth')->group(function () {
 
     })->name('masuk.absensi');
 
-    Route::get('/dashboard', [HomeController::class, 'index'])->name('dashboard');
+
+    Route::get('/dashboard', [HomeController::class, 'index'])
+        ->name('dashboard');
 });
+
 
 /*
 |--------------------------------------------------------------------------
@@ -95,6 +105,7 @@ Route::middleware(['auth','cekrole:admin'])->group(function () {
         ->name('data-karyawan.destroy');
 });
 
+
 /*
 | ADMIN & KARYAWAN → LIHAT + DOWNLOAD QR
 */
@@ -111,6 +122,7 @@ Route::middleware(['auth','cekrole:admin,karyawan'])->group(function () {
         ->name('data-karyawan.downloadQr');
 });
 
+
 /*
 |--------------------------------------------------------------------------
 | ABSENSI
@@ -118,7 +130,8 @@ Route::middleware(['auth','cekrole:admin,karyawan'])->group(function () {
 */
 Route::middleware(['auth','cekrole:admin,karyawan'])->group(function () {
 
-    Route::get('absensi', [AbsensiController::class, 'index'])->name('absensi.index');
+    Route::get('absensi', [AbsensiController::class, 'index'])
+        ->name('absensi.index');
 
     Route::get('absensi/{id}', [AbsensiController::class, 'show'])
         ->name('absensi.show');
@@ -136,6 +149,7 @@ Route::middleware(['auth','cekrole:admin,karyawan'])->group(function () {
         ->name('absen.barcode');
 });
 
+
 /*
 |--------------------------------------------------------------------------
 | PERMOHONAN CUTI
@@ -144,7 +158,9 @@ Route::middleware(['auth','cekrole:admin,karyawan'])->group(function () {
 Route::middleware(['auth','cekrole:admin,karyawan'])->group(function () {
 
     Route::resource('permohonan-cuti', PermohonanCutiController::class);
+
 });
+
 
 /*
 |--------------------------------------------------------------------------
@@ -161,7 +177,9 @@ Route::middleware(['auth','cekrole:admin'])->group(function () {
 
     Route::get('/laporan-absensi/cetak-pdf', [LaporanController::class,'cetak'])
         ->name('laporan.cetak');
+
 });
+
 
 /*
 |--------------------------------------------------------------------------
@@ -171,7 +189,9 @@ Route::middleware(['auth','cekrole:admin'])->group(function () {
 Route::middleware(['auth','cekrole:admin'])->group(function () {
 
     Route::resource('akun', AkunController::class);
+
 });
+
 
 /*
 |--------------------------------------------------------------------------
@@ -195,4 +215,5 @@ Route::middleware(['auth','cekrole:admin,karyawan'])->group(function () {
     Route::post('kritik_saran/{id}/komentar',
         [KritikSaranController::class,'komentar'])
         ->name('kritik_saran.komentar');
+
 });

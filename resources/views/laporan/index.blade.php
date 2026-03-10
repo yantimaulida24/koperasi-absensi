@@ -48,8 +48,9 @@
                     <th>Tanggal</th>
                     <th>Masuk</th>
                     <th>Keluar</th>
-                    <th>Total Jam Kerja</th> {{-- ✅ --}}
+                    <th>Total Jam Kerja</th>
                     <th>Status</th>
+                    <th>Foto Selfie</th> {{-- TAMBAHAN --}}
                 </tr>
             </thead>
             <tbody>
@@ -61,7 +62,7 @@
                     <td>{{ $a->waktu_masuk ?? '-' }}</td>
                     <td>{{ $a->waktu_keluar ?? '-' }}</td>
 
-                    {{-- ✅ FIX TOTAL JAM KERJA --}}
+                    {{-- TOTAL JAM KERJA --}}
                     <td>
                         @if($a->total_jam_kerja !== null && $a->waktu_keluar)
                             @php
@@ -75,10 +76,23 @@
                     </td>
 
                     <td>{{ $a->status }}</td>
+
+                    {{-- FOTO SELFIE --}}
+                    <td>
+                        @if($a->foto_absen)
+                            <img 
+                                src="data:image/png;base64,{{ $a->foto_absen }}" 
+                                width="70"
+                                style="border-radius:8px;">
+                        @else
+                            <span class="text-muted">Tidak ada</span>
+                        @endif
+                    </td>
+
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="7" class="text-center text-muted">
+                    <td colspan="8" class="text-center text-muted">
                         Tidak ada data
                     </td>
                 </tr>

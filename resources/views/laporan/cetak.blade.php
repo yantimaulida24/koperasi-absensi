@@ -7,6 +7,7 @@
         table { width: 100%; border-collapse: collapse; font-size: 12px; }
         th, td { border: 1px solid #000; padding: 5px; text-align: center; }
         th { background-color: #f2f2f2; }
+        img { width: 60px; }
     </style>
 </head>
 <body>
@@ -24,6 +25,7 @@
             <th>Waktu Keluar</th>
             <th>Total Jam Kerja</th>
             <th>Status</th>
+            <th>Foto</th> {{-- TAMBAHAN --}}
         </tr>
     </thead>
     <tbody>
@@ -39,7 +41,7 @@
             <td>{{ $a->waktu_masuk ?? '-' }}</td>
             <td>{{ $a->waktu_keluar ?? '-' }}</td>
 
-            {{-- ✅ FIX TOTAL JAM KERJA --}}
+            {{-- TOTAL JAM --}}
             <td>
                 @if($a->total_jam_kerja !== null && $a->waktu_keluar)
                     @php
@@ -54,18 +56,28 @@
             </td>
 
             <td>{{ $a->status }}</td>
+
+            {{-- FOTO SELFIE --}}
+            <td>
+                @if($a->foto_absen)
+                    <img src="data:image/png;base64,{{ $a->foto_absen }}">
+                @else
+                    -
+                @endif
+            </td>
+
         </tr>
         @endforeach
     </tbody>
 
-    {{-- ✅ TOTAL KESELURUHAN --}}
+    {{-- TOTAL JAM --}}
     <tfoot>
         @php
             $totalJam = floor($totalJamDecimal);
             $totalMenit = round(($totalJamDecimal - $totalJam) * 60);
         @endphp
         <tr>
-            <th colspan="5" style="text-align:right;">Total Jam Kerja</th>
+            <th colspan="6" style="text-align:right;">Total Jam Kerja</th>
             <th colspan="2">
                 {{ $totalJam }} jam {{ $totalMenit }} menit
             </th>
