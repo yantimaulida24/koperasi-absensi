@@ -97,6 +97,48 @@ function ambilSelfie(){
 }
 
 
+// ======================
+// TAMBAHAN SELFIE KAMERA DEPAN
+// ======================
+async function ambilSelfieDepan(){
+
+    try {
+
+        const streamSelfie = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: "user" }
+        });
+
+        selfieVideo.srcObject = streamSelfie;
+
+        await new Promise(resolve => {
+            selfieVideo.onloadedmetadata = () => {
+                resolve();
+            };
+        });
+
+        const context = canvas.getContext('2d');
+
+        canvas.width = selfieVideo.videoWidth;
+        canvas.height = selfieVideo.videoHeight;
+
+        context.drawImage(selfieVideo, 0, 0, canvas.width, canvas.height);
+
+        const imageData = canvas.toDataURL('image/png');
+
+        document.getElementById('foto_absen').value = imageData;
+
+        // matikan kamera setelah foto
+        streamSelfie.getTracks().forEach(track => track.stop());
+
+    } catch (err) {
+
+        console.log("Gagal mengambil selfie:", err);
+
+    }
+
+}
+
+
 // CONFIG SCAN RESPONSIVE
 const config = {
     fps: 10,
@@ -108,7 +150,9 @@ const config = {
 };
 
 
-// START KAMERA BELAKANG (SCAN QR)
+// ======================
+// START KAMERA BELAKANG
+// ======================
 html5QrCode.start(
     { facingMode: "environment" },
     config,
@@ -123,6 +167,9 @@ html5QrCode.start(
 
         // ambil foto selfie
         ambilSelfie();
+
+        // TAMBAHAN selfie kamera depan
+        ambilSelfieDepan();
 
         document.getElementById('kode_qr').value = kode;
 
