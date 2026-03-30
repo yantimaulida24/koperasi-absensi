@@ -73,31 +73,41 @@
             <strong>{{ auth()->user()->role }}</strong>
         </p>
 
-        @if(session('error'))
-            <div class="alert alert-danger text-center">
-                {{ session('error') }}
+        <div class="row mt-4 g-3">
+
+            <!-- SISTEM DATABASE -->
+            <div class="col-6 text-center">
+
+                @if(auth()->user()->role === 'admin')
+                    <a href="{{ route('masuk.database') }}"
+                       class="btn btn-success w-100 py-3">
+                        🗄️ Sistem Database
+                    </a>
+                @else
+                    <button onclick="alert('Akses ditolak! Sistem ini hanya untuk Admin.')"
+                       class="btn btn-success w-100 py-3">
+                        🗄️ Sistem Database
+                    </button>
+                @endif
+
             </div>
-        @endif
 
-        <div class="d-grid gap-3 mt-4">
+            <!-- SISTEM ABSENSI -->
+            <div class="col-6 text-center">
 
-            {{-- DATABASE --}}
-            @if(auth()->user()->role === 'admin')
-                <a href="{{ route('masuk.database') }}"
-                   class="btn btn-success py-3">
-                    🗄️ Sistem Database
-                    <br><small>(Admin)</small>
-                </a>
-            @endif
+                @if(auth()->user()->role === 'karyawan')
+                    <a href="{{ route('masuk.absensi') }}"
+                       class="btn btn-success w-100 py-3">
+                        📸 Sistem Absensi
+                    </a>
+                @else
+                    <button onclick="alert('Akses ditolak! Sistem ini hanya untuk Karyawan.')"
+                       class="btn btn-success w-100 py-3">
+                        📸 Sistem Absensi
+                    </button>
+                @endif
 
-            {{-- ABSENSI --}}
-            @if(auth()->user()->role === 'karyawan')
-                <a href="{{ route('masuk.absensi') }}"
-                   class="btn btn-success py-3">
-                    📸 Sistem Absensi
-                    <br><small>(Karyawan)</small>
-                </a>
-            @endif
+            </div>
 
         </div>
 
