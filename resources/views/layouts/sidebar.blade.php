@@ -49,13 +49,7 @@
             </a>
         </li>
 
-        <!-- 🕒 Data Absensi -->
-        <li class="nav-item">
-            <a class="nav-link" href="{{ route('absensi.index') }}">
-                <i class="fas fa-fw fa-calendar-check"></i>
-                <span>Data Absensi</span>
-            </a>
-        </li>
+        
 
         <!-- 🕓 Jadwal Kerja -->
         <li class="nav-item">
@@ -91,48 +85,41 @@
     @endif
 
     <!-- KARYAWAN MENU -->
-    @if(auth()->check() && auth()->user()->role === 'karyawan')
-        <div class="sidebar-heading">Menu Karyawan</div>
-        
-        <!-- 👥 Data Karyawan -->
-        <li class="nav-item">
-            <a class="nav-link" href="{{ route('data-karyawan.index') }}">
-                <i class="fas fa-fw fa-users"></i>
-                <span>Data Karyawan</span>
-            </a>
-        </li>
+@if(auth()->check() && auth()->user()->role === 'karyawan')
+    <div class="sidebar-heading">Menu Karyawan</div>
+    
+    <!-- 👥 Data Karyawan -->
+    <li class="nav-item">
+        <a class="nav-link" href="{{ route('data-karyawan.index') }}">
+            <i class="fas fa-fw fa-users"></i>
+            <span>Data Karyawan</span>
+        </a>
+    </li>
 
-        <!-- 📷 Scan QR Absensi -->
-        <li class="nav-item">
-            <a class="nav-link" href="{{ route('absen.scan') }}">
-                <i class="fas fa-qrcode"></i>
-                <span>Scan QR Absensi</span>
-            </a>
-        </li>
+    <!-- 📅 Riwayat Absensi -->
+    <li class="nav-item">
+        <a class="nav-link" href="{{ route('absensi.index') }}">
+            <i class="fas fa-calendar-check"></i>
+            <span>Absensi</span>
+        </a>
+    </li>
 
-        <!-- 📅 Riwayat Absensi -->
-        <li class="nav-item">
-            <a class="nav-link" href="{{ route('absensi.index') }}">
-                <i class="fas fa-calendar-check"></i>
-                <span>Absensi</span>
-            </a>
-        </li>
-        <!-- 📨 Permohonan Cuti -->
-        <li class="nav-item">
-            <a class="nav-link" href="{{ route('permohonan-cuti.index') }}">
-                <i class="fas fa-fw fa-envelope-open"></i>
-                <span>Permohonan Cuti</span>
-            </a>
-        </li>
+    <!-- 📨 Permohonan Cuti -->
+    <li class="nav-item">
+        <a class="nav-link" href="{{ route('permohonan-cuti.index') }}">
+            <i class="fas fa-fw fa-envelope-open"></i>
+            <span>Permohonan Cuti</span>
+        </a>
+    </li>
 
-        <!-- 💬 Kritik & Saran -->
-        <li class="nav-item">
-            <a class="nav-link" href="{{ route('kritik_saran.index') }}">
-                <i class="fas fa-fw fa-comments"></i>
-                <span>Kritik & Saran</span>
-            </a>
-        </li>
-    @endif
+    <!-- 💬 Kritik & Saran -->
+    <li class="nav-item">
+        <a class="nav-link" href="{{ route('kritik_saran.index') }}">
+            <i class="fas fa-fw fa-comments"></i>
+            <span>Kritik & Saran</span>
+        </a>
+    </li>
+@endif
 
     <hr class="sidebar-divider d-none d-md-block">
 

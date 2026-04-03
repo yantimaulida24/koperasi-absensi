@@ -9,11 +9,17 @@ use Carbon\Carbon;
 
 class AbsensiController extends Controller
 {
+    // =====================
+    // HALAMAN SCAN
+    // =====================
     public function scanPage()
     {
         return view('absensi.scan');
     }
 
+    // =====================
+    // PROSES SCAN
+    // =====================
     public function prosesScan(Request $request)
     {
         // =====================
@@ -23,7 +29,6 @@ class AbsensiController extends Controller
 
         if ($request->has('foto_absen')) {
             $fotoBase64 = $request->foto_absen;
-
             $fotoBase64 = str_replace('data:image/png;base64,', '', $fotoBase64);
             $fotoBase64 = str_replace(' ', '+', $fotoBase64);
         }
@@ -35,7 +40,7 @@ class AbsensiController extends Controller
         }
 
         // =====================
-        // VALIDASI FORMAT QR
+        // VALIDASI QR
         // =====================
         preg_match('/KRY-\d+/i', $raw, $match);
 
@@ -56,12 +61,15 @@ class AbsensiController extends Controller
         }
 
         // =====================
-        // PAKSA TIMEZONE WITA
+        // WAKTU SEKARANG (WITA)
         // =====================
         $now     = Carbon::now('Asia/Makassar');
         $tanggal = $now->toDateString();
         $waktu   = $now->format('H:i:s');
 
+        // =====================
+        // CEK ABSEN HARI INI
+        // =====================
         $absen = Absensi::where('id_karyawan', $idKaryawan)
             ->where('tanggal', $tanggal)
             ->first();
@@ -101,10 +109,7 @@ class AbsensiController extends Controller
             $masuk  = Carbon::createFromFormat('H:i:s', $absen->waktu_masuk);
             $keluar = Carbon::createFromFormat('H:i:s', $waktu);
 
-            // Hitung total menit kerja
             $totalMenit = $masuk->diffInMinutes($keluar);
-
-            // Konversi ke jam desimal
             $totalJamKerja = round($totalMenit / 60, 2);
 
             $absen->update([
@@ -123,15 +128,19 @@ class AbsensiController extends Controller
     }
 
     // =====================
-    // HALAMAN DATA ABSENSI
+    // HALAMAN ABSENSI (FIX)
     // =====================
     public function index()
     {
-        $absensi = Absensi::with('karyawan')
-            ->orderBy('tanggal', 'desc')
-            ->get();
+        $today = Carbon::now('Asia/Makassar')->toDateString();
 
-        return view('absensi.index', compact('absensi'));
+        // 🔥 Ambil semua karyawan
+        $karyawan = Karyawan::all();
+
+        // 🔥 Ambil absensi hari ini saja
+        $absensi = Absensi::where('tanggal', $today)->get();
+
+        return view('absensi.index', compact('karyawan', 'absensi'));
     }
 
     // =====================

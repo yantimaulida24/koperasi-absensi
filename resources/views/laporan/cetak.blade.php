@@ -4,15 +4,15 @@
     <meta charset="utf-8">
     <title>Laporan Absensi</title>
     <style>
+        body { font-family: sans-serif; }
         table { width: 100%; border-collapse: collapse; font-size: 12px; }
-        th, td { border: 1px solid #000; padding: 5px; text-align: center; }
+        th, td { border: 1px solid #000; padding: 6px; text-align: center; }
         th { background-color: #f2f2f2; }
-        img { width: 60px; }
     </style>
 </head>
 <body>
 
-<h3 style="text-align:center;">Laporan Absensi</h3>
+<h3 style="text-align:center;">Laporan Rekap Absensi Karyawan</h3>
 <p>Periode: {{ $tanggal_mulai }} s/d {{ $tanggal_selesai }}</p>
 
 <table>
@@ -20,67 +20,54 @@
         <tr>
             <th>No</th>
             <th>Nama Karyawan</th>
-            <th>Tanggal</th>
-            <th>Waktu Masuk</th>
-            <th>Waktu Keluar</th>
-            <th>Total Jam Kerja</th>
-            <th>Status</th>
-            <th>Foto</th> {{-- TAMBAHAN --}}
+            <th>Hadir</th>
+            <th>Tidak Hadir</th>
+            <th>Total Jam Kerja</th> {{-- ✅ DIHAPUS TOTAL HARI --}}
         </tr>
     </thead>
+
     <tbody>
         @php
-            $totalJamDecimal = 0;
+            $totalHadir = 0;
+            $totalTidakHadir = 0;
+            $grandTotalJam = 0;
         @endphp
 
-        @foreach($absensi as $a)
+        @foreach($data as $d)
         <tr>
             <td>{{ $loop->iteration }}</td>
-            <td>{{ $a->karyawan->nama_karyawan ?? '-' }}</td>
-            <td>{{ \Carbon\Carbon::parse($a->tanggal)->format('d-m-Y') }}</td>
-            <td>{{ $a->waktu_masuk ?? '-' }}</td>
-            <td>{{ $a->waktu_keluar ?? '-' }}</td>
+            <td>{{ $d['nama'] }}</td>
+            <td>{{ $d['hadir'] }}</td>
+            <td>{{ $d['tidak_hadir'] }}</td>
 
-            {{-- TOTAL JAM --}}
             <td>
-                @if($a->total_jam_kerja !== null && $a->waktu_keluar)
-                    @php
-                        $jam = floor($a->total_jam_kerja);
-                        $menit = round(($a->total_jam_kerja - $jam) * 60);
-                        $totalJamDecimal += $a->total_jam_kerja;
-                    @endphp
-                    {{ $jam }} jam {{ $menit }} menit
-                @else
-                    -
-                @endif
+                @php
+                    $jam = floor($d['total_jam_kerja']);
+                    $menit = round(($d['total_jam_kerja'] - $jam) * 60);
+                @endphp
+                {{ $jam }} jam {{ $menit }} menit
             </td>
-
-            <td>{{ $a->status }}</td>
-
-            {{-- FOTO SELFIE --}}
-            <td>
-                @if($a->foto_absen)
-                    <img src="data:image/png;base64,{{ $a->foto_absen }}">
-                @else
-                    -
-                @endif
-            </td>
-
         </tr>
+
+        @php
+            $totalHadir += $d['hadir'];
+            $totalTidakHadir += $d['tidak_hadir'];
+            $grandTotalJam += $d['total_jam_kerja'];
+        @endphp
+
         @endforeach
     </tbody>
 
-    {{-- TOTAL JAM --}}
     <tfoot>
         @php
-            $totalJam = floor($totalJamDecimal);
-            $totalMenit = round(($totalJamDecimal - $totalJam) * 60);
+            $jam = floor($grandTotalJam);
+            $menit = round(($grandTotalJam - $jam) * 60);
         @endphp
         <tr>
-            <th colspan="6" style="text-align:right;">Total Jam Kerja</th>
-            <th colspan="2">
-                {{ $totalJam }} jam {{ $totalMenit }} menit
-            </th>
+            <th colspan="2">TOTAL</th>
+            <th>{{ $totalHadir }}</th>
+            <th>{{ $totalTidakHadir }}</th>
+            <th>{{ $jam }} jam {{ $menit }} menit</th>
         </tr>
     </tfoot>
 </table>

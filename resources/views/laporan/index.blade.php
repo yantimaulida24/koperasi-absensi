@@ -9,18 +9,12 @@
 
             <div class="col-md-3">
                 <label class="form-label">Tanggal Mulai</label>
-                <input type="date"
-                       name="tanggal_mulai"
-                       class="form-control"
-                       value="{{ $tanggal_mulai }}">
+                <input type="date" name="tanggal_mulai" class="form-control" value="{{ $tanggal_mulai }}">
             </div>
 
             <div class="col-md-3">
                 <label class="form-label">Tanggal Selesai</label>
-                <input type="date"
-                       name="tanggal_selesai"
-                       class="form-control"
-                       value="{{ $tanggal_selesai }}">
+                <input type="date" name="tanggal_selesai" class="form-control" value="{{ $tanggal_selesai }}">
             </div>
 
             <div class="col-md-6 d-flex gap-2">
@@ -38,61 +32,39 @@
         </div>
     </form>
 
-    {{-- TABLE --}}
+    {{-- TABLE REKAP --}}
     <div class="table-responsive">
         <table class="table table-bordered">
             <thead class="table-light">
                 <tr>
                     <th>No</th>
                     <th>Nama Karyawan</th>
-                    <th>Tanggal</th>
-                    <th>Masuk</th>
-                    <th>Keluar</th>
-                    <th>Total Jam Kerja</th>
-                    <th>Status</th>
-                    <th>Foto Selfie</th> {{-- TAMBAHAN --}}
+                    <th>Hadir</th>
+                    <th>Tidak Hadir</th>
                 </tr>
             </thead>
             <tbody>
-                @forelse($absensi as $a)
+                @forelse($data as $item)
                 <tr>
                     <td>{{ $loop->iteration }}</td>
-                    <td>{{ $a->karyawan->nama_karyawan ?? '-' }}</td>
-                    <td>{{ \Carbon\Carbon::parse($a->tanggal)->format('d-m-Y') }}</td>
-                    <td>{{ $a->waktu_masuk ?? '-' }}</td>
-                    <td>{{ $a->waktu_keluar ?? '-' }}</td>
+                    <td>{{ $item['nama'] }}</td>
 
-                    {{-- TOTAL JAM KERJA --}}
                     <td>
-                        @if($a->total_jam_kerja !== null && $a->waktu_keluar)
-                            @php
-                                $jam = floor($a->total_jam_kerja);
-                                $menit = round(($a->total_jam_kerja - $jam) * 60);
-                            @endphp
-                            {{ $jam }} jam {{ $menit }} menit
-                        @else
-                            -
-                        @endif
+                        <span class="badge bg-success">
+                            {{ $item['hadir'] }}
+                        </span>
                     </td>
 
-                    <td>{{ $a->status }}</td>
-
-                    {{-- FOTO SELFIE --}}
                     <td>
-                        @if($a->foto_absen)
-                            <img 
-                                src="data:image/png;base64,{{ $a->foto_absen }}" 
-                                width="70"
-                                style="border-radius:8px;">
-                        @else
-                            <span class="text-muted">Tidak ada</span>
-                        @endif
+                        <span class="badge bg-danger">
+                            {{ $item['tidak_hadir'] }}
+                        </span>
                     </td>
 
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="8" class="text-center text-muted">
+                    <td colspan="4" class="text-center text-muted">
                         Tidak ada data
                     </td>
                 </tr>

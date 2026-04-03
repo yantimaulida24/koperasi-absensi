@@ -33,7 +33,6 @@
 
 <p class="mt-2 text-center" id="status">📷 Menyiapkan kamera...</p>
 
-{{-- CSS --}}
 <style>
 .qr-reader {
     width: 100%;
@@ -45,7 +44,6 @@
     overflow: hidden;
 }
 
-/* Samakan tampilan kamera depan & belakang */
 #reader video {
     width: 100% !important;
     height: 100% !important;
@@ -53,7 +51,6 @@
 }
 </style>
 
-{{-- SCRIPT --}}
 <script src="https://unpkg.com/html5-qrcode"></script>
 
 <script>
@@ -79,26 +76,7 @@ navigator.mediaDevices.getUserMedia({
 
 
 // ======================
-// AMBIL FOTO SELFIE
-// ======================
-function ambilSelfie(){
-
-    const context = canvas.getContext('2d');
-
-    canvas.width = selfieVideo.videoWidth;
-    canvas.height = selfieVideo.videoHeight;
-
-    context.drawImage(selfieVideo, 0, 0, canvas.width, canvas.height);
-
-    const imageData = canvas.toDataURL('image/png');
-
-    document.getElementById('foto_absen').value = imageData;
-
-}
-
-
-// ======================
-// TAMBAHAN SELFIE KAMERA DEPAN
+// SELFIE KAMERA DEPAN (FIX)
 // ======================
 async function ambilSelfieDepan(){
 
@@ -130,9 +108,12 @@ async function ambilSelfieDepan(){
         // matikan kamera setelah foto
         streamSelfie.getTracks().forEach(track => track.stop());
 
+        return imageData; // 🔥 tambahan penting
+
     } catch (err) {
 
         console.log("Gagal mengambil selfie:", err);
+        return null;
 
     }
 
@@ -151,7 +132,7 @@ const config = {
 
 
 // ======================
-// START KAMERA BELAKANG
+// START SCAN
 // ======================
 html5QrCode.start(
     { facingMode: "environment" },
@@ -165,20 +146,21 @@ html5QrCode.start(
             .replace(/\s+/g, '')
             .toUpperCase();
 
-        // ambil foto selfie
-        ambilSelfie();
+        // 🔥 PERBAIKAN DI SINI
+        (async () => {
 
-        // TAMBAHAN selfie kamera depan
-        ambilSelfieDepan();
+            await ambilSelfieDepan(); // tunggu foto selesai
 
-        document.getElementById('kode_qr').value = kode;
+            document.getElementById('kode_qr').value = kode;
 
-        statusEl.innerText = "📸 Mengambil foto & memproses absensi...";
-        statusEl.style.color = "blue";
+            statusEl.innerText = "📸 Mengambil foto & memproses absensi...";
+            statusEl.style.color = "blue";
 
-        setTimeout(() => {
-            document.getElementById('formScan').submit();
-        }, 500);
+            setTimeout(() => {
+                document.getElementById('formScan').submit();
+            }, 500);
+
+        })();
 
         html5QrCode.stop();
 
