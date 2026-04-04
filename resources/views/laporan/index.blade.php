@@ -41,6 +41,7 @@
                     <th>Nama Karyawan</th>
                     <th>Hadir</th>
                     <th>Tidak Hadir</th>
+                    <th>Foto Selfie</th> {{-- TAMBAHAN --}}
                 </tr>
             </thead>
             <tbody>
@@ -49,7 +50,6 @@
                     <td>{{ $loop->iteration }}</td>
                     <td>{{ $item['nama'] }}</td>
 
-                    {{-- TANPA WARNA --}}
                     <td class="text-center">
                         {{ $item['hadir'] }}
                     </td>
@@ -58,10 +58,22 @@
                         {{ $item['tidak_hadir'] }}
                     </td>
 
+                    {{-- FOTO SELFIE --}}
+                    <td class="text-center">
+                        @if(!empty($item['foto']))
+                            <img src="data:image/png;base64,{{ $item['foto'] }}"
+                                 width="80"
+                                 height="80"
+                                 style="object-fit: cover; border-radius: 8px;">
+                        @else
+                            <span class="text-muted">Tidak ada</span>
+                        @endif
+                    </td>
+
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="4" class="text-center text-muted">
+                    <td colspan="5" class="text-center text-muted">
                         Tidak ada data
                     </td>
                 </tr>
