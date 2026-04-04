@@ -49,16 +49,13 @@
                     <td>{{ $loop->iteration }}</td>
                     <td>{{ $item['nama'] }}</td>
 
-                    <td>
-                        <span class="badge bg-success">
-                            {{ $item['hadir'] }}
-                        </span>
+                    {{-- TANPA WARNA --}}
+                    <td class="text-center">
+                        {{ $item['hadir'] }}
                     </td>
 
-                    <td>
-                        <span class="badge bg-danger">
-                            {{ $item['tidak_hadir'] }}
-                        </span>
+                    <td class="text-center">
+                        {{ $item['tidak_hadir'] }}
                     </td>
 
                 </tr>
