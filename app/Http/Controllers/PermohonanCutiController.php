@@ -64,7 +64,7 @@ class PermohonanCutiController extends Controller
         'tanggal_mulai'    => 'required|date',
         'tanggal_selesai'  => 'required|date|after_or_equal:tanggal_mulai',
         'alasan_cuti'      => 'required|string',
-        'status_cuti'      => 'required|in:disetujui,belum disetujui',
+        'status_cuti' => 'required|in:disetujui,belum disetujui,ditolak',
     ]);
 
     $cuti->update([

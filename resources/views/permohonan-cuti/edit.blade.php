@@ -7,9 +7,10 @@
         @csrf
         @method('PUT')
 
+        {{-- Nama Karyawan --}}
         <div class="mb-3">
             <label class="form-label">Nama Karyawan</label>
-            <select name="id_karyawan" class="form-control" disabled>
+            <select class="form-control" disabled>
                 @foreach($karyawan as $k)
                     <option value="{{ $k->id_karyawan }}"
                         {{ $k->id_karyawan == $cuti->id_karyawan ? 'selected' : '' }}>
@@ -18,10 +19,10 @@
                 @endforeach
             </select>
 
-            {{-- hidden agar data tetap terkirim --}}
             <input type="hidden" name="id_karyawan" value="{{ $cuti->id_karyawan }}">
         </div>
 
+        {{-- Tanggal Mulai --}}
         <div class="mb-3">
             <label class="form-label">Tanggal Mulai</label>
             <input type="date" class="form-control"
@@ -30,6 +31,7 @@
             <input type="hidden" name="tanggal_mulai" value="{{ $cuti->tanggal_mulai }}">
         </div>
 
+        {{-- Tanggal Selesai --}}
         <div class="mb-3">
             <label class="form-label">Tanggal Selesai</label>
             <input type="date" class="form-control"
@@ -38,21 +40,26 @@
             <input type="hidden" name="tanggal_selesai" value="{{ $cuti->tanggal_selesai }}">
         </div>
 
-        {{-- ======================
-             STATUS CUTI (AKTIF)
-        ======================= --}}
+        {{-- STATUS CUTI --}}
         <div class="mb-3">
             <label class="form-label">Status Cuti</label>
             <select name="status_cuti" class="form-control" required>
-                <option value="belum disetujui" {{ $cuti->status_cuti == 'belum disetujui' ? 'selected' : '' }}>
+                <option value="belum disetujui"
+                    {{ $cuti->status_cuti == 'belum disetujui' ? 'selected' : '' }}>
                     Belum Disetujui
                 </option>
-                <option value="disetujui" {{ $cuti->status_cuti == 'disetujui' ? 'selected' : '' }}>
+                <option value="disetujui"
+                    {{ $cuti->status_cuti == 'disetujui' ? 'selected' : '' }}>
                     Disetujui
+                </option>
+                <option value="ditolak"
+                    {{ $cuti->status_cuti == 'ditolak' ? 'selected' : '' }}>
+                    Ditolak
                 </option>
             </select>
         </div>
 
+        {{-- Alasan --}}
         <div class="mb-3">
             <label class="form-label">Alasan Cuti</label>
             <textarea class="form-control" rows="4" readonly>{{ $cuti->alasan_cuti }}</textarea>
@@ -60,12 +67,13 @@
             <input type="hidden" name="alasan_cuti" value="{{ $cuti->alasan_cuti }}">
         </div>
 
-        <button class="btn btn-jabatan">Simpan Perubahan</button>
+        {{-- Tombol --}}
+        <button type="submit" class="btn btn-jabatan">Simpan Perubahan</button>
         <a href="{{ route('permohonan-cuti.index') }}" class="btn btn-secondary">Batal</a>
     </form>
 </div>
 
-{{-- STYLE TOMBOL HIJAU --}}
+{{-- STYLE --}}
 <style>
     .btn-jabatan {
         background-color: #1b5e20;
@@ -73,6 +81,7 @@
         font-weight: 500;
         border-radius: 6px;
         padding: 8px 18px;
+        border: none;
     }
 
     .btn-jabatan:hover {

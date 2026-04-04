@@ -30,7 +30,18 @@
                 <td>{{ $c->tanggal_pengajuan }}</td>
                 <td>{{ $c->tanggal_mulai }}</td>
                 <td>{{ $c->tanggal_selesai }}</td>
-                <td>{{ $c->status_cuti }}</td>
+
+                {{-- STATUS BERWARNA --}}
+                <td>
+                    @if($c->status_cuti == 'disetujui')
+                        <span class="badge bg-success">Disetujui</span>
+                    @elseif($c->status_cuti == 'ditolak')
+                        <span class="badge bg-danger">Ditolak</span>
+                    @else
+                        <span class="badge bg-warning text-dark">Belum Disetujui</span>
+                    @endif
+                </td>
+
                 <td>{{ $c->alasan_cuti }}</td>
                 <td>
                     {{-- Edit hanya ADMIN --}}
