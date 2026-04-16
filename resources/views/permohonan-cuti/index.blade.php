@@ -23,9 +23,9 @@
             </tr>
         </thead>
         <tbody>
-            @foreach($cuti as $c)
+            @forelse($cuti as $c)
             <tr>
-                <td>{{ $c->id_cuti }}</td>
+                <td>{{ $loop->iteration }}</td>
                 <td>{{ $c->karyawan->nama_karyawan }}</td>
                 <td>{{ $c->tanggal_pengajuan }}</td>
                 <td>{{ $c->tanggal_mulai }}</td>
@@ -65,7 +65,13 @@
                     </form>
                 </td>
             </tr>
-            @endforeach
+            @empty
+            <tr>
+                <td colspan="8" class="text-center">
+                    Belum ada data permohonan cuti
+                </td>
+            </tr>
+            @endforelse
         </tbody>
     </table>
 </div>
