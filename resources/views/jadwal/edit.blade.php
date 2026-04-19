@@ -2,7 +2,6 @@
 
 @section('content')
 <div class="container">
-    
 
     <form action="{{ route('jadwal.update', $jadwal->id_jadwal) }}" method="POST">
         @csrf
@@ -19,8 +18,9 @@
 
         <div class="mb-3">
             <label class="form-label">Jam Masuk</label>
-            <input type="time" name="jam_masuk" class="form-control"
-                   value="{{ old('jam_masuk', $jadwal->jam_masuk) }}" required>
+            <input type="text" name="jam_masuk" class="form-control timepicker"
+                   value="{{ old('jam_masuk', \Carbon\Carbon::parse($jadwal->jam_masuk)->format('H:i')) }}"
+                   required>
             @error('jam_masuk')
                 <small class="text-danger">{{ $message }}</small>
             @enderror
@@ -28,19 +28,32 @@
 
         <div class="mb-3">
             <label class="form-label">Jam Keluar</label>
-            <input type="time" name="jam_keluar" class="form-control"
-                   value="{{ old('jam_keluar', $jadwal->jam_keluar) }}" required>
+            <input type="text" name="jam_keluar" class="form-control timepicker"
+                   value="{{ old('jam_keluar', \Carbon\Carbon::parse($jadwal->jam_keluar)->format('H:i')) }}"
+                   required>
             @error('jam_keluar')
                 <small class="text-danger">{{ $message }}</small>
             @enderror
         </div>
 
-        <button class="btn btn-success">Simpan Perubahan</button>
+        <button class="btn btn-jabatan">Simpan Perubahan</button>
         <a href="{{ route('jadwal.index') }}" class="btn btn-secondary">Kembali</a>
     </form>
 </div>
 
-{{-- STYLE TOMBOL HIJAU --}}
+{{-- FLATPICKR --}}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+<script>
+flatpickr(".timepicker", {
+    enableTime: true,
+    noCalendar: true,
+    dateFormat: "H:i",
+    time_24hr: true
+});
+</script>
+
 <style>
     .btn-jabatan {
         background-color: #1b5e20;

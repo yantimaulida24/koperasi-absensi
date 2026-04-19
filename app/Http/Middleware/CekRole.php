@@ -10,23 +10,31 @@ class CekRole
 {
     public function handle(Request $request, Closure $next, ...$roles)
     {
-        // Belum login
+        // Jika belum login
         if (!Auth::check()) {
             return redirect()->route('login');
         }
 
-        // Sistem belum dipilih
-        if (!session()->has('role')) {
-            return redirect()->route('pilih.sistem');
-        }
+        // Ambil role dari user login
+        $userRole = Auth::user()->role;
 
-        // Cek akses
-        if (in_array(session('role'), $roles)) {
+        // Jika role sesuai dengan yang diizinkan
+        if (in_array($userRole, $roles)) {
             return $next($request);
         }
 
-        // Redirect aman
-        return redirect()->route('pilih.sistem')
-            ->with('error', 'Anda tidak memiliki akses ke sistem ini.');
+        // Jika tidak sesuai → redirect sesuai role
+        if ($userRole === 'admin') {
+            return redirect()->route('dashboard')
+                ->with('error', 'Anda tidak memiliki akses ke halaman tersebut.');
+        }
+
+        if ($userRole === 'karyawan') {
+            return redirect()->route('absensi.index')
+                ->with('error', 'Anda tidak memiliki akses ke halaman tersebut.');
+        }
+
+        // Default fallback
+        return redirect('/login');
     }
 }

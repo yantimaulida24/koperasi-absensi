@@ -5,27 +5,23 @@
 
     {{-- ALERT --}}
     @if(session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
-        </div>
+        <div class="alert alert-success">{{ session('success') }}</div>
     @elseif(session('error'))
-        <div class="alert alert-danger">
-            {{ session('error') }}
-        </div>
+        <div class="alert alert-danger">{{ session('error') }}</div>
     @endif
 
     <div class="table-responsive">
         <table class="table custom-table table-bordered">
             <thead class="table-light">
                 <tr>
-                    <th>No</th> {{-- ✅ TAMBAHAN --}}
+                    <th>No</th>
                     <th>Nama Karyawan</th>
                     <th>Tanggal</th>
-                    <th>Waktu Masuk</th>
-                    <th>Waktu Keluar</th>
-                    <th>Total Jam Kerja</th>
+                    <th>Masuk</th>
+                    <th>Keluar</th>
+                    <th>Total Jam</th>
                     <th>Status</th>
-                    <th>Foto Selfie</th>
+                    <th>Foto</th>
                     <th>Aksi</th>
                 </tr>
             </thead>
@@ -48,22 +44,22 @@
                         <td>
                             {{ $absen 
                                 ? \Carbon\Carbon::parse($absen->tanggal)->format('d-m-Y') 
-                                : \Carbon\Carbon::now('Asia/Makassar')->format('d-m-Y') 
+                                : \Carbon\Carbon::now()->format('d-m-Y') 
                             }}
                         </td>
 
-                        {{-- WAKTU MASUK --}}
+                        {{-- MASUK --}}
                         <td>
                             {{ $absen && $absen->waktu_masuk 
-                                ? \Carbon\Carbon::parse($absen->waktu_masuk)->format('H:i:s') 
+                                ? \Carbon\Carbon::parse($absen->waktu_masuk)->format('H:i') 
                                 : '-' 
                             }}
                         </td>
 
-                        {{-- WAKTU KELUAR --}}
+                        {{-- KELUAR --}}
                         <td>
                             {{ $absen && $absen->waktu_keluar 
-                                ? \Carbon\Carbon::parse($absen->waktu_keluar)->format('H:i:s') 
+                                ? \Carbon\Carbon::parse($absen->waktu_keluar)->format('H:i') 
                                 : '-' 
                             }}
                         </td>
@@ -75,7 +71,9 @@
                                     $jam = floor($absen->total_jam_kerja);
                                     $menit = round(($absen->total_jam_kerja - $jam) * 60);
                                 @endphp
-                                {{ $jam }} jam {{ $menit }} menit
+                                <span class="badge bg-secondary">
+                                    {{ $jam }}j {{ $menit }}m
+                                </span>
                             @else
                                 -
                             @endif
@@ -84,11 +82,11 @@
                         {{-- STATUS --}}
                         <td>
                             @if($absen && $absen->waktu_masuk && $absen->waktu_keluar)
-                                <span class="badge bg-success">Sudah Absen</span>
+                                <span class="badge bg-success">Selesai</span>
                             @elseif($absen && $absen->waktu_masuk)
-                                <span class="badge bg-info">Sedang Bekerja</span>
+                                <span class="badge bg-info text-dark">Bekerja</span>
                             @else
-                                <span class="badge bg-danger">Belum Absen</span>
+                                <span class="badge bg-danger">Belum</span>
                             @endif
                         </td>
 
@@ -97,10 +95,10 @@
                             @if($absen && $absen->foto_absen)
                                 <img 
                                     src="data:image/png;base64,{{ $absen->foto_absen }}" 
-                                    width="70"
-                                    style="border-radius:8px;">
+                                    width="60"
+                                    style="border-radius:6px;">
                             @else
-                                <span class="text-muted">Tidak ada</span>
+                                <span class="text-muted">-</span>
                             @endif
                         </td>
 
@@ -108,11 +106,12 @@
                         <td>
                             @if(!$absen || !$absen->waktu_keluar)
                                 <a href="{{ route('absen.scan', $k->id_karyawan) }}" 
-                                   class="btn btn-sm btn-primary">
+                                   class="btn btn-sm btn-primary"
+                                   title="Scan Absensi">
                                     <i class="fas fa-qrcode"></i> Scan
                                 </a>
                             @else
-                                <span class="text-success">✔ Selesai</span>
+                                <i class="fas fa-check-circle text-success" title="Selesai"></i>
                             @endif
                         </td>
 

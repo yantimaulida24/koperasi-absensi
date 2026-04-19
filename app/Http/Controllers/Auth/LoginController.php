@@ -11,30 +11,32 @@ class LoginController extends Controller
 {
     use AuthenticatesUsers;
 
-    /**
-     * Setelah login JANGAN ke /home
-     */
-    protected function redirectTo()
-    {
-        return route('pilih.sistem');
-    }
-
     public function __construct()
     {
         $this->middleware('guest')->except('logout');
     }
 
     /**
-     * Dipanggil OTOMATIS setelah login sukses
+     * Redirect setelah login sesuai role
      */
     protected function authenticated(Request $request, $user)
     {
-        // Reset sistem setiap login
-        session()->forget('role');
+        // ADMIN → ke dashboard
+        if ($user->role === 'admin') {
+            return redirect()->route('dashboard');
+        }
+
+        // KARYAWAN → ke halaman absensi
+        if ($user->role === 'karyawan') {
+            return redirect()->route('absensi.index');
+        }
+
+        // Default
+        return redirect('/');
     }
 
     /**
-     * Logout + hapus session role
+     * Logout
      */
     public function logout(Request $request)
     {

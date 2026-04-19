@@ -27,15 +27,26 @@ class JadwalKerjaController extends Controller
             'hari_kerja' => 'required|string|max:20',
             'jam_masuk'  => 'required|date_format:H:i',
             'jam_keluar' => 'required|date_format:H:i|after:jam_masuk',
+        ], [
+            'hari_kerja.required' => 'Hari kerja wajib diisi.',
+            'jam_masuk.required'  => 'Jam masuk wajib diisi.',
+            'jam_masuk.date_format' => 'Format jam masuk harus 24 jam (contoh: 08:00).',
+            'jam_keluar.required' => 'Jam keluar wajib diisi.',
+            'jam_keluar.date_format' => 'Format jam keluar harus 24 jam (contoh: 17:00).',
+            'jam_keluar.after' => 'Jam keluar harus lebih besar dari jam masuk.',
         ]);
 
-        if (JadwalKerja::where('hari_kerja',$request->hari_kerja)->exists()) {
-            return back()->withInput()->with('error','Hari kerja sudah ada.');
+        if (JadwalKerja::where('hari_kerja', $request->hari_kerja)->exists()) {
+            return back()->withInput()->with('error', 'Hari kerja tersebut sudah terdaftar.');
         }
 
-        JadwalKerja::create($request->only(['hari_kerja','jam_masuk','jam_keluar']));
+        JadwalKerja::create([
+            'hari_kerja' => $request->hari_kerja,
+            'jam_masuk'  => $request->jam_masuk,
+            'jam_keluar' => $request->jam_keluar,
+        ]);
 
-        return redirect()->route('jadwal.index')->with('success','Jadwal berhasil ditambahkan.');
+        return redirect()->route('jadwal.index')->with('success', 'Data jadwal kerja berhasil ditambahkan.');
     }
 
     public function edit($id)
@@ -52,17 +63,28 @@ class JadwalKerjaController extends Controller
             'hari_kerja' => 'required|string|max:20',
             'jam_masuk'  => 'required|date_format:H:i',
             'jam_keluar' => 'required|date_format:H:i|after:jam_masuk',
+        ], [
+            'hari_kerja.required' => 'Hari kerja wajib diisi.',
+            'jam_masuk.required'  => 'Jam masuk wajib diisi.',
+            'jam_masuk.date_format' => 'Format jam masuk harus 24 jam (contoh: 08:00).',
+            'jam_keluar.required' => 'Jam keluar wajib diisi.',
+            'jam_keluar.date_format' => 'Format jam keluar harus 24 jam (contoh: 17:00).',
+            'jam_keluar.after' => 'Jam keluar harus lebih besar dari jam masuk.',
         ]);
 
-        if (JadwalKerja::where('hari_kerja',$request->hari_kerja)
-            ->where('id_jadwal','!=',$jadwal->id_jadwal)
+        if (JadwalKerja::where('hari_kerja', $request->hari_kerja)
+            ->where('id_jadwal', '!=', $jadwal->id_jadwal)
             ->exists()) {
-            return back()->withInput()->with('error','Hari kerja sudah digunakan.');
+            return back()->withInput()->with('error', 'Hari kerja tersebut sudah digunakan.');
         }
 
-        $jadwal->update($request->only(['hari_kerja','jam_masuk','jam_keluar']));
+        $jadwal->update([
+            'hari_kerja' => $request->hari_kerja,
+            'jam_masuk'  => $request->jam_masuk,
+            'jam_keluar' => $request->jam_keluar,
+        ]);
 
-        return redirect()->route('jadwal.index')->with('success','Jadwal berhasil diperbarui.');
+        return redirect()->route('jadwal.index')->with('success', 'Data jadwal kerja berhasil diperbarui.');
     }
 
     public function destroy($id)
@@ -70,6 +92,6 @@ class JadwalKerjaController extends Controller
         $jadwal = JadwalKerja::findOrFail($id);
         $jadwal->delete();
 
-        return redirect()->route('jadwal.index')->with('success','Jadwal berhasil dihapus.');
+        return redirect()->route('jadwal.index')->with('success', 'Data jadwal kerja berhasil dihapus.');
     }
 }

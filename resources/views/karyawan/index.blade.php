@@ -5,8 +5,10 @@
 
     {{-- TOMBOL TAMBAH (ADMIN) --}}
     @if(auth()->user()->role === 'admin')
-        <a href="{{ route('data-karyawan.create') }}" class="btn btn-primary mb-3">
-            + Tambah Karyawan
+        <a href="{{ route('data-karyawan.create') }}"
+           class="btn btn-primary mb-3"
+           title="Tambah Karyawan">
+            <i class="fas fa-plus"></i> Tambah Karyawan
         </a>
     @endif
 
@@ -19,11 +21,15 @@
             placeholder="Cari nama karyawan..."
             value="{{ request('search') }}"
         >
-        <button class="btn btn-primary">Cari</button>
+        <button class="btn btn-primary" title="Cari">
+            <i class="fas fa-search"></i>
+        </button>
 
         @if(request('search'))
-            <a href="{{ route('data-karyawan.index') }}" class="btn btn-secondary ms-2">
-                Reset
+            <a href="{{ route('data-karyawan.index') }}"
+               class="btn btn-secondary ms-2"
+               title="Reset">
+                <i class="fas fa-sync"></i>
             </a>
         @endif
     </form>
@@ -47,7 +53,7 @@
                     <th>Jabatan</th>
                     <th>No Telepon</th>
                     <th>Alamat</th>
-                    <th width="22%">Aksi</th>
+                    <th width="20%">Aksi</th>
                 </tr>
             </thead>
             <tbody>
@@ -62,31 +68,38 @@
                     <td>{{ $data->jabatan->nama_jabatan ?? '-' }}</td>
                     <td>{{ $data->no_telepon ?? '-' }}</td>
                     <td>{{ $data->alamat ?? '-' }}</td>
+
                     <td class="text-center">
 
                         {{-- DETAIL --}}
                         <a href="{{ route('data-karyawan.show', $data->id_karyawan) }}"
-                           class="btn btn-info btn-sm">
-                            Lihat
+                           class="btn btn-info btn-sm"
+                           title="Lihat Detail">
+                            <i class="fas fa-eye"></i>
                         </a>
 
                         @if(auth()->user()->role === 'admin')
+
                             {{-- EDIT --}}
                             <a href="{{ route('data-karyawan.edit', $data->id_karyawan) }}"
-                               class="btn btn-warning btn-sm">
-                                Edit
+                               class="btn btn-warning btn-sm"
+                               title="Edit">
+                                <i class="fas fa-edit"></i>
                             </a>
 
                             {{-- HAPUS --}}
                             <form action="{{ route('data-karyawan.destroy', $data->id_karyawan) }}"
-                                  method="POST" class="d-inline">
+                                  method="POST"
+                                  class="d-inline"
+                                  onsubmit="return confirm('Yakin ingin menghapus data ini?')">
                                 @csrf
                                 @method('DELETE')
                                 <button class="btn btn-danger btn-sm"
-                                        onclick="return confirm('Yakin ingin menghapus data ini?')">
-                                    Hapus
+                                        title="Hapus">
+                                    <i class="fas fa-trash"></i>
                                 </button>
                             </form>
+
                         @endif
                     </td>
                 </tr>

@@ -3,8 +3,11 @@
 @section('content')
 <div class="container">
 
-    <a href="{{ route('jadwal.create') }}" class="btn btn-primary mb-3">
-        + Tambah Jadwal
+    <a href="{{ route('jadwal.create') }}"
+    class="btn btn-primary mb-3"
+    title="Tambah Jadwal">
+        <i class="fas fa-plus me-1"></i>
+        <span class="fw-bold">Tambah Jadwal</span>
     </a>
 
     <div class="table-responsive">
@@ -23,19 +26,29 @@
                 <tr>
                     <td>{{ $i + 1 }}</td>
                     <td>{{ $j->hari_kerja }}</td>
-                    <td>{{ $j->jam_masuk }}</td>
-                    <td>{{ $j->jam_keluar }}</td>
-                    <td>
-                        <a href="{{ route('jadwal.edit', $j->id_jadwal) }}"
-                           class="btn btn-warning btn-sm">Edit</a>
 
+                    {{-- FORMAT JAM --}}
+                    <td>{{ \Carbon\Carbon::parse($j->jam_masuk)->format('H:i') }}</td>
+                    <td>{{ \Carbon\Carbon::parse($j->jam_keluar)->format('H:i') }}</td>
+
+                    <td>
+                        {{-- EDIT --}}
+                        <a href="{{ route('jadwal.edit', $j->id_jadwal) }}"
+                           class="btn btn-warning btn-sm"
+                           title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </a>
+
+                        {{-- HAPUS --}}
                         <form action="{{ route('jadwal.destroy', $j->id_jadwal) }}"
-                              method="POST" class="d-inline">
+                              method="POST"
+                              class="d-inline"
+                              onsubmit="return confirm('Yakin ingin menghapus jadwal ini?')">
                             @csrf
                             @method('DELETE')
                             <button class="btn btn-danger btn-sm"
-                                    onclick="return confirm('Hapus jadwal?')">
-                                Hapus
+                                    title="Hapus">
+                                <i class="fas fa-trash"></i>
                             </button>
                         </form>
                     </td>
@@ -50,5 +63,6 @@
             </tbody>
         </table>
     </div>
+
 </div>
 @endsection

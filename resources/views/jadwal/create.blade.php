@@ -2,7 +2,6 @@
 
 @section('content')
 <div class="container">
-    
 
     {{-- Alert --}}
     @if (session('success'))
@@ -27,7 +26,7 @@
 
         <div class="mb-3">
             <label class="form-label">Jam Masuk</label>
-            <input type="time" name="jam_masuk" class="form-control"
+            <input type="text" name="jam_masuk" class="form-control timepicker"
                    value="{{ old('jam_masuk') }}" required>
             @error('jam_masuk')
                 <small class="text-danger">{{ $message }}</small>
@@ -36,7 +35,7 @@
 
         <div class="mb-3">
             <label class="form-label">Jam Keluar</label>
-            <input type="time" name="jam_keluar" class="form-control"
+            <input type="text" name="jam_keluar" class="form-control timepicker"
                    value="{{ old('jam_keluar') }}" required>
             @error('jam_keluar')
                 <small class="text-danger">{{ $message }}</small>
@@ -48,7 +47,19 @@
     </form>
 </div>
 
-{{-- STYLE TOMBOL HIJAU --}}
+{{-- FLATPICKR --}}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+<script>
+flatpickr(".timepicker", {
+    enableTime: true,
+    noCalendar: true,
+    dateFormat: "H:i",
+    time_24hr: true
+});
+</script>
+
 <style>
     .btn-jabatan {
         background-color: #1b5e20;
