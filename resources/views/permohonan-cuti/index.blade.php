@@ -12,17 +12,17 @@
         </a>
     @endif
 
-    <table class="table custom-table">
+    <table class="table custom-table text-center">
         <thead>
             <tr>
-                <th>No</th>
-                <th>Nama</th>
-                <th>Pengajuan</th>
-                <th>Mulai</th>
-                <th>Selesai</th>
-                <th>Status</th>
-                <th>Alasan</th>
-                <th>Aksi</th>
+                <th class="text-center">No</th>
+                <th class="text-center">Nama</th>
+                <th class="text-center">Pengajuan</th>
+                <th class="text-center">Mulai</th>
+                <th class="text-center">Selesai</th>
+                <th class="text-center">Status</th>
+                <th class="text-center">Alasan</th>
+                <th class="text-center">Aksi</th>
             </tr>
         </thead>
         <tbody>

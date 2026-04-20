@@ -20,9 +20,9 @@
 <div class="container-fluid py-4">
 
     <!-- =======================
-         STATISTIK CARDS
+         STATISTIK CARDS (FIX CENTER)
     ======================== -->
-    <div class="row g-3">
+    <div class="row g-3 justify-content-center text-center">
 
         {{-- 👑 ADMIN ONLY --}}
         @if(auth()->user()->role === 'admin')
@@ -30,7 +30,7 @@
         <div class="col-md-3">
             <a href="{{ route('akun.index') }}" class="card-link">
                 <div class="card shadow-sm border-0 rounded-3" style="background-color:#1b5e20; color:#fff;">
-                    <div class="card-body text-center">
+                    <div class="card-body">
                         <h6 class="fw-semibold">Total Pengguna</h6>
                         <h2 class="fw-bold mt-2">{{ $totalPengguna }}</h2>
                     </div>
@@ -41,7 +41,7 @@
         <div class="col-md-3">
             <a href="{{ route('data-karyawan.index') }}" class="card-link">
                 <div class="card shadow-sm border-0 rounded-3" style="background-color:#2e7d32; color:#fff;">
-                    <div class="card-body text-center">
+                    <div class="card-body">
                         <h6 class="fw-semibold">Total Karyawan</h6>
                         <h2 class="fw-bold mt-2">{{ $totalKaryawan }}</h2>
                     </div>
@@ -51,17 +51,11 @@
 
         @endif
 
-    </div>
-
-    <!-- =======================
-         CENTER CARD (HADIR + CUTI)
-    ======================== -->
-    <div class="row g-3 justify-content-center mt-2">
-
+        <!-- CARD HADIR -->
         <div class="col-md-3">
             <a href="{{ route('absensi.index') }}" class="card-link">
                 <div class="card shadow-sm border-0 rounded-3" style="background-color:#81c784; color:#000;">
-                    <div class="card-body text-center">
+                    <div class="card-body">
                         <h6 class="fw-semibold">Hadir Hari Ini ✅</h6>
                         <h2 class="fw-bold mt-2">{{ $totalHadir }}</h2>
                     </div>
@@ -69,10 +63,11 @@
             </a>
         </div>
 
+        <!-- CARD CUTI -->
         <div class="col-md-3">
             <a href="{{ route('permohonan-cuti.index') }}" class="card-link">
                 <div class="card shadow-sm border-0 rounded-3" style="background-color:#ffb300; color:#000;">
-                    <div class="card-body text-center">
+                    <div class="card-body">
                         <h6 class="fw-semibold">Permohonan Cuti 📄</h6>
                         <h2 class="fw-bold mt-2">{{ $totalPermohonan }}</h2>
                     </div>

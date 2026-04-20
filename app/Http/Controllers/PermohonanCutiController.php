@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\PermohonanCuti;
 use App\Models\Karyawan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
 class PermohonanCutiController extends Controller
@@ -17,21 +18,18 @@ class PermohonanCutiController extends Controller
 
     public function create()
     {
-        $karyawan = Karyawan::all();
+        $karyawan = Karyawan::all(); // tetap, tidak dihapus
         return view('permohonan-cuti.create', compact('karyawan'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'id_karyawan' => 'required|exists:karyawans,id_karyawan',
+            // 🔥 HAPUS VALIDASI id_karyawan
             'tanggal_mulai' => 'required|date|after_or_equal:today',
             'tanggal_selesai' => 'required|date|after_or_equal:tanggal_mulai',
             'alasan_cuti' => 'required|string',
         ], [
-            'id_karyawan.required' => 'Karyawan wajib dipilih.',
-            'id_karyawan.exists' => 'Karyawan tidak ditemukan.',
-            
             'tanggal_mulai.required' => 'Tanggal mulai cuti wajib diisi.',
             'tanggal_mulai.date' => 'Format tanggal mulai tidak valid.',
             'tanggal_mulai.after_or_equal' => 'Tanggal mulai tidak boleh sebelum hari ini.',
@@ -44,7 +42,7 @@ class PermohonanCutiController extends Controller
         ]);
 
         PermohonanCuti::create([
-            'id_karyawan' => $request->id_karyawan,
+            'id_karyawan' => Auth::user()->id_karyawan, // 🔥 otomatis
             'tanggal_pengajuan' => Carbon::today(),
             'tanggal_mulai' => $request->tanggal_mulai,
             'tanggal_selesai' => $request->tanggal_selesai,
@@ -59,7 +57,7 @@ class PermohonanCutiController extends Controller
     public function edit($id)
     {
         $cuti = PermohonanCuti::findOrFail($id);
-        $karyawan = Karyawan::all();
+        $karyawan = Karyawan::all(); // tetap
         return view('permohonan-cuti.edit', compact('cuti', 'karyawan'));
     }
 
@@ -68,15 +66,12 @@ class PermohonanCutiController extends Controller
         $cuti = PermohonanCuti::findOrFail($id);
 
         $request->validate([
-            'id_karyawan' => 'required|exists:karyawans,id_karyawan',
+            // 🔥 HAPUS VALIDASI id_karyawan
             'tanggal_mulai' => 'required|date',
             'tanggal_selesai' => 'required|date|after_or_equal:tanggal_mulai',
             'alasan_cuti' => 'required|string',
             'status_cuti' => 'required|in:disetujui,belum disetujui,ditolak',
         ], [
-            'id_karyawan.required' => 'Karyawan wajib dipilih.',
-            'id_karyawan.exists' => 'Karyawan tidak ditemukan.',
-
             'tanggal_mulai.required' => 'Tanggal mulai cuti wajib diisi.',
             'tanggal_mulai.date' => 'Format tanggal mulai tidak valid.',
 
@@ -91,7 +86,7 @@ class PermohonanCutiController extends Controller
         ]);
 
         $cuti->update([
-            'id_karyawan' => $request->id_karyawan,
+            // 🔥 HAPUS id_karyawan
             'tanggal_mulai' => $request->tanggal_mulai,
             'tanggal_selesai' => $request->tanggal_selesai,
             'status_cuti' => $request->status_cuti,

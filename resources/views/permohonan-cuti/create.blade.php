@@ -22,25 +22,11 @@
     <form action="{{ route('permohonan-cuti.store') }}" method="POST">
         @csrf
 
-        {{-- KARYAWAN --}}
+        {{-- 🔥 NAMA KARYAWAN (OTOMATIS) --}}
         <div class="mb-3">
             <label class="form-label">Nama Karyawan</label>
-            <select name="id_karyawan"
-                class="form-control @error('id_karyawan') is-invalid @enderror"
-                required>
-
-                <option value="">-- Pilih Karyawan --</option>
-                @foreach($karyawan as $k)
-                    <option value="{{ $k->id_karyawan }}"
-                        {{ old('id_karyawan') == $k->id_karyawan ? 'selected' : '' }}>
-                        {{ $k->nama_karyawan }}
-                    </option>
-                @endforeach
-            </select>
-
-            @error('id_karyawan')
-                <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
+            <input type="text" class="form-control"
+                value="{{ auth()->user()->karyawan->nama_karyawan ?? '-' }}" readonly>
         </div>
 
         {{-- TANGGAL MULAI --}}
@@ -97,7 +83,6 @@ document.addEventListener("DOMContentLoaded", function () {
     mulai.addEventListener('change', function () {
         selesai.min = this.value;
 
-        // reset jika tanggal selesai lebih kecil
         if (selesai.value < this.value) {
             selesai.value = "";
         }
@@ -105,7 +90,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 </script>
 
-{{-- STYLE TOMBOL --}}
+{{-- STYLE --}}
 <style>
     .btn-jabatan {
         background-color: #1b5e20;

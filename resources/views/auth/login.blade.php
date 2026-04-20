@@ -64,17 +64,30 @@
     <div class="col-md-6 login-right">
         <h4 class="text-center mb-4">Selamat Datang Kembali</h4>
 
+        {{-- 🔥 ALERT ERROR --}}
+        @if ($errors->has('email'))
+            <div class="alert alert-danger text-center">
+                Email atau password salah
+            </div>
+        @endif
+
         <form method="POST" action="{{ route('login') }}">
             @csrf
 
+            {{-- EMAIL --}}
             <div class="mb-3">
                 <label class="form-label">Email</label>
-                <input type="email" name="email" class="form-control" required>
+                <input type="email" name="email"
+                    class="form-control @error('email') is-invalid @enderror"
+                    required>
             </div>
 
+            {{-- PASSWORD --}}
             <div class="mb-3">
                 <label class="form-label">Password</label>
-                <input type="password" name="password" class="form-control" required>
+                <input type="password" name="password"
+                    class="form-control @error('email') is-invalid @enderror"
+                    required>
             </div>
 
             <button class="btn btn-success w-100 py-2 mt-2">

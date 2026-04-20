@@ -7,22 +7,14 @@
         @csrf
         @method('PUT')
 
-        {{-- Nama Karyawan --}}
+        {{-- 🔥 NAMA KARYAWAN (OTOMATIS) --}}
         <div class="mb-3">
             <label class="form-label">Nama Karyawan</label>
-            <select class="form-control" disabled>
-                @foreach($karyawan as $k)
-                    <option value="{{ $k->id_karyawan }}"
-                        {{ $k->id_karyawan == $cuti->id_karyawan ? 'selected' : '' }}>
-                        {{ $k->nama_karyawan }}
-                    </option>
-                @endforeach
-            </select>
-
-            <input type="hidden" name="id_karyawan" value="{{ $cuti->id_karyawan }}">
+            <input type="text" class="form-control"
+                value="{{ $cuti->karyawan->nama_karyawan }}" readonly>
         </div>
 
-        {{-- Tanggal Mulai --}}
+        {{-- TANGGAL MULAI --}}
         <div class="mb-3">
             <label class="form-label">Tanggal Mulai</label>
             <input type="date" class="form-control"
@@ -31,7 +23,7 @@
             <input type="hidden" name="tanggal_mulai" value="{{ $cuti->tanggal_mulai }}">
         </div>
 
-        {{-- Tanggal Selesai --}}
+        {{-- TANGGAL SELESAI --}}
         <div class="mb-3">
             <label class="form-label">Tanggal Selesai</label>
             <input type="date" class="form-control"
@@ -59,7 +51,7 @@
             </select>
         </div>
 
-        {{-- Alasan --}}
+        {{-- ALASAN --}}
         <div class="mb-3">
             <label class="form-label">Alasan Cuti</label>
             <textarea class="form-control" rows="4" readonly>{{ $cuti->alasan_cuti }}</textarea>
@@ -67,7 +59,7 @@
             <input type="hidden" name="alasan_cuti" value="{{ $cuti->alasan_cuti }}">
         </div>
 
-        {{-- Tombol --}}
+        {{-- TOMBOL --}}
         <button type="submit" class="btn btn-jabatan">Simpan Perubahan</button>
         <a href="{{ route('permohonan-cuti.index') }}" class="btn btn-secondary">Batal</a>
     </form>
@@ -89,4 +81,5 @@
         color: #ffffff;
     }
 </style>
+
 @endsection
