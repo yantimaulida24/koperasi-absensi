@@ -16,7 +16,7 @@ class Karyawan extends Model
      * Kolom yang boleh diisi mass assignment
      */
     protected $fillable = [
-        'nik_karyawan', // ✅ TAMBAHAN
+        'nik_karyawan',
         'id_jabatan',
         'nama_karyawan',
         'tempat_lahir',
@@ -59,6 +59,18 @@ class Karyawan extends Model
     {
         return $this->hasMany(
             Absensi::class,
+            'id_karyawan',
+            'id_karyawan'
+        );
+    }
+
+    /**
+     * 🔥 TAMBAHAN: Relasi ke tabel users
+     */
+    public function user()
+    {
+        return $this->hasOne(
+            User::class,
             'id_karyawan',
             'id_karyawan'
         );

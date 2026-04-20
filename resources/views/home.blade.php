@@ -6,9 +6,11 @@
 .card-link {
     text-decoration: none;
 }
+
 .card-link .card {
     transition: transform .2s ease, box-shadow .2s ease;
 }
+
 .card-link .card:hover {
     transform: translateY(-4px);
     box-shadow: 0 8px 20px rgba(0,0,0,.15);
@@ -21,6 +23,9 @@
          STATISTIK CARDS
     ======================== -->
     <div class="row g-3">
+
+        {{-- 👑 ADMIN ONLY --}}
+        @if(auth()->user()->role === 'admin')
 
         <div class="col-md-3">
             <a href="{{ route('akun.index') }}" class="card-link">
@@ -44,8 +49,17 @@
             </a>
         </div>
 
+        @endif
+
+    </div>
+
+    <!-- =======================
+         CENTER CARD (HADIR + CUTI)
+    ======================== -->
+    <div class="row g-3 justify-content-center mt-2">
+
         <div class="col-md-3">
-            <a href="{{ route('absensi.index', ['status' => 'Hadir']) }}" class="card-link">
+            <a href="{{ route('absensi.index') }}" class="card-link">
                 <div class="card shadow-sm border-0 rounded-3" style="background-color:#81c784; color:#000;">
                     <div class="card-body text-center">
                         <h6 class="fw-semibold">Hadir Hari Ini ✅</h6>
@@ -75,6 +89,7 @@
         <div class="card-header bg-white fw-bold text-primary">
             <i class="fas fa-clipboard-list me-2"></i> Absensi Terbaru 📝
         </div>
+
         <div class="card-body">
             <div class="table-responsive">
                 <table class="table table-hover table-bordered align-middle">
@@ -88,26 +103,28 @@
                             <th>Total Jam Kerja</th>
                         </tr>
                     </thead>
+
                     <tbody>
                         @forelse($absensiTerbaru as $absen)
                         <tr class="text-center">
                             <td>{{ $absen->karyawan->nama_karyawan ?? '-' }}</td>
                             <td>{{ \Carbon\Carbon::parse($absen->tanggal)->format('d-m-Y') }}</td>
+
                             <td>
                                 @if($absen->status == 'Hadir')
-                                    <span class="badge" style="background-color:#2e7d32; color:#fff;">{{ $absen->status }}</span>
+                                    <span class="badge bg-success">{{ $absen->status }}</span>
                                 @elseif($absen->status == 'Izin')
-                                    <span class="badge" style="background-color:#ffb300; color:#000;">{{ $absen->status }}</span>
+                                    <span class="badge bg-warning text-dark">{{ $absen->status }}</span>
                                 @elseif($absen->status == 'Sakit')
-                                    <span class="badge" style="background-color:#d32f2f; color:#fff;">{{ $absen->status }}</span>
+                                    <span class="badge bg-danger">{{ $absen->status }}</span>
                                 @else
                                     <span class="badge bg-secondary">{{ $absen->status }}</span>
                                 @endif
                             </td>
+
                             <td>{{ $absen->waktu_masuk ?? '-' }}</td>
                             <td>{{ $absen->waktu_keluar ?? '-' }}</td>
 
-                            {{-- ✅ FIX TOTAL JAM KERJA --}}
                             <td>
                                 @if($absen->total_jam_kerja !== null && $absen->waktu_keluar)
                                     @php
@@ -128,6 +145,7 @@
                         </tr>
                         @endforelse
                     </tbody>
+
                 </table>
             </div>
         </div>

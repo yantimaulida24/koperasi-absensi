@@ -7,15 +7,11 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
-        Schema::table('karyawans', function (Blueprint $table) {
-            $table->string('nik_karyawan')->unique()->after('id_karyawan');
-        });
+        // ✅ kosongkan saja karena kolom sudah ada
     }
 
     public function down(): void
     {
-        Schema::table('karyawans', function (Blueprint $table) {
-            $table->dropColumn('nik_karyawan');
-        });
+        // kosongkan juga
     }
 };

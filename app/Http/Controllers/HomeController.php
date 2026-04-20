@@ -13,35 +13,49 @@ class HomeController extends Controller
 {
     public function index()
     {
-        // =========================
-        // TANGGAL HARI INI
-        // =========================
         $hariIni = Carbon::today()->toDateString();
 
         // =========================
-        // TOTAL DATA
+        // ROLE CHECK
         // =========================
-        $totalPengguna = User::count();
-        $totalKaryawan = Karyawan::count();
+        $isAdmin = Auth::user()->role === 'admin';
+        $idKaryawan = Auth::user()->id_karyawan;
 
         // =========================
-        // TOTAL HADIR HARI INI
+        // TOTAL DATA (ADMIN ONLY)
         // =========================
-        $totalHadir = Absensi::where('tanggal', $hariIni)
-            ->count();
+        if ($isAdmin) {
+            $totalPengguna = User::count();
+            $totalKaryawan = Karyawan::count();
+        } else {
+            $totalPengguna = null;
+            $totalKaryawan = null;
+        }
 
         // =========================
-        // TOTAL PERMOHONAN CUTI HARI INI
+        // TOTAL HADIR
         // =========================
-        $totalPermohonan = PermohonanCuti::whereDate(
-            'tanggal_mulai',
-            '<=',
-            $hariIni
-        )->whereDate(
-            'tanggal_selesai',
-            '>=',
-            $hariIni
-        )->count();
+        if ($isAdmin) {
+            $totalHadir = Absensi::where('tanggal', $hariIni)->count();
+        } else {
+            $totalHadir = Absensi::where('tanggal', $hariIni)
+                ->where('id_karyawan', $idKaryawan)
+                ->count();
+        }
+
+        // =========================
+        // TOTAL CUTI
+        // =========================
+        if ($isAdmin) {
+            $totalPermohonan = PermohonanCuti::whereDate('tanggal_mulai', '<=', $hariIni)
+                ->whereDate('tanggal_selesai', '>=', $hariIni)
+                ->count();
+        } else {
+            $totalPermohonan = PermohonanCuti::where('id_karyawan', $idKaryawan)
+                ->whereDate('tanggal_mulai', '<=', $hariIni)
+                ->whereDate('tanggal_selesai', '>=', $hariIni)
+                ->count();
+        }
 
         // =========================
         // GRAFIK MINGGUAN
@@ -53,46 +67,54 @@ class HomeController extends Controller
         for ($i = 6; $i >= 0; $i--) {
             $tanggal = Carbon::today()->subDays($i)->toDateString();
 
-            $hadirHarian = Absensi::where('tanggal', $tanggal)
-                ->count();
+            if ($isAdmin) {
+                $hadirHarian = Absensi::where('tanggal', $tanggal)->count();
 
-            $permohonanHarian = PermohonanCuti::whereDate(
-                'tanggal_mulai',
-                '<=',
-                $tanggal
-            )->whereDate(
-                'tanggal_selesai',
-                '>=',
-                $tanggal
-            )->count();
+                $permohonanHarian = PermohonanCuti::whereDate('tanggal_mulai', '<=', $tanggal)
+                    ->whereDate('tanggal_selesai', '>=', $tanggal)
+                    ->count();
+            } else {
+                $hadirHarian = Absensi::where('tanggal', $tanggal)
+                    ->where('id_karyawan', $idKaryawan)
+                    ->count();
 
-            $labelMinggu[]        = Carbon::parse($tanggal)->format('d M');
-            $dataHadir[]          = $hadirHarian;
-            $dataPermohonan[]     = $permohonanHarian;
+                $permohonanHarian = PermohonanCuti::where('id_karyawan', $idKaryawan)
+                    ->whereDate('tanggal_mulai', '<=', $tanggal)
+                    ->whereDate('tanggal_selesai', '>=', $tanggal)
+                    ->count();
+            }
+
+            $labelMinggu[]    = Carbon::parse($tanggal)->format('d M');
+            $dataHadir[]      = $hadirHarian;
+            $dataPermohonan[] = $permohonanHarian;
         }
 
         // =========================
         // ABSENSI TERBARU
         // =========================
-        $absensiTerbaru = Absensi::with('karyawan')
-            ->orderBy('tanggal', 'desc')
-            ->orderBy('waktu_masuk', 'desc')
-            ->limit(5)
-            ->get();
+        if ($isAdmin) {
+            $absensiTerbaru = Absensi::with('karyawan')
+                ->orderBy('tanggal', 'desc')
+                ->orderBy('waktu_masuk', 'desc')
+                ->limit(5)
+                ->get();
+        } else {
+            $absensiTerbaru = Absensi::with('karyawan')
+                ->where('id_karyawan', $idKaryawan)
+                ->orderBy('tanggal', 'desc')
+                ->orderBy('waktu_masuk', 'desc')
+                ->limit(5)
+                ->get();
+        }
 
         // =========================
         // PERMOHONAN CUTI TERBARU
         // =========================
-        if (Auth::user()->role === 'karyawan') {
-            $permohonanCuti = PermohonanCuti::where(
-                    'id_karyawan',
-                    Auth::user()->id_karyawan
-                )
-                ->latest()
-                ->limit(5)
-                ->get();
+        if ($isAdmin) {
+            $permohonanCuti = PermohonanCuti::latest()->limit(5)->get();
         } else {
-            $permohonanCuti = PermohonanCuti::latest()
+            $permohonanCuti = PermohonanCuti::where('id_karyawan', $idKaryawan)
+                ->latest()
                 ->limit(5)
                 ->get();
         }

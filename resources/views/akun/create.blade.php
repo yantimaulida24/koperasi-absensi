@@ -31,6 +31,19 @@
             </select>
         </div>
 
+        {{-- 🔥 TAMBAHAN: PILIH KARYAWAN --}}
+        <div class="mb-3">
+            <label>Pilih Karyawan</label>
+            <select name="id_karyawan" class="form-control">
+                <option value="">-- Pilih Karyawan --</option>
+                @foreach($karyawan as $k)
+                    <option value="{{ $k->id_karyawan }}">
+                        {{ $k->nama_karyawan }} ({{ $k->nik_karyawan }})
+                    </option>
+                @endforeach
+            </select>
+        </div>
+
         <button class="btn btn-success">Simpan</button>
         <a href="{{ route('akun.index') }}" class="btn btn-secondary">Kembali</a>
     </form>

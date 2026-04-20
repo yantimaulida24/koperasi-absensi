@@ -14,8 +14,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'role',     // ✅ tambahkan ini agar bisa digunakan di middleware cekRole
-        
+        'role',
+        'id_karyawan', // ✅ TAMBAHAN
     ];
 
     protected $hidden = [
@@ -32,6 +32,14 @@ class User extends Authenticatable
     }
 
     // ===========================
+    // 🔥 RELASI KE KARYAWAN (WAJIB)
+    // ===========================
+    public function karyawan()
+    {
+        return $this->belongsTo(Karyawan::class, 'id_karyawan', 'id_karyawan');
+    }
+
+    // ===========================
     // Relasi ke tabel absensi
     // ===========================
     public function absensis()
@@ -44,6 +52,6 @@ class User extends Authenticatable
     // ===========================
     public function cuti()
     {
-        return $this->hasMany(PermohonanCuti::class, 'id_karyawan', 'id');
+        return $this->hasMany(PermohonanCuti::class, 'id_karyawan', 'id_karyawan');
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Karyawan; // ✅ TAMBAHAN
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -22,7 +23,8 @@ class AkunController extends Controller
      */
     public function create()
     {
-        return view('akun.create');
+        $karyawan = Karyawan::all(); // ✅ TAMBAHAN
+        return view('akun.create', compact('karyawan'));
     }
 
     /**
@@ -31,18 +33,19 @@ class AkunController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name'     => 'required|string|max:255',
-            'email'    => 'required|email|unique:users',
-            'password' => 'required|min:6',
-            'role'     => 'required|in:admin,karyawan',
+            'name'         => 'required|string|max:255',
+            'email'        => 'required|email|unique:users',
+            'password'     => 'required|min:6',
+            'role'         => 'required|in:admin,karyawan',
+            'id_karyawan'  => 'nullable|exists:karyawans,id_karyawan', // ✅ TAMBAHAN
         ]);
 
         User::create([
-            'name'     => $request->name,
-            'email'    => $request->email,
-            // otomatis di-hash karena cast "hashed"
-            'password' => $request->password,
-            'role'     => $request->role,
+            'name'         => $request->name,
+            'email'        => $request->email,
+            'password'     => $request->password,
+            'role'         => $request->role,
+            'id_karyawan'  => $request->id_karyawan, // 🔥 PENTING
         ]);
 
         return redirect()->route('akun.index')
@@ -54,7 +57,8 @@ class AkunController extends Controller
      */
     public function edit(User $akun)
     {
-        return view('akun.edit', compact('akun'));
+        $karyawan = Karyawan::all(); // ✅ TAMBAHAN
+        return view('akun.edit', compact('akun', 'karyawan'));
     }
 
     /**
@@ -63,15 +67,17 @@ class AkunController extends Controller
     public function update(Request $request, User $akun)
     {
         $request->validate([
-            'name'  => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $akun->id,
-            'role'  => 'required|in:admin,karyawan',
+            'name'         => 'required|string|max:255',
+            'email'        => 'required|email|unique:users,email,' . $akun->id,
+            'role'         => 'required|in:admin,karyawan',
+            'id_karyawan'  => 'nullable|exists:karyawans,id_karyawan', // ✅ TAMBAHAN
         ]);
 
         $data = [
-            'name'  => $request->name,
-            'email' => $request->email,
-            'role'  => $request->role,
+            'name'         => $request->name,
+            'email'        => $request->email,
+            'role'         => $request->role,
+            'id_karyawan'  => $request->id_karyawan, // 🔥 TAMBAHAN
         ];
 
         // jika password diisi

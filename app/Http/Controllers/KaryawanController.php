@@ -7,7 +7,7 @@ use App\Models\Jabatan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-// QR (tampilan & PNG)
+// QR
 use SimpleSoftwareIO\QrCode\Facades\QrCode as QrCodeView;
 
 // PDF
@@ -17,11 +17,22 @@ class KaryawanController extends Controller
 {
     public function index(Request $request)
     {
-        $karyawan = Karyawan::with('jabatan')
-            ->when($request->search, function ($query) use ($request) {
-                $query->where('nama_karyawan', 'like', '%' . $request->search . '%');
-            })
-            ->get();
+        if (Auth::user()->role === 'admin') {
+
+            // 👑 ADMIN: semua data karyawan
+            $karyawan = Karyawan::with('jabatan')
+                ->when($request->search, function ($query) use ($request) {
+                    $query->where('nama_karyawan', 'like', '%' . $request->search . '%');
+                })
+                ->get();
+
+        } else {
+
+            // 👷 KARYAWAN: hanya data dirinya sendiri
+            $karyawan = Karyawan::with('jabatan')
+                ->where('id_karyawan', Auth::user()->id_karyawan)
+                ->get();
+        }
 
         return view('karyawan.index', compact('karyawan'));
     }
@@ -40,13 +51,8 @@ class KaryawanController extends Controller
 
         $request->validate([
             'id_jabatan'     => 'required|exists:jabatans,id_jabatan',
-
-            // ✅ NIK sebagai pembeda (UNIQUE)
             'nik_karyawan'   => 'required|string|max:50|unique:karyawans,nik_karyawan',
-
-            // ✅ Nama boleh sama
             'nama_karyawan'  => 'required|string|max:255',
-
             'tempat_lahir'   => 'required|string|max:100',
             'tanggal_lahir'  => 'required|date',
             'no_telepon'     => 'nullable|string|max:20|unique:karyawans,no_telepon',
@@ -63,6 +69,12 @@ class KaryawanController extends Controller
     public function show(Karyawan $data_karyawan)
     {
         $karyawan = $data_karyawan->load('jabatan');
+
+        // 🔐 Karyawan hanya boleh lihat dirinya sendiri
+        if (Auth::user()->role !== 'admin' &&
+            Auth::user()->id_karyawan != $karyawan->id_karyawan) {
+            abort(403, 'Akses ditolak');
+        }
 
         $urlQr = url('/absen/scan?kode=' . $karyawan->kode_qr);
 
@@ -91,14 +103,9 @@ class KaryawanController extends Controller
 
         $request->validate([
             'id_jabatan'     => 'required|exists:jabatans,id_jabatan',
-
-            // ✅ NIK tetap UNIQUE saat update
             'nik_karyawan'   => 'required|string|max:50|unique:karyawans,nik_karyawan,' 
                                 . $data_karyawan->id_karyawan . ',id_karyawan',
-
-            // ✅ Nama tetap boleh sama
             'nama_karyawan'  => 'required|string|max:255',
-
             'tempat_lahir'   => 'required|string|max:100',
             'tanggal_lahir'  => 'required|date',
             'no_telepon'     => 'nullable|string|max:20|unique:karyawans,no_telepon,' 
@@ -127,6 +134,12 @@ class KaryawanController extends Controller
     public function downloadQr(Karyawan $data_karyawan)
     {
         $karyawan = $data_karyawan->load('jabatan');
+
+        // 🔐 hanya admin atau pemilik data
+        if (Auth::user()->role !== 'admin' &&
+            Auth::user()->id_karyawan != $karyawan->id_karyawan) {
+            abort(403, 'Akses ditolak');
+        }
 
         $urlQr = url('/absen/scan?kode=' . $karyawan->kode_qr);
 

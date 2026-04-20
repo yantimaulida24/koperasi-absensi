@@ -6,6 +6,7 @@ use App\Models\Absensi;
 use App\Models\Karyawan;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class AbsensiController extends Controller
 {
@@ -22,9 +23,6 @@ class AbsensiController extends Controller
     // =====================
     public function prosesScan(Request $request)
     {
-        // =====================
-        // AMBIL FOTO SELFIE
-        // =====================
         $fotoBase64 = null;
 
         if ($request->has('foto_absen')) {
@@ -39,9 +37,6 @@ class AbsensiController extends Controller
             return back()->with('error', 'QR kosong');
         }
 
-        // =====================
-        // VALIDASI QR
-        // =====================
         preg_match('/KRY-\d+/i', $raw, $match);
 
         if (!$match) {
@@ -51,32 +46,20 @@ class AbsensiController extends Controller
         $kodeQR     = strtoupper($match[0]);
         $idKaryawan = (int) str_replace('KRY-', '', $kodeQR);
 
-        // =====================
-        // CEK KARYAWAN
-        // =====================
         $karyawan = Karyawan::where('id_karyawan', $idKaryawan)->first();
 
         if (!$karyawan) {
             return back()->with('error', 'Karyawan tidak ditemukan');
         }
 
-        // =====================
-        // WAKTU SEKARANG (WITA)
-        // =====================
         $now     = Carbon::now('Asia/Makassar');
         $tanggal = $now->toDateString();
         $waktu   = $now->format('H:i:s');
 
-        // =====================
-        // CEK ABSEN HARI INI
-        // =====================
         $absen = Absensi::where('id_karyawan', $idKaryawan)
             ->where('tanggal', $tanggal)
             ->first();
 
-        // =====================
-        // CEGAH DOUBLE SCAN
-        // =====================
         if ($absen) {
             $lastUpdate = Carbon::parse($absen->updated_at);
 
@@ -85,11 +68,8 @@ class AbsensiController extends Controller
             }
         }
 
-        // =====================
         // ABSEN MASUK
-        // =====================
         if (!$absen) {
-
             Absensi::create([
                 'id_karyawan' => $idKaryawan,
                 'tanggal'     => $tanggal,
@@ -101,9 +81,7 @@ class AbsensiController extends Controller
             return back()->with('success', 'Absensi masuk berhasil');
         }
 
-        // =====================
         // ABSEN PULANG
-        // =====================
         if (is_null($absen->waktu_keluar)) {
 
             $masuk  = Carbon::createFromFormat('H:i:s', $absen->waktu_masuk);
@@ -121,24 +99,31 @@ class AbsensiController extends Controller
             return back()->with('success', 'Absensi pulang berhasil');
         }
 
-        // =====================
-        // SUDAH ABSEN
-        // =====================
         return back()->with('error', 'Anda sudah absen hari ini');
     }
 
     // =====================
-    // HALAMAN ABSENSI (FIX)
+    // HALAMAN ABSENSI (ROLE BASED)
     // =====================
     public function index()
     {
         $today = Carbon::now('Asia/Makassar')->toDateString();
 
-        // 🔥 Ambil semua karyawan
-        $karyawan = Karyawan::all();
+        if (Auth::user()->role === 'admin') {
 
-        // 🔥 Ambil absensi hari ini saja
-        $absensi = Absensi::where('tanggal', $today)->get();
+            // 👑 ADMIN: lihat semua karyawan + semua absensi
+            $karyawan = Karyawan::all();
+            $absensi = Absensi::where('tanggal', $today)->get();
+
+        } else {
+
+            // 👷 KARYAWAN: hanya dirinya sendiri
+            $karyawan = Karyawan::where('id_karyawan', Auth::user()->id_karyawan)->get();
+
+            $absensi = Absensi::where('tanggal', $today)
+                ->where('id_karyawan', Auth::user()->id_karyawan)
+                ->get();
+        }
 
         return view('absensi.index', compact('karyawan', 'absensi'));
     }
