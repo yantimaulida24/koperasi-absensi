@@ -48,6 +48,7 @@
                 <tr class="text-center">
                     <th width="5%">No</th>
                     <th>Nama Karyawan</th>
+                    <th>NIK</th> {{-- ✅ TAMBAHAN --}}
                     <th>Tempat Lahir</th>
                     <th>Tanggal Lahir</th>
                     <th>Jabatan</th>
@@ -61,6 +62,7 @@
                 <tr>
                     <td class="text-center">{{ $index + 1 }}</td>
                     <td>{{ $data->nama_karyawan }}</td>
+                    <td>{{ $data->nik_karyawan }}</td> {{-- ✅ TAMBAHAN --}}
                     <td>{{ $data->tempat_lahir }}</td>
                     <td>
                         {{ \Carbon\Carbon::parse($data->tanggal_lahir)->format('d-m-Y') }}
@@ -105,7 +107,7 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="8" class="text-center text-muted">
+                    <td colspan="9" class="text-center text-muted"> {{-- ✅ DIUBAH --}}
                         Tidak ada data karyawan
                     </td>
                 </tr>

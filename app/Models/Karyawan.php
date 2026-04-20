@@ -16,6 +16,7 @@ class Karyawan extends Model
      * Kolom yang boleh diisi mass assignment
      */
     protected $fillable = [
+        'nik_karyawan', // ✅ TAMBAHAN
         'id_jabatan',
         'nama_karyawan',
         'tempat_lahir',

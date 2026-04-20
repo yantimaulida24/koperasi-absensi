@@ -15,9 +15,6 @@ use Barryvdh\DomPDF\Facade\Pdf;
 
 class KaryawanController extends Controller
 {
-    /* =========================
-       INDEX
-       ========================= */
     public function index(Request $request)
     {
         $karyawan = Karyawan::with('jabatan')
@@ -29,9 +26,6 @@ class KaryawanController extends Controller
         return view('karyawan.index', compact('karyawan'));
     }
 
-    /* =========================
-       CREATE
-       ========================= */
     public function create()
     {
         $this->onlyAdmin();
@@ -40,16 +34,19 @@ class KaryawanController extends Controller
         return view('karyawan.create', compact('jabatan'));
     }
 
-    /* =========================
-       STORE
-       ========================= */
     public function store(Request $request)
     {
         $this->onlyAdmin();
 
         $request->validate([
             'id_jabatan'     => 'required|exists:jabatans,id_jabatan',
-            'nama_karyawan'  => 'required|string|max:255|unique:karyawans,nama_karyawan',
+
+            // ✅ NIK sebagai pembeda (UNIQUE)
+            'nik_karyawan'   => 'required|string|max:50|unique:karyawans,nik_karyawan',
+
+            // ✅ Nama boleh sama
+            'nama_karyawan'  => 'required|string|max:255',
+
             'tempat_lahir'   => 'required|string|max:100',
             'tanggal_lahir'  => 'required|date',
             'no_telepon'     => 'nullable|string|max:20|unique:karyawans,no_telepon',
@@ -63,9 +60,6 @@ class KaryawanController extends Controller
             ->with('success', 'Data karyawan berhasil ditambahkan');
     }
 
-    /* =========================
-       SHOW
-       ========================= */
     public function show(Karyawan $data_karyawan)
     {
         $karyawan = $data_karyawan->load('jabatan');
@@ -79,9 +73,6 @@ class KaryawanController extends Controller
         return view('karyawan.show', compact('karyawan', 'qrCode'));
     }
 
-    /* =========================
-       EDIT
-       ========================= */
     public function edit(Karyawan $data_karyawan)
     {
         $this->onlyAdmin();
@@ -94,17 +85,20 @@ class KaryawanController extends Controller
         ]);
     }
 
-    /* =========================
-       UPDATE
-       ========================= */
     public function update(Request $request, Karyawan $data_karyawan)
     {
         $this->onlyAdmin();
 
         $request->validate([
             'id_jabatan'     => 'required|exists:jabatans,id_jabatan',
-            'nama_karyawan'  => 'required|string|max:255|unique:karyawans,nama_karyawan,' 
+
+            // ✅ NIK tetap UNIQUE saat update
+            'nik_karyawan'   => 'required|string|max:50|unique:karyawans,nik_karyawan,' 
                                 . $data_karyawan->id_karyawan . ',id_karyawan',
+
+            // ✅ Nama tetap boleh sama
+            'nama_karyawan'  => 'required|string|max:255',
+
             'tempat_lahir'   => 'required|string|max:100',
             'tanggal_lahir'  => 'required|date',
             'no_telepon'     => 'nullable|string|max:20|unique:karyawans,no_telepon,' 
@@ -119,9 +113,6 @@ class KaryawanController extends Controller
             ->with('success', 'Data karyawan berhasil diperbarui');
     }
 
-    /* =========================
-       DESTROY
-       ========================= */
     public function destroy(Karyawan $data_karyawan)
     {
         $this->onlyAdmin();
@@ -133,16 +124,12 @@ class KaryawanController extends Controller
             ->with('success', 'Data karyawan berhasil dihapus');
     }
 
-        /* =========================
-    DOWNLOAD QR PDF
-    ========================= */
     public function downloadQr(Karyawan $data_karyawan)
     {
         $karyawan = $data_karyawan->load('jabatan');
 
         $urlQr = url('/absen/scan?kode=' . $karyawan->kode_qr);
 
-        // Generate QR dalam format SVG (AMAN, tidak butuh imagick)
         $qrSvg = QrCodeView::format('svg')
             ->size(300)
             ->generate($urlQr);
@@ -157,9 +144,6 @@ class KaryawanController extends Controller
         );
     }
 
-    /* =========================
-       HELPER
-       ========================= */
     private function onlyAdmin()
     {
         if (!Auth::check() || Auth::user()->role !== 'admin') {

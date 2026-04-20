@@ -25,6 +25,19 @@
                     @enderror
                 </div>
 
+                {{-- NIK --}}
+                <div class="mb-3">
+                    <label class="form-label">NIK</label>
+                    <input type="text"
+                           name="nik_karyawan"
+                           class="form-control"
+                           value="{{ old('nik_karyawan') }}"
+                           required>
+                    @error('nik_karyawan')
+                        <div class="text-danger">{{ $message }}</div>
+                    @enderror
+                </div>
+
                 {{-- TEMPAT LAHIR --}}
                 <div class="mb-3">
                     <label class="form-label">Tempat Lahir</label>
@@ -105,7 +118,6 @@
 
 </div>
 
-{{-- STYLE TOMBOL (SAMA SEMUA HALAMAN) --}}
 <style>
     .btn-jabatan {
         background-color: #1b5e20;
