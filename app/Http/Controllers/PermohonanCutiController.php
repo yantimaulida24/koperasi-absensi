@@ -12,7 +12,17 @@ class PermohonanCutiController extends Controller
 {
     public function index()
     {
-        $cuti = PermohonanCuti::with('karyawan')->get();
+        // 🔹 Filter berdasarkan role
+        if (Auth::user()->role === 'karyawan') {
+            // Hanya cuti milik karyawan yang login
+            $cuti = PermohonanCuti::with('karyawan')
+                ->where('id_karyawan', Auth::user()->id_karyawan)
+                ->get();
+        } else {
+            // Admin lihat semua
+            $cuti = PermohonanCuti::with('karyawan')->get();
+        }
+
         return view('permohonan-cuti.index', compact('cuti'));
     }
 
@@ -33,11 +43,11 @@ class PermohonanCutiController extends Controller
             'tanggal_mulai.required' => 'Tanggal mulai cuti wajib diisi.',
             'tanggal_mulai.date' => 'Format tanggal mulai tidak valid.',
             'tanggal_mulai.after_or_equal' => 'Tanggal mulai tidak boleh sebelum hari ini.',
-            
+
             'tanggal_selesai.required' => 'Tanggal selesai cuti wajib diisi.',
             'tanggal_selesai.date' => 'Format tanggal selesai tidak valid.',
             'tanggal_selesai.after_or_equal' => 'Tanggal selesai harus sama atau setelah tanggal mulai.',
-            
+
             'alasan_cuti.required' => 'Alasan cuti wajib diisi.',
         ]);
 
@@ -66,7 +76,7 @@ class PermohonanCutiController extends Controller
         $cuti = PermohonanCuti::findOrFail($id);
 
         $request->validate([
-            // 🔥 HAPUS VALIDASI id_karyawan
+            // 🔥 HAPUS id_karyawan
             'tanggal_mulai' => 'required|date',
             'tanggal_selesai' => 'required|date|after_or_equal:tanggal_mulai',
             'alasan_cuti' => 'required|string',
